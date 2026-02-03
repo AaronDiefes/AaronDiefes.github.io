@@ -493,7 +493,7 @@
                 const modeSelect = document.getElementById('blendModeSelect');
                 const modeName = modeSelect.value;
                 const blendMode = Module.BlendMode[modeName];
-                paint2.setBlendMode(blendMode.value);
+                paint2.setBlendMode(blendMode);  // Emscripten enum IS the value
 
                 wasmCanvas.drawRectWithPaint(300, 250, 200, 200, paint2);
                 updateCanvasDisplay();
@@ -505,7 +505,7 @@
                 // Get selected blend mode
                 const modeSelect = document.getElementById('blendModeSelect');
                 const modeName = modeSelect.value;
-                const blendMode = Module.BlendMode[modeName];
+                const blendMode = Module.BlendMode[modeName];  // This IS the numeric value
 
                 const centerX = 400, centerY = 300;
 
@@ -521,7 +521,7 @@
                 circle2.addCircle(centerX + 50, centerY, 100, Module.PathDirection.CW);
                 const paint2 = new Module.PaintWrapper();
                 paint2.setColor(1.0, 0.3, 0.3, 0.7);  // 0.7 alpha for transparency
-                paint2.setBlendMode(blendMode.value);
+                paint2.setBlendMode(blendMode);  // Emscripten enum IS the value
                 wasmCanvas.drawPathWithPaint(circle2, paint2);
 
                 updateCanvasDisplay();
