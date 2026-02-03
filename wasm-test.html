@@ -170,11 +170,22 @@
                 const pixelPtr = wasmCanvas.getPixelsPtr();
 
                 console.log('Pixel buffer pointer:', '0x' + pixelPtr.toString(16));
-                console.log('HEAPU32 buffer size:', Module.HEAPU32.buffer.byteLength);
+                console.log('Module properties:', Object.keys(Module));
 
                 // Get pixel data from WASM memory (ARGB premultiplied format)
                 const pixelCount = width * height;
-                const wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+
+                // Access WASM memory buffer - try different methods
+                let wasmPixels;
+                if (Module.HEAPU32) {
+                    wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+                } else if (Module.HEAPU8) {
+                    wasmPixels = new Uint32Array(Module.HEAPU8.buffer, pixelPtr, pixelCount);
+                } else if (Module.wasmMemory) {
+                    wasmPixels = new Uint32Array(Module.wasmMemory.buffer, pixelPtr, pixelCount);
+                } else {
+                    throw new Error('Cannot access WASM memory - no HEAPU32, HEAPU8, or wasmMemory found');
+                }
 
                 console.log('Reading', pixelCount, 'pixels from WASM memory');
                 console.log('First few pixels:', wasmPixels.slice(0, 5));
