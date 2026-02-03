@@ -16,7 +16,10 @@ EMFLAGS += -s MODULARIZE=1
 EMFLAGS += -s EXPORT_NAME="GraphicsEngine"
 EMFLAGS += -s EXPORTED_RUNTIME_METHODS='["cwrap","ccall"]'
 EMFLAGS += -s NO_EXIT_RUNTIME=1
-EMFLAGS += -s ASSERTIONS=1
+EMFLAGS += -s ASSERTIONS=0
+EMFLAGS += -s ENVIRONMENT=web
+EMFLAGS += -s FILESYSTEM=0
+EMFLAGS += -s MALLOC=emmalloc
 
 # Source files (exclude apps/ and file I/O dependent code)
 CORE_SRC = my_canvas.cpp \

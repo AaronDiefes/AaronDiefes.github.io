@@ -115,10 +115,20 @@
             statusDiv.className = type;
         }
 
-        // Initialize WASM module
-        GraphicsEngine().then((module) => {
+        // Initialize WASM module with progress tracking
+        const startTime = Date.now();
+        log('Starting WASM module initialization...');
+
+        GraphicsEngine({
+            print: (text) => log('WASM: ' + text),
+            printErr: (text) => log('WASM Error: ' + text),
+            onRuntimeInitialized: () => {
+                log('✓ Runtime initialized');
+            }
+        }).then((module) => {
             Module = module;
-            log('✓ WebAssembly module loaded successfully');
+            const loadTime = Date.now() - startTime;
+            log(`✓ WebAssembly module loaded in ${loadTime}ms`);
 
             // Create canvas wrapper
             try {
@@ -129,7 +139,7 @@
                 const pixelPtr = wasmCanvas.getPixelsPtr();
                 log('✓ Pixel buffer at: 0x' + pixelPtr.toString(16));
 
-                updateStatus('✅ WASM Engine Ready!', 'success');
+                updateStatus(`✅ WASM Engine Ready! (loaded in ${loadTime}ms)`, 'success');
 
                 // Enable buttons
                 document.getElementById('testBasic').disabled = false;
@@ -138,10 +148,12 @@
 
             } catch (e) {
                 log('✗ Error creating canvas: ' + e.message);
+                log('Stack trace: ' + e.stack);
                 updateStatus('❌ Error: ' + e.message, 'error');
             }
         }).catch((error) => {
             log('✗ Failed to load WASM module: ' + error);
+            log('Error details: ' + error.stack);
             updateStatus('❌ Failed to load WASM module', 'error');
         });
 
