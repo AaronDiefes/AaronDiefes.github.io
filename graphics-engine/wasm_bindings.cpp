@@ -295,6 +295,40 @@ ShaderWrapper* createLinearGradient(float x0, float y0, float x1, float y1,
     return nullptr;
 }
 
+ShaderWrapper* createBitmapShaderFromFile(const std::string& filename,
+                                          float m0, float m1, float m2,
+                                          float m3, float m4, float m5,
+                                          int tileMode) {
+    // Load bitmap from virtual filesystem
+    GBitmap bitmap;
+    if (!bitmap.readFromFile(filename.c_str())) {
+        return nullptr;
+    }
+
+    // Create matrix from 6 values (affine transform)
+    GMatrix matrix(m0, m1, m2, m3, m4, m5);
+
+    auto shader = GCreateBitmapShader(bitmap, matrix, static_cast<GTileMode>(tileMode));
+    if (shader) {
+        return new ShaderWrapper(std::move(shader));
+    }
+    return nullptr;
+}
+
+// Helper to load image from URL and store in virtual FS
+// This will be called from JavaScript
+bool loadImageToVFS(const std::string& filename, uintptr_t dataPtr, size_t dataSize) {
+    // Write data to virtual filesystem
+    FILE* f = fopen(filename.c_str(), "wb");
+    if (!f) return false;
+
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(dataPtr);
+    size_t written = fwrite(data, 1, dataSize, f);
+    fclose(f);
+
+    return written == dataSize;
+}
+
 // Emscripten bindings
 EMSCRIPTEN_BINDINGS(graphics_engine) {
     // PathWrapper
@@ -346,6 +380,8 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
 
     // Shader factory functions
     function("createLinearGradient", &createLinearGradient, allow_raw_pointers());
+    function("createBitmapShaderFromFile", &createBitmapShaderFromFile, allow_raw_pointers());
+    function("loadImageToVFS", &loadImageToVFS);
 
     // Enums
     enum_<GBlendMode>("BlendMode")

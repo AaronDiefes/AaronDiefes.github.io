@@ -14,24 +14,23 @@ EMFLAGS += -s WASM=1
 EMFLAGS += -s ALLOW_MEMORY_GROWTH=1
 EMFLAGS += -s MODULARIZE=1
 EMFLAGS += -s EXPORT_NAME="GraphicsEngine"
-EMFLAGS += -s EXPORTED_RUNTIME_METHODS='["cwrap","ccall","HEAPU8","HEAPU32"]'
+EMFLAGS += -s EXPORTED_RUNTIME_METHODS='["cwrap","ccall","HEAPU8","HEAPU32","FS"]'
 EMFLAGS += -s NO_EXIT_RUNTIME=1
 EMFLAGS += -s ASSERTIONS=0
 EMFLAGS += -s ENVIRONMENT=web
-EMFLAGS += -s FILESYSTEM=0
+EMFLAGS += -s FORCE_FILESYSTEM=1
 EMFLAGS += -s MALLOC=emmalloc
 
-# Source files (exclude apps/ and file I/O dependent code)
+# Source files (now includes file I/O for image loading)
 CORE_SRC = my_canvas.cpp \
            my_final.cpp \
            matrix_transform.cpp \
            src/GBitmap.cpp \
+           src/GBitmap_lode.cpp \
+           src/lodepng.cpp \
            src/GPath.cpp \
            src/GTime.cpp \
            wasm_bindings.cpp
-
-# Exclude lodepng file I/O for WASM (browser doesn't need it)
-# src/GBitmap_lode.cpp src/lodepng.cpp
 
 # Output files
 OUTPUT = graphics_engine

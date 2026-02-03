@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image/File I/O Test - Bitmap Shaders</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { margin-top: 0; color: #333; }
+        h2 { color: #667eea; margin-top: 30px; }
+        #status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        #status.loading { background: #fff3cd; border: 2px solid #ffc107; }
+        #status.success { background: #d4edda; border: 2px solid #28a745; }
+        #status.error { background: #f8d7da; border: 2px solid #dc3545; }
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: block;
+        }
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ File I/O Test: Bitmap Shaders</h1>
+        <div id="status" class="loading">Loading WebAssembly module with filesystem support...</div>
+
+        <div class="info-box">
+            <strong>📚 How File I/O Works in WASM:</strong>
+            <ul>
+                <li><strong>Virtual Filesystem:</strong> Emscripten creates an in-memory filesystem</li>
+                <li><strong>Load from JavaScript:</strong> Fetch images and write to virtual FS</li>
+                <li><strong>C++ reads normally:</strong> Your code uses <code>bitmap.readFromFile("image.png")</code></li>
+                <li><strong>lodepng decodes:</strong> PNG decoding happens in C++ at native speed</li>
+            </ul>
+        </div>
+
+        <canvas id="canvas" width="800" height="600"></canvas>
+
+        <div class="demo-section">
+            <h2>📁 Load Image from URL</h2>
+            <p>Load an image from a URL into the virtual filesystem, then create a bitmap shader.</p>
+            <input type="text" id="imageUrl" placeholder="Enter image URL" style="width: 400px; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+            <button id="loadUrl" disabled>Load from URL</button>
+            <button id="testBitmapShader" disabled>Test Bitmap Shader</button>
+        </div>
+
+        <div class="demo-section">
+            <h2>📤 Upload Local Image</h2>
+            <p>Upload an image file from your computer to test with.</p>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg" disabled>
+            <button id="uploadFile" disabled>Upload to Virtual FS</button>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎨 Test Default Pattern</h2>
+            <p>Generate a test pattern in JavaScript, save to VFS, load in C++.</p>
+            <button id="testPattern" disabled>Create Test Pattern</button>
+        </div>
+
+        <h3>Virtual Filesystem Contents:</h3>
+        <pre id="fsContents">(Filesystem not initialized)</pre>
+
+        <h3>Log:</h3>
+        <pre id="log"></pre>
+    </div>
+
+    <script src="graphics_engine.js"></script>
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logPre = document.getElementById('log');
+        const fsContents = document.getElementById('fsContents');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let wasmCanvas = null;
+        let Module = null;
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logPre.textContent += `[${timestamp}] ${message}\n`;
+            logPre.scrollTop = logPre.scrollHeight;
+        }
+
+        function updateStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+        }
+
+        function updateCanvasDisplay() {
+            if (!wasmCanvas || !Module) return;
+
+            try {
+                const width = wasmCanvas.getWidth();
+                const height = wasmCanvas.getHeight();
+                const pixelPtr = wasmCanvas.getPixelsPtr();
+                const pixelCount = width * height;
+
+                let wasmPixels;
+                if (Module.HEAPU32) {
+                    wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+                } else if (Module.HEAPU8) {
+                    wasmPixels = new Uint32Array(Module.HEAPU8.buffer, pixelPtr, pixelCount);
+                }
+
+                const imageData = ctx.createImageData(width, height);
+                const data = imageData.data;
+
+                for (let i = 0; i < pixelCount; i++) {
+                    const argb = wasmPixels[i];
+                    const a = (argb >> 24) & 0xFF;
+                    let r = (argb >> 16) & 0xFF;
+                    let g = (argb >> 8) & 0xFF;
+                    let b = argb & 0xFF;
+
+                    if (a > 0 && a < 255) {
+                        r = Math.round((r * 255) / a);
+                        g = Math.round((g * 255) / a);
+                        b = Math.round((b * 255) / a);
+                    }
+
+                    const idx = i * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = a;
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+            } catch (e) {
+                log('✗ Error updating canvas: ' + e.message);
+            }
+        }
+
+        function listFilesystem() {
+            if (!Module || !Module.FS) {
+                fsContents.textContent = 'Filesystem not available';
+                return;
+            }
+
+            try {
+                const files = Module.FS.readdir('/');
+                fsContents.textContent = 'Root directory (/):\n' + files.map(f => '  - ' + f).join('\n');
+                log('Filesystem contents: ' + files.join(', '));
+            } catch (e) {
+                fsContents.textContent = 'Error reading filesystem: ' + e.message;
+            }
+        }
+
+        // Initialize
+        const startTime = Date.now();
+        log('Starting WASM module with filesystem support...');
+
+        GraphicsEngine().then((module) => {
+            Module = module;
+            const loadTime = Date.now() - startTime;
+            log(`✓ WASM module loaded in ${loadTime}ms`);
+            log('✓ Filesystem enabled: ' + (Module.FS ? 'YES' : 'NO'));
+
+            wasmCanvas = new Module.CanvasWrapper(800, 600);
+            log('✓ Canvas created: ' + wasmCanvas.getWidth() + 'x' + wasmCanvas.getHeight());
+
+            updateStatus(`✅ File I/O Ready! (${loadTime}ms)`, 'success');
+
+            // Enable all buttons
+            document.querySelectorAll('button, input[type="file"]').forEach(el => el.disabled = false);
+
+            listFilesystem();
+
+        }).catch((error) => {
+            log('✗ Failed to load WASM: ' + error);
+            updateStatus('❌ Failed to load WASM', 'error');
+        });
+
+        // Load image from URL
+        document.getElementById('loadUrl').addEventListener('click', async () => {
+            const url = document.getElementById('imageUrl').value;
+            if (!url) {
+                log('✗ Please enter a URL');
+                return;
+            }
+
+            log('=== Loading image from URL ===');
+            log('Fetching: ' + url);
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                const arrayBuffer = await response.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                log('✓ Downloaded ' + uint8Array.length + ' bytes');
+
+                // Write to WASM memory
+                const dataPtr = Module._malloc(uint8Array.length);
+                Module.HEAPU8.set(uint8Array, dataPtr);
+
+                // Load into virtual filesystem
+                const filename = '/test_image.png';
+                const success = Module.loadImageToVFS(filename, dataPtr, uint8Array.length);
+
+                Module._free(dataPtr);
+
+                if (success) {
+                    log('✓ Image written to virtual FS: ' + filename);
+                    listFilesystem();
+                    document.getElementById('testBitmapShader').disabled = false;
+                } else {
+                    log('✗ Failed to write to virtual FS');
+                }
+
+            } catch (e) {
+                log('✗ Error loading image: ' + e.message);
+            }
+        });
+
+        // Test bitmap shader
+        document.getElementById('testBitmapShader').addEventListener('click', () => {
+            log('=== Testing bitmap shader ===');
+            wasmCanvas.clear(0.2, 0.2, 0.2, 1.0);
+
+            try {
+                // Create bitmap shader from file in virtual FS
+                // Identity matrix: scale 1, no rotation, no translation
+                const shader = Module.createBitmapShaderFromFile(
+                    '/test_image.png',
+                    1, 0, 0,  // Matrix row 1: [1, 0, 0]
+                    0, 1, 0,  // Matrix row 2: [0, 1, 0]
+                    Module.TileMode.Repeat
+                );
+
+                if (!shader) {
+                    log('✗ Failed to create bitmap shader - image may not exist in VFS');
+                    return;
+                }
+
+                log('✓ Bitmap shader created from file');
+
+                // Draw rectangle with bitmap shader
+                const paint = new Module.PaintWrapper();
+                paint.setShader(shader.getPtr());
+
+                wasmCanvas.drawRectWithPaint(0, 0, 800, 600, paint);
+
+                log('✓ Bitmap shader applied to rectangle');
+                updateCanvasDisplay();
+
+            } catch (e) {
+                log('✗ Error creating bitmap shader: ' + e.message);
+                console.error(e);
+            }
+        });
+
+        // Upload local file
+        document.getElementById('uploadFile').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                log('✗ Please select a file first');
+                return;
+            }
+
+            log('=== Uploading local file ===');
+            log('File: ' + file.name + ' (' + file.size + ' bytes)');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const arrayBuffer = e.target.result;
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                log('✓ File read: ' + uint8Array.length + ' bytes');
+
+                // Write to WASM memory
+                const dataPtr = Module._malloc(uint8Array.length);
+                Module.HEAPU8.set(uint8Array, dataPtr);
+
+                // Load into virtual filesystem
+                const filename = '/uploaded_' + file.name;
+                const success = Module.loadImageToVFS(filename, dataPtr, uint8Array.length);
+
+                Module._free(dataPtr);
+
+                if (success) {
+                    log('✓ File written to virtual FS: ' + filename);
+                    listFilesystem();
+                } else {
+                    log('✗ Failed to write to virtual FS');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Create test pattern
+        document.getElementById('testPattern').addEventListener('click', () => {
+            log('=== Creating test pattern ===');
+
+            // Create a test pattern using canvas
+            const patternCanvas = document.createElement('canvas');
+            patternCanvas.width = 128;
+            patternCanvas.height = 128;
+            const pctx = patternCanvas.getContext('2d');
+
+            // Draw checkerboard pattern
+            for (let y = 0; y < 128; y += 16) {
+                for (let x = 0; x < 128; x += 16) {
+                    pctx.fillStyle = ((x + y) / 16) % 2 === 0 ? '#667eea' : '#764ba2';
+                    pctx.fillRect(x, y, 16, 16);
+                }
+            }
+
+            log('✓ Test pattern generated (128x128 checkerboard)');
+
+            // Convert to PNG blob
+            patternCanvas.toBlob((blob) => {
+                blob.arrayBuffer().then(arrayBuffer => {
+                    const uint8Array = new Uint8Array(arrayBuffer);
+                    log('✓ PNG encoded: ' + uint8Array.length + ' bytes');
+
+                    // Write to WASM filesystem
+                    const dataPtr = Module._malloc(uint8Array.length);
+                    Module.HEAPU8.set(uint8Array, dataPtr);
+
+                    const filename = '/test_pattern.png';
+                    const success = Module.loadImageToVFS(filename, dataPtr, uint8Array.length);
+
+                    Module._free(dataPtr);
+
+                    if (success) {
+                        log('✓ Pattern saved to virtual FS: ' + filename);
+                        listFilesystem();
+
+                        // Automatically test it
+                        log('Testing pattern as bitmap shader...');
+                        wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+
+                        const shader = Module.createBitmapShaderFromFile(
+                            filename,
+                            2, 0, 100,  // Scale 2x, translate to (100, 100)
+                            0, 2, 100,
+                            Module.TileMode.Repeat
+                        );
+
+                        if (shader) {
+                            const paint = new Module.PaintWrapper();
+                            paint.setShader(shader.getPtr());
+                            wasmCanvas.drawRectWithPaint(100, 100, 600, 400, paint);
+                            log('✓ Test pattern rendered!');
+                            updateCanvasDisplay();
+                        }
+                    }
+                });
+            }, 'image/png');
+        });
+    </script>
+</body>
+</html>
