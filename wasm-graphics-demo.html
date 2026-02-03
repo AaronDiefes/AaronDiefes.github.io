@@ -257,8 +257,27 @@
                         <option value="transforms">Transformations</option>
                         <option value="gradients">Linear Gradients</option>
                         <option value="blend-modes">Blend Modes</option>
+                        <option value="blend-test">Blend Test (Rects)</option>
                         <option value="paths">Curved Paths</option>
                         <option value="mesh">Mesh Rendering</option>
+                    </select>
+                </div>
+
+                <div class="control-group" id="blendModeSelector" style="display:none;">
+                    <label>Blend Mode</label>
+                    <select id="blendModeSelect">
+                        <option value="SrcOver">SrcOver (Normal)</option>
+                        <option value="Src">Src (Replace)</option>
+                        <option value="Dst">Dst (Keep destination)</option>
+                        <option value="Clear">Clear (Transparent)</option>
+                        <option value="SrcIn">SrcIn (Intersection)</option>
+                        <option value="SrcOut">SrcOut (Subtract Dst)</option>
+                        <option value="DstOver">DstOver (Behind)</option>
+                        <option value="DstIn">DstIn (Mask)</option>
+                        <option value="DstOut">DstOut (Erase overlap)</option>
+                        <option value="SrcATop">SrcATop (Src inside Dst)</option>
+                        <option value="DstATop">DstATop (Dst inside Src)</option>
+                        <option value="Xor">Xor (Exclude overlap)</option>
                     </select>
                 </div>
 
@@ -297,6 +316,10 @@
                 title: 'Basic Shapes',
                 description: 'Demonstrates rectangle and polygon rendering with the C++ canvas API. Uses drawRect() and drawConvexPolygon() functions.'
             },
+            'blend-test': {
+                title: 'Blend Test (Rectangles)',
+                description: 'Blend mode demonstration using semi-transparent rectangles. Blue (destination) drawn first, red (source) with selected blend mode second. Try SrcOver to see color blending, Dst to keep only blue, or Xor to exclude overlap.'
+            },
             transforms: {
                 title: 'Transformations',
                 description: 'Shows matrix transformations including translate, rotate, and scale operations. Uses save/restore to manage the CTM stack.'
@@ -307,7 +330,7 @@
             },
             'blend-modes': {
                 title: 'Blend Modes',
-                description: 'Porter-Duff compositing modes. Shows how shapes blend together using different GBlendMode values like SrcOver, Multiply, and Xor.'
+                description: 'Porter-Duff compositing with semi-transparent colors. Blue circle drawn first (destination), red circle second (source) with selected blend mode. With SrcOver you\'ll see colors blend; Dst keeps only blue; Src shows only red; SrcIn shows intersection; DstOut erases overlap.'
             },
             paths: {
                 title: 'Curved Paths',
@@ -457,33 +480,49 @@
                 updateCanvasDisplay();
             },
 
+            'blend-test': () => {
+                wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);  // White background
+
+                // Blue rectangle (destination) - semi-transparent
+                wasmCanvas.drawRect(200, 200, 200, 200, 0.2, 0.5, 1.0, 0.7);
+
+                // Red rectangle (source) with blend mode - semi-transparent
+                const paint2 = new Module.PaintWrapper();
+                paint2.setColor(1.0, 0.3, 0.3, 0.7);  // 0.7 alpha for transparency
+
+                const modeSelect = document.getElementById('blendModeSelect');
+                const modeName = modeSelect.value;
+                const blendMode = Module.BlendMode[modeName];
+                paint2.setBlendMode(blendMode.value);
+
+                wasmCanvas.drawRectWithPaint(300, 250, 200, 200, paint2);
+                updateCanvasDisplay();
+            },
+
             'blend-modes': () => {
-                wasmCanvas.clear(0.9, 0.9, 0.9, 1.0);
+                wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);  // White background
 
-                const modes = [
-                    Module.BlendMode.SrcOver,
-                    Module.BlendMode.SrcIn,
-                    Module.BlendMode.SrcOut,
-                    Module.BlendMode.DstOver,
-                    Module.BlendMode.DstIn,
-                    Module.BlendMode.Xor
-                ];
+                // Get selected blend mode
+                const modeSelect = document.getElementById('blendModeSelect');
+                const modeName = modeSelect.value;
+                const blendMode = Module.BlendMode[modeName];
 
-                const labels = ['SrcOver', 'SrcIn', 'SrcOut', 'DstOver', 'DstIn', 'Xor'];
+                const centerX = 400, centerY = 300;
 
-                for (let i = 0; i < modes.length; i++) {
-                    const x = 100 + (i % 3) * 220;
-                    const y = 100 + Math.floor(i / 3) * 220;
+                // Blue circle (destination) - semi-transparent
+                const circle1 = new Module.PathWrapper();
+                circle1.addCircle(centerX - 50, centerY, 100, Module.PathDirection.CW);
+                const paint1 = new Module.PaintWrapper();
+                paint1.setColor(0.2, 0.5, 1.0, 0.7);  // 0.7 alpha for transparency
+                wasmCanvas.drawPathWithPaint(circle1, paint1);
 
-                    // Background circle (blue)
-                    wasmCanvas.drawRect(x, y, 150, 150, 0.4, 0.49, 0.92, 0.8);
-
-                    // Foreground circle (red) with blend mode
-                    const paint = new Module.PaintWrapper();
-                    paint.setColor(0.93, 0.30, 0.24, 0.8);
-                    paint.setBlendMode(modes[i]);
-                    wasmCanvas.drawRectWithPaint(x + 50, y + 50, 150, 150, paint);
-                }
+                // Red circle (source) with selected blend mode - semi-transparent
+                const circle2 = new Module.PathWrapper();
+                circle2.addCircle(centerX + 50, centerY, 100, Module.PathDirection.CW);
+                const paint2 = new Module.PaintWrapper();
+                paint2.setColor(1.0, 0.3, 0.3, 0.7);  // 0.7 alpha for transparency
+                paint2.setBlendMode(blendMode.value);
+                wasmCanvas.drawPathWithPaint(circle2, paint2);
 
                 updateCanvasDisplay();
             },
@@ -586,6 +625,29 @@
         document.getElementById('demoPreset').addEventListener('change', (e) => {
             currentDemo = e.target.value;
             updateDemoDescription(currentDemo);
+
+            // Show blend mode selector for blend-modes and blend-test demos
+            const blendModeSelector = document.getElementById('blendModeSelector');
+            if (currentDemo === 'blend-modes' || currentDemo === 'blend-test') {
+                blendModeSelector.style.display = 'block';
+                // Auto-run demo when first selected
+                setTimeout(() => {
+                    if (demos[currentDemo]) {
+                        demos[currentDemo]();
+                    }
+                }, 100);
+            } else {
+                blendModeSelector.style.display = 'none';
+            }
+        });
+
+        document.getElementById('blendModeSelect').addEventListener('change', () => {
+            // Auto-run current blend demo when mode changes
+            if (currentDemo === 'blend-modes' || currentDemo === 'blend-test') {
+                if (demos[currentDemo]) {
+                    demos[currentDemo]();
+                }
+            }
         });
 
         document.getElementById('runDemo').addEventListener('click', () => {

@@ -85,7 +85,13 @@ public:
         fPaint.setShader(reinterpret_cast<GShader*>(shaderPtr));
     }
 
-    const GPaint& getPaint() const { return fPaint; }
+    GPaint getPaint() const { return fPaint; }  // Return by value, not reference
+
+    // Debug: Get color components
+    float getColorR() const { return fPaint.getColor().r; }
+    float getColorG() const { return fPaint.getColor().g; }
+    float getColorB() const { return fPaint.getColor().b; }
+    float getColorA() const { return fPaint.getColor().a; }
 
 private:
     GPaint fPaint;
@@ -155,29 +161,29 @@ public:
     }
 
     // Draw with PaintWrapper
-    void drawRectWithPaint(float x, float y, float width, float height, const PaintWrapper& paint) {
+    void drawRectWithPaint(float x, float y, float width, float height, const PaintWrapper* paint) {
         GRect rect = GRect::XYWH(x, y, width, height);
-        fCanvas->drawRect(rect, paint.getPaint());
+        fCanvas->drawRect(rect, paint->getPaint());
     }
 
-    void drawConvexPolygonWithPaint(const std::vector<float>& points, const PaintWrapper& paint) {
+    void drawConvexPolygonWithPaint(const std::vector<float>& points, const PaintWrapper* paint) {
         size_t count = points.size() / 2;
         std::vector<GPoint> gpoints(count);
         for (size_t i = 0; i < count; ++i) {
             gpoints[i] = GPoint{points[i * 2], points[i * 2 + 1]};
         }
-        fCanvas->drawConvexPolygon(gpoints.data(), count, paint.getPaint());
+        fCanvas->drawConvexPolygon(gpoints.data(), count, paint->getPaint());
     }
 
-    void drawPathWithPaint(const PathWrapper& path, const PaintWrapper& paint) {
-        fCanvas->drawPath(path.getPath(), paint.getPaint());
+    void drawPathWithPaint(const PathWrapper& path, const PaintWrapper* paint) {
+        fCanvas->drawPath(path.getPath(), paint->getPaint());
     }
 
     void drawMesh(const std::vector<float>& verts,
                   const std::vector<float>& colors,
                   const std::vector<float>& texs,
                   const std::vector<int>& indices,
-                  const PaintWrapper& paint) {
+                  const PaintWrapper* paint) {
         // Convert verts
         size_t vertCount = verts.size() / 2;
         std::vector<GPoint> gverts(vertCount);
@@ -210,14 +216,14 @@ public:
         }
 
         fCanvas->drawMesh(gverts.data(), colorPtr, texPtr,
-                          indices.size() / 3, indices.data(), paint.getPaint());
+                          indices.size() / 3, indices.data(), paint->getPaint());
     }
 
     void drawQuad(const std::vector<float>& verts,
                   const std::vector<float>& colors,
                   const std::vector<float>& texs,
                   int level,
-                  const PaintWrapper& paint) {
+                  const PaintWrapper* paint) {
         if (verts.size() != 8) return; // Need exactly 4 points (8 floats)
 
         GPoint gverts[4];
@@ -243,7 +249,7 @@ public:
             texPtr = gtexs;
         }
 
-        fCanvas->drawQuad(gverts, colorPtr, texPtr, level, paint.getPaint());
+        fCanvas->drawQuad(gverts, colorPtr, texPtr, level, paint->getPaint());
     }
 
     // Legacy simple color methods (for backward compatibility)
@@ -376,7 +382,11 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
         .function("setColor", &PaintWrapper::setColor)
         .function("setAlpha", &PaintWrapper::setAlpha)
         .function("setBlendMode", &PaintWrapper::setBlendMode)
-        .function("setShader", &PaintWrapper::setShader, allow_raw_pointers());
+        .function("setShader", &PaintWrapper::setShader, allow_raw_pointers())
+        .function("getColorR", &PaintWrapper::getColorR)
+        .function("getColorG", &PaintWrapper::getColorG)
+        .function("getColorB", &PaintWrapper::getColorB)
+        .function("getColorA", &PaintWrapper::getColorA);
 
     // ShaderWrapper
     class_<ShaderWrapper>("ShaderWrapper")
@@ -395,11 +405,11 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
         .function("rotate", &CanvasWrapper::rotate)
         .function("clear", &CanvasWrapper::clear)
         // Paint-based drawing
-        .function("drawRectWithPaint", &CanvasWrapper::drawRectWithPaint)
-        .function("drawConvexPolygonWithPaint", &CanvasWrapper::drawConvexPolygonWithPaint)
-        .function("drawPathWithPaint", &CanvasWrapper::drawPathWithPaint)
-        .function("drawMesh", &CanvasWrapper::drawMesh)
-        .function("drawQuad", &CanvasWrapper::drawQuad)
+        .function("drawRectWithPaint", &CanvasWrapper::drawRectWithPaint, allow_raw_pointers())
+        .function("drawConvexPolygonWithPaint", &CanvasWrapper::drawConvexPolygonWithPaint, allow_raw_pointers())
+        .function("drawPathWithPaint", &CanvasWrapper::drawPathWithPaint, allow_raw_pointers())
+        .function("drawMesh", &CanvasWrapper::drawMesh, allow_raw_pointers())
+        .function("drawQuad", &CanvasWrapper::drawQuad, allow_raw_pointers())
         // Legacy simple color methods
         .function("drawRect", &CanvasWrapper::drawRect)
         .function("drawConvexPolygon", &CanvasWrapper::drawConvexPolygon);
