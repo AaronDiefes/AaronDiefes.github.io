@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Graphics Engine (WebAssembly) - Aaron Diefes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .control-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 0.5rem;
+        }
+
+        button:hover:not(:disabled) {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #e74c3c;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background: #c0392b;
+        }
+
+        .canvas-container {
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        #canvas {
+            background: white;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        #status.loading {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        #status.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        #status.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .info {
+            background: #e8f4f8;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .demo-description {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .demo-description h3 {
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 968px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                max-height: none;
+            }
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 C++ Graphics Engine</h1>
+            <p>Real-time 2D rendering powered by C++ and WebAssembly</p>
+            <span class="badge">Phase 2 Complete: Full API Exposed</span>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="info">
+                    <strong>⚡ Real C++ Engine</strong><br>
+                    This is not a JavaScript simulation - it's my actual C++ graphics engine compiled to WebAssembly and running in your browser at near-native speed!
+                </div>
+
+                <div id="demoDescription" class="demo-description">
+                    <h3>Select a Demo</h3>
+                    <p>Choose from the presets below to explore different capabilities of the graphics engine.</p>
+                </div>
+
+                <div class="control-group">
+                    <label>Demo Preset</label>
+                    <select id="demoPreset" disabled>
+                        <option value="shapes">Basic Shapes</option>
+                        <option value="transforms">Transformations</option>
+                        <option value="gradients">Linear Gradients</option>
+                        <option value="blend-modes">Blend Modes</option>
+                        <option value="paths">Curved Paths</option>
+                        <option value="mesh">Mesh Rendering</option>
+                    </select>
+                </div>
+
+                <button id="runDemo" disabled>Run Selected Demo</button>
+                <button class="secondary" id="clearBtn" disabled>Clear Canvas</button>
+            </div>
+
+            <div class="canvas-container">
+                <div id="status" class="loading">
+                    <div class="spinner"></div>
+                    Loading WebAssembly module...
+                </div>
+                <canvas id="canvas" width="800" height="600" style="display:none"></canvas>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built by Aaron Diefes | <a href="index.html">Back to Home</a> | <a href="admin.html">View Source Code</a></p>
+        </footer>
+    </div>
+
+    <script src="graphics_engine.js"></script>
+    <script>
+        const statusDiv = document.getElementById('status');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const demoDescription = document.getElementById('demoDescription');
+
+        let wasmCanvas = null;
+        let Module = null;
+        let currentDemo = 'shapes';
+
+        // Demo descriptions
+        const demoInfo = {
+            shapes: {
+                title: 'Basic Shapes',
+                description: 'Demonstrates rectangle and polygon rendering with the C++ canvas API. Uses drawRect() and drawConvexPolygon() functions.'
+            },
+            transforms: {
+                title: 'Transformations',
+                description: 'Shows matrix transformations including translate, rotate, and scale operations. Uses save/restore to manage the CTM stack.'
+            },
+            gradients: {
+                title: 'Linear Gradients',
+                description: 'Linear gradient shaders with multiple color stops. Demonstrates the shader system with GCreateLinearGradient() and tile modes.'
+            },
+            'blend-modes': {
+                title: 'Blend Modes',
+                description: 'Porter-Duff compositing modes. Shows how shapes blend together using different GBlendMode values like SrcOver, Multiply, and Xor.'
+            },
+            paths: {
+                title: 'Curved Paths',
+                description: 'GPath API with Bezier curves. Demonstrates moveTo, lineTo, quadTo, and cubicTo path operations for complex shapes.'
+            },
+            mesh: {
+                title: 'Mesh Rendering',
+                description: 'Triangle mesh rendering with vertex colors. Uses drawMesh() to render indexed triangle geometry with interpolated colors.'
+            }
+        };
+
+        function updateStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+            if (type === 'loading') {
+                statusDiv.innerHTML = '<div class="spinner"></div>' + message;
+            }
+        }
+
+        function updateDemoDescription(demo) {
+            const info = demoInfo[demo];
+            demoDescription.innerHTML = `
+                <h3>${info.title}</h3>
+                <p>${info.description}</p>
+            `;
+        }
+
+        function updateCanvasDisplay() {
+            if (!wasmCanvas || !Module) return;
+
+            try {
+                const width = wasmCanvas.getWidth();
+                const height = wasmCanvas.getHeight();
+                const pixelPtr = wasmCanvas.getPixelsPtr();
+                const pixelCount = width * height;
+
+                let wasmPixels;
+                if (Module.HEAPU32) {
+                    wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+                } else if (Module.HEAPU8) {
+                    wasmPixels = new Uint32Array(Module.HEAPU8.buffer, pixelPtr, pixelCount);
+                }
+
+                const imageData = ctx.createImageData(width, height);
+                const data = imageData.data;
+
+                // Convert premultiplied ARGB to non-premultiplied RGBA
+                for (let i = 0; i < pixelCount; i++) {
+                    const argb = wasmPixels[i];
+                    const a = (argb >> 24) & 0xFF;
+                    let r = (argb >> 16) & 0xFF;
+                    let g = (argb >> 8) & 0xFF;
+                    let b = argb & 0xFF;
+
+                    // Unpremultiply RGB by alpha
+                    if (a > 0 && a < 255) {
+                        r = Math.round((r * 255) / a);
+                        g = Math.round((g * 255) / a);
+                        b = Math.round((b * 255) / a);
+                    }
+
+                    const idx = i * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = a;
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+            } catch (e) {
+                console.error('Error updating canvas:', e);
+            }
+        }
+
+        // Demo implementations
+        const demos = {
+            shapes: () => {
+                wasmCanvas.clear(0.95, 0.95, 0.95, 1.0);
+
+                // Draw rectangles with different colors
+                wasmCanvas.drawRect(50, 50, 200, 150, 0.4, 0.49, 0.92, 1.0); // Blue
+                wasmCanvas.drawRect(150, 150, 200, 150, 0.93, 0.30, 0.24, 0.8); // Red
+
+                // Draw triangle
+                const trianglePoints = new Module.VectorFloat();
+                [400, 50, 500, 200, 300, 200].forEach(v => trianglePoints.push_back(v));
+                wasmCanvas.drawConvexPolygon(trianglePoints, 0.2, 0.8, 0.2, 1.0); // Green
+                trianglePoints.delete();
+
+                // Draw hexagon
+                const hexPoints = new Module.VectorFloat();
+                const centerX = 600, centerY = 350, radius = 80;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI * 2) / 6;
+                    hexPoints.push_back(centerX + radius * Math.cos(angle));
+                    hexPoints.push_back(centerY + radius * Math.sin(angle));
+                }
+                wasmCanvas.drawConvexPolygon(hexPoints, 0.58, 0.4, 0.64, 1.0); // Purple
+                hexPoints.delete();
+
+                updateCanvasDisplay();
+            },
+
+            transforms: () => {
+                wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+
+                // Draw transformed rectangles
+                for (let i = 0; i < 6; i++) {
+                    wasmCanvas.save();
+                    wasmCanvas.translate(400, 300);
+                    wasmCanvas.rotate((i * Math.PI) / 3);
+                    wasmCanvas.scale(1.0 - i * 0.1, 1.0 - i * 0.1);
+
+                    const hue = i / 6;
+                    const r = Math.sin(hue * Math.PI * 2) * 0.5 + 0.5;
+                    const g = Math.sin((hue + 0.33) * Math.PI * 2) * 0.5 + 0.5;
+                    const b = Math.sin((hue + 0.66) * Math.PI * 2) * 0.5 + 0.5;
+
+                    wasmCanvas.drawRect(-100, -50, 200, 100, r, g, b, 0.7);
+                    wasmCanvas.restore();
+                }
+
+                updateCanvasDisplay();
+            },
+
+            gradients: () => {
+                wasmCanvas.clear(0.1, 0.1, 0.1, 1.0);
+
+                // Horizontal gradient
+                const colors1 = new Module.VectorFloat();
+                [0.4, 0.49, 0.92, 1.0, 0.93, 0.30, 0.24, 1.0].forEach(v => colors1.push_back(v));
+                const shader1 = Module.createLinearGradient(50, 150, 350, 150, colors1, Module.TileMode.Clamp);
+                const paint1 = new Module.PaintWrapper();
+                paint1.setShader(shader1.getPtr());
+                wasmCanvas.drawRectWithPaint(50, 50, 300, 200, paint1);
+                colors1.delete();
+
+                // Diagonal gradient
+                const colors2 = new Module.VectorFloat();
+                [0.2, 0.8, 0.2, 1.0, 0.2, 0.2, 0.8, 1.0, 1.0, 0.9, 0.2, 1.0].forEach(v => colors2.push_back(v));
+                const shader2 = Module.createLinearGradient(400, 50, 750, 550, colors2, Module.TileMode.Clamp);
+                const paint2 = new Module.PaintWrapper();
+                paint2.setShader(shader2.getPtr());
+                wasmCanvas.drawRectWithPaint(400, 50, 350, 500, paint2);
+                colors2.delete();
+
+                updateCanvasDisplay();
+            },
+
+            'blend-modes': () => {
+                wasmCanvas.clear(0.9, 0.9, 0.9, 1.0);
+
+                const modes = [
+                    Module.BlendMode.SrcOver,
+                    Module.BlendMode.SrcIn,
+                    Module.BlendMode.SrcOut,
+                    Module.BlendMode.DstOver,
+                    Module.BlendMode.DstIn,
+                    Module.BlendMode.Xor
+                ];
+
+                const labels = ['SrcOver', 'SrcIn', 'SrcOut', 'DstOver', 'DstIn', 'Xor'];
+
+                for (let i = 0; i < modes.length; i++) {
+                    const x = 100 + (i % 3) * 220;
+                    const y = 100 + Math.floor(i / 3) * 220;
+
+                    // Background circle (blue)
+                    wasmCanvas.drawRect(x, y, 150, 150, 0.4, 0.49, 0.92, 0.8);
+
+                    // Foreground circle (red) with blend mode
+                    const paint = new Module.PaintWrapper();
+                    paint.setColor(0.93, 0.30, 0.24, 0.8);
+                    paint.setBlendMode(modes[i]);
+                    wasmCanvas.drawRectWithPaint(x + 50, y + 50, 150, 150, paint);
+                }
+
+                updateCanvasDisplay();
+            },
+
+            paths: () => {
+                wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+
+                // Heart shape using cubic curves
+                const path1 = new Module.PathWrapper();
+                path1.moveTo(200, 200);
+                path1.cubicTo(200, 150, 150, 120, 120, 150);
+                path1.cubicTo(90, 180, 90, 220, 120, 250);
+                path1.lineTo(200, 320);
+                path1.lineTo(280, 250);
+                path1.cubicTo(310, 220, 310, 180, 280, 150);
+                path1.cubicTo(250, 120, 200, 150, 200, 200);
+
+                const paint1 = new Module.PaintWrapper();
+                paint1.setColor(0.93, 0.30, 0.24, 1.0);
+                wasmCanvas.drawPathWithPaint(path1, paint1);
+
+                // Star using quadratic curves
+                const path2 = new Module.PathWrapper();
+                const centerX = 550, centerY = 250, outerR = 100, innerR = 40;
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i * Math.PI * 2) / 5 - Math.PI / 2;
+                    const x = centerX + outerR * Math.cos(angle);
+                    const y = centerY + outerR * Math.sin(angle);
+
+                    if (i === 0) path2.moveTo(x, y);
+                    else path2.lineTo(x, y);
+
+                    const innerAngle = angle + Math.PI / 5;
+                    const ix = centerX + innerR * Math.cos(innerAngle);
+                    const iy = centerY + innerR * Math.sin(innerAngle);
+                    path2.lineTo(ix, iy);
+                }
+
+                const paint2 = new Module.PaintWrapper();
+                paint2.setColor(1.0, 0.84, 0.0, 1.0);
+                wasmCanvas.drawPathWithPaint(path2, paint2);
+
+                updateCanvasDisplay();
+            },
+
+            mesh: () => {
+                wasmCanvas.clear(0.05, 0.05, 0.05, 1.0);
+
+                // Create triangle mesh with vertex colors
+                const verts = new Module.VectorFloat();
+                const colors = new Module.VectorFloat();
+                const indices = new Module.VectorInt();
+
+                // Triangle vertices
+                [400, 100, 200, 500, 600, 500].forEach(v => verts.push_back(v));
+
+                // Vertex colors (RGB + alpha)
+                [1.0, 0.0, 0.0, 1.0,  // Red
+                 0.0, 1.0, 0.0, 1.0,  // Green
+                 0.0, 0.0, 1.0, 1.0   // Blue
+                ].forEach(v => colors.push_back(v));
+
+                // Triangle indices
+                [0, 1, 2].forEach(v => indices.push_back(v));
+
+                const paint = new Module.PaintWrapper();
+                wasmCanvas.drawMesh(verts, colors, new Module.VectorFloat(), indices, paint);
+
+                verts.delete();
+                colors.delete();
+                indices.delete();
+
+                updateCanvasDisplay();
+            }
+        };
+
+        // Initialize WASM module
+        GraphicsEngine().then((module) => {
+            Module = module;
+            wasmCanvas = new Module.CanvasWrapper(800, 600);
+
+            updateStatus('✅ Engine Ready!', 'success');
+            canvas.style.display = 'block';
+
+            // Enable controls
+            document.getElementById('demoPreset').disabled = false;
+            document.getElementById('runDemo').disabled = false;
+            document.getElementById('clearBtn').disabled = false;
+
+            // Run default demo
+            demos.shapes();
+            updateDemoDescription('shapes');
+
+        }).catch((error) => {
+            updateStatus('❌ Failed to load WebAssembly module', 'error');
+            console.error('WASM load error:', error);
+        });
+
+        // Event listeners
+        document.getElementById('demoPreset').addEventListener('change', (e) => {
+            currentDemo = e.target.value;
+            updateDemoDescription(currentDemo);
+        });
+
+        document.getElementById('runDemo').addEventListener('click', () => {
+            if (demos[currentDemo]) {
+                demos[currentDemo]();
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (wasmCanvas) {
+                wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+                updateCanvasDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
