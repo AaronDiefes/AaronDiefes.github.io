@@ -1,0 +1,318 @@
+# Roadmap - WebAssembly Graphics Engine Portfolio
+
+## Overview
+
+This roadmap transforms an existing C++ graphics engine into an interactive browser-based portfolio. The phases progress from foundational compilation infrastructure through interactive features to polished documentation, with each phase delivering a testable, verifiable capability. All 7 phases derive from the natural boundaries in the requirements, ensuring complete coverage of the v1 scope.
+
+## Phase Structure
+
+| Phase | Goal | Requirements | Duration Est. |
+|-------|------|--------------|---------------|
+| 1 - Build Foundation | WASM compilation pipeline established | WASM-01, WASM-02, WASM-03 | Foundation |
+| 2 - JavaScript Bridge | JS can control engine operations | BRIDGE-01, BRIDGE-02, BRIDGE-03, BRIDGE-04 | Core |
+| 3 - Canvas Integration | Engine renders to browser canvas | CANVAS-01, CANVAS-02, CANVAS-03 | Core |
+| 4 - Interactive Controls | Users manipulate rendering in real-time | UI-01, UI-02, UI-03, UI-04 | Features |
+| 5 - Code Examples | Source code visible alongside demos | CODE-01, CODE-02, CODE-03 | Features |
+| 6 - Documentation System | Engine capabilities fully documented | DOC-01, DOC-02, DOC-03, DOC-04 | Enhancement |
+| 7 - Testing & Optimization | Performance validated and verified | PERF-01, PERF-02, PERF-03, TEST-01, TEST-02, TEST-03 | Polish |
+
+---
+
+## Phase 1: Build Foundation
+
+**Goal:** Compilation pipeline produces working WASM module from C++ engine.
+
+**Dependencies:** None (foundation phase)
+
+**Requirements:**
+- WASM-01: Emscripten Build Configuration
+- WASM-02: Module Interface Definitions
+- WASM-03: Memory Management
+
+**Success Criteria:**
+1. Makefile produces .wasm and .js files from graphics-engine/ source code
+2. Emscripten successfully compiles all C++ sources without modification or with minimal bridge code
+3. WASM module loads in browser console without errors
+4. Basic canvas creation function callable from browser DevTools
+5. Pixel buffer can be allocated and read from JavaScript
+
+**Technical Notes:**
+- Install Emscripten SDK and configure environment
+- Create separate emscripten.mk or modify existing Makefile with WASM target
+- Use EMSCRIPTEN_BINDINGS to export GCreateCanvas and basic operations
+- Configure ALLOW_MEMORY_GROWTH for dynamic canvas sizes
+- Export malloc/free or use embind memory management
+- Resolve any lodepng or platform-specific dependencies
+
+**Blockers:**
+- C++ code that relies on file I/O (lodepng) may need stubs or browser alternatives
+- Platform-specific code in GTime.cpp may need conditional compilation
+
+---
+
+## Phase 2: JavaScript Bridge
+
+**Goal:** JavaScript code has full API access to engine operations.
+
+**Dependencies:** Phase 1 (requires compiled WASM module)
+
+**Requirements:**
+- BRIDGE-01: Canvas Creation API
+- BRIDGE-02: Drawing Function Bindings
+- BRIDGE-03: Transformation Functions
+- BRIDGE-04: Shader Bindings
+
+**Success Criteria:**
+1. JavaScript can create canvas with specified dimensions and access underlying bitmap
+2. All drawing operations (clear, drawRect, drawConvexPolygon, drawPath) callable from JS
+3. Matrix transformations (translate, rotate, scale, save/restore CTM) work correctly
+4. Shaders can be created and applied to paint objects from JavaScript
+5. Demo script successfully draws test pattern using all bound functions
+
+**Technical Notes:**
+- Create comprehensive EMSCRIPTEN_BINDINGS block covering:
+  - GCanvas methods (clear, drawRect, drawConvexPolygon, drawPath, drawMesh, drawQuad)
+  - Matrix operations (save, restore, concat, translate, rotate, scale)
+  - Paint configuration (setColor, setBlendMode, setShader)
+  - Shader creation (GCreateBitmapShader, GCreateLinearGradient)
+  - Color and geometry types (GColor, GRect, GPoint, GPath)
+- Handle pointer marshaling for arrays (points[], colors[], indices[])
+- Create JavaScript wrapper classes for ergonomic API
+
+**Blockers:**
+- GPath API may need special binding approach for chaining operations
+- Shader lifetime management between JS and C++ ownership
+
+---
+
+## Phase 3: Canvas Integration
+
+**Goal:** Engine output renders visibly in HTML5 Canvas element.
+
+**Dependencies:** Phase 2 (requires JS API bindings)
+
+**Requirements:**
+- CANVAS-01: Pixel Buffer Transfer
+- CANVAS-02: Coordinate System Mapping
+- CANVAS-03: Real-time Rendering
+
+**Success Criteria:**
+1. Engine pixel buffer transfers to HTML5 Canvas ImageData correctly
+2. Rendered shapes appear at correct positions matching engine coordinates
+3. Multiple draw calls composite correctly in visible output
+4. Canvas updates complete in under 33ms (30 FPS) for typical operations
+5. Color values match expected output (no RGBA/BGRA confusion)
+
+**Technical Notes:**
+- Create JavaScript render loop:
+  - Get pixel pointer from WASM heap
+  - Create ImageData from WASM memory view
+  - Use ctx.putImageData() to transfer to canvas
+- Handle pixel format differences (GPixel ARGB vs ImageData RGBA)
+- Implement requestAnimationFrame loop for smooth updates
+- Verify coordinate system matches (top-left origin, Y-down)
+- Consider double-buffering if flicker occurs
+
+**Blockers:**
+- Pixel format conversion overhead may impact performance
+- Large canvases (>1000x1000) may have slow transfer times
+
+---
+
+## Phase 4: Interactive Controls
+
+**Goal:** Users manipulate rendering parameters through UI controls.
+
+**Dependencies:** Phase 3 (requires visible canvas rendering)
+
+**Requirements:**
+- UI-01: Demo Preset Selector
+- UI-02: Parameter Controls
+- UI-03: Visual Feedback
+- UI-04: Responsive Layout
+
+**Success Criteria:**
+1. Demo selector switches between preset scenes (shapes, gradients, transformations, blend modes, paths)
+2. Parameter controls (sliders, color pickers, dropdowns) modify engine state in real-time
+3. Canvas updates immediately upon control changes without lag
+4. Layout matches graphics-demo.html design (sidebar controls, main canvas)
+5. All engine capabilities accessible through at least one demo preset
+
+**Technical Notes:**
+- Port graphics-demo.html layout and styling to WASM-integrated page
+- Create demo presets showcasing:
+  - Basic shapes (rectangles, circles, polygons)
+  - Matrix transformations (translate, rotate, scale)
+  - Shaders (solid colors, bitmap textures, linear gradients, radial gradients)
+  - Blend modes (all supported modes from GBlendMode)
+  - Path rendering (curves, fills, strokes)
+  - Mesh rendering (triangulated quads)
+- Wire event listeners to call WASM functions
+- Implement clear/redraw pattern for control changes
+- Add preset JSON or inline definitions
+
+**Blockers:**
+- Performance of full redraws on every control change
+- Complexity of preset definitions if too many parameters
+
+---
+
+## Phase 5: Code Examples
+
+**Goal:** Source code visible alongside running demos.
+
+**Dependencies:** Phase 4 (requires working interactive demos)
+
+**Requirements:**
+- CODE-01: Syntax-Highlighted Examples
+- CODE-02: Code-to-Visual Mapping
+- CODE-03: Multiple Code Views
+
+**Success Criteria:**
+1. Each demo displays relevant C++ implementation with syntax highlighting
+2. Code view shows actual source from my_canvas.cpp, shader_ops.h, etc.
+3. Multiple code tabs available (API usage, shader implementation, blend modes)
+4. Code examples exactly correspond to what's executing in the canvas
+5. Syntax highlighting makes code readable and professional
+
+**Technical Notes:**
+- Integrate syntax highlighting library (Prism.js or Highlight.js)
+- Create code snippet database:
+  - Extract relevant sections from .cpp and .h files
+  - Organize by demo and by layer (API, implementation, algorithms)
+- Implement tabbed code view in UI
+- Use data attributes or JSON to map demos to code snippets
+- Include comments in code explaining key techniques
+- Option: fetch actual source files vs inline snippets
+
+**Blockers:**
+- Keeping code snippets in sync with actual implementation
+- Code length vs UI space constraints
+
+---
+
+## Phase 6: Documentation System
+
+**Goal:** Comprehensive documentation explains engine architecture and capabilities.
+
+**Dependencies:** Phase 5 (benefits from code examples being complete)
+
+**Requirements:**
+- DOC-01: Architecture Overview
+- DOC-02: API Reference
+- DOC-03: Implementation Details
+- DOC-04: Capability Showcase
+
+**Success Criteria:**
+1. Architecture page explains canvas abstraction, shader system, blend pipeline, path rendering
+2. API reference documents all exported functions with parameters and examples
+3. Implementation details explain edge-list rasterization, scanline rendering, matrix math
+4. Capability catalog lists all features with descriptions and links to demos
+5. Documentation accessible from main portfolio navigation
+
+**Technical Notes:**
+- Create documentation pages:
+  - /docs/architecture.html - system overview with diagrams
+  - /docs/api-reference.html - function signatures and usage
+  - /docs/implementation.html - algorithm explanations
+  - /docs/capabilities.html - feature catalog
+- Extract API documentation from header files (GCanvas.h, GShader.h, etc.)
+- Create architecture diagrams (SVG or Mermaid):
+  - Canvas → Paint → Shader → Blender → Pixels pipeline
+  - Transformation matrix stack
+  - Edge list construction and rasterization
+- Link documentation to corresponding demos
+- Style consistently with portfolio design
+
+**Blockers:**
+- Time required to write comprehensive explanations
+- Creating clear diagrams without design tools
+
+---
+
+## Phase 7: Testing & Optimization
+
+**Goal:** Portfolio validated for correctness, performance, and compatibility.
+
+**Dependencies:** Phase 6 (complete feature set required for testing)
+
+**Requirements:**
+- PERF-01: Load Time
+- PERF-02: Frame Rate
+- PERF-03: Memory Efficiency
+- TEST-01: Visual Regression Tests
+- TEST-02: Cross-Browser Verification
+- TEST-03: Functionality Validation
+
+**Success Criteria:**
+1. WASM bundle size under 5MB, page loads in under 5 seconds on broadband
+2. All interactive demos maintain 30+ FPS during parameter manipulation
+3. Memory usage stays under 100MB for typical demo canvases, no leaks after repeated operations
+4. Visual regression tests pass (WASM output matches expected/ reference images)
+5. Portfolio works correctly in Chrome, Firefox, and Safari latest versions
+6. All exported functions validated with automated tests
+
+**Technical Notes:**
+- Optimize WASM build:
+  - Use -O3 optimization flag
+  - Enable -s WASM=1 for pure WASM output
+  - Measure and reduce bundle size (strip debug symbols if needed)
+- Performance profiling:
+  - Use browser DevTools Performance tab
+  - Measure frame times for each demo
+  - Identify bottlenecks (transfer vs rendering)
+- Visual regression:
+  - Compare against graphics-engine/expected/*.png
+  - Use pixel-by-pixel diff or perceptual diff
+  - Automate with test script
+- Cross-browser testing:
+  - Test locally on all three browsers
+  - Verify WebAssembly support detection
+  - Handle any browser-specific issues
+- Functionality tests:
+  - Create test suite calling each binding
+  - Verify return values and state changes
+  - Test edge cases (zero dimensions, null pointers, etc.)
+
+**Blockers:**
+- Older Safari versions may have WASM quirks
+- Optimization may require code changes impacting earlier phases
+
+---
+
+## Progress Tracking
+
+| Phase | Status | Completion |
+|-------|--------|------------|
+| 1 - Build Foundation | Pending | 0% |
+| 2 - JavaScript Bridge | Pending | 0% |
+| 3 - Canvas Integration | Pending | 0% |
+| 4 - Interactive Controls | Pending | 0% |
+| 5 - Code Examples | Pending | 0% |
+| 6 - Documentation System | Pending | 0% |
+| 7 - Testing & Optimization | Pending | 0% |
+
+**Overall Progress:** 0% (0/7 phases complete)
+
+---
+
+## Next Steps
+
+1. Review and approve this roadmap
+2. Begin Phase 1: Install Emscripten and create WASM build configuration
+3. Establish success criteria validation method for each phase
+4. Set up version control branch strategy if working incrementally
+
+## Requirement Coverage
+
+All 27 v1 requirements mapped to phases:
+
+**Phase 1:** WASM-01, WASM-02, WASM-03 (3 requirements)
+**Phase 2:** BRIDGE-01, BRIDGE-02, BRIDGE-03, BRIDGE-04 (4 requirements)
+**Phase 3:** CANVAS-01, CANVAS-02, CANVAS-03 (3 requirements)
+**Phase 4:** UI-01, UI-02, UI-03, UI-04 (4 requirements)
+**Phase 5:** CODE-01, CODE-02, CODE-03 (3 requirements)
+**Phase 6:** DOC-01, DOC-02, DOC-03, DOC-04 (4 requirements)
+**Phase 7:** PERF-01, PERF-02, PERF-03, TEST-01, TEST-02, TEST-03 (6 requirements)
+
+**Total:** 27/27 requirements mapped (100% coverage)
