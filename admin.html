@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source Code - Admin Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-container h1 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .login-container p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .code-viewer {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .code-viewer.show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1.5rem;
+            background: #e74c3c;
+            width: auto;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .code-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .file-tree {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .file-tree-item {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            transition: background 0.2s;
+        }
+
+        .file-tree-item:hover {
+            background: #e9ecef;
+        }
+
+        .file-tree-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .file-tree-item.folder {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .file-tree-item.file {
+            padding-left: 1.5rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-display {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: #282c34;
+        }
+
+        .code-info {
+            background: #1e2127;
+            color: #abb2bf;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .code-info h2 {
+            color: #61afef;
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            margin: 0;
+            padding: 1.5rem;
+            background: #282c34;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #abb2bf;
+        }
+
+        .keyword { color: #c678dd; }
+        .string { color: #98c379; }
+        .comment { color: #5c6370; font-style: italic; }
+        .function { color: #61afef; }
+        .type { color: #e5c07b; }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <h1>🔒 Source Code Access</h1>
+        <p>Enter the admin password to view the graphics engine source code.</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+                <div class="error" id="error">Incorrect password. Please try again.</div>
+            </div>
+            <button type="submit">Access Source Code</button>
+        </form>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Code Viewer -->
+    <div class="code-viewer" id="codeViewer">
+        <div class="code-header">
+            <h1>2D Graphics Engine - Source Code</h1>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        <div class="code-content">
+            <div class="file-tree" id="fileTree">
+                <!-- File tree will be generated here -->
+            </div>
+            <div class="code-display" id="codeDisplay">
+                <div class="code-info">
+                    <h2>2D Graphics Engine</h2>
+                    <p>Select a file from the tree to view its contents.</p>
+                    <p><strong>About:</strong> This C++ graphics engine handles drawing geometric shapes, transformations (scaling, rotation, translation), color blending, and shader operations.</p>
+                    <p><strong>Repository:</strong> <a href="https://github.com/AaronDiefes/2D-graphics-engine" target="_blank" style="color: #61afef;">View on GitHub</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple password hash (SHA-256) - In production, use server-side auth
+        // Default password: "graphics2024" - Change this!
+        const PASSWORD_HASH = "f8c3bf62a9aa3e6fc1619c250e48afe7519373d3ebc0f61c65b8c34e40fce1c7";
+
+        const loginForm = document.getElementById('loginForm');
+        const loginContainer = document.getElementById('loginContainer');
+        const codeViewer = document.getElementById('codeViewer');
+        const error = document.getElementById('error');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const fileTree = document.getElementById('fileTree');
+        const codeDisplay = document.getElementById('codeDisplay');
+
+        // Simple SHA-256 hash function
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Check session
+        if (sessionStorage.getItem('authenticated') === 'true') {
+            showCodeViewer();
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const hash = await sha256(password);
+
+            if (hash === PASSWORD_HASH) {
+                sessionStorage.setItem('authenticated', 'true');
+                showCodeViewer();
+            } else {
+                error.classList.add('show');
+                document.getElementById('password').value = '';
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('authenticated');
+            loginContainer.style.display = 'block';
+            codeViewer.classList.remove('show');
+        });
+
+        function showCodeViewer() {
+            loginContainer.style.display = 'none';
+            codeViewer.classList.add('show');
+            loadFileTree();
+        }
+
+        // File structure
+        const files = {
+            'Core Files': [
+                { name: 'my_canvas.cpp', type: 'C++ Implementation' },
+                { name: 'my_final.cpp', type: 'Final Project' },
+                { name: 'matrix_transform.cpp', type: 'Transform Logic' }
+            ],
+            'Headers': [
+                { name: 'blend_functions.h', type: 'Blending' },
+                { name: 'shader_ops.h', type: 'Shaders' },
+                { name: 'path_ops.h', type: 'Path Operations' },
+                { name: 'Edge.h', type: 'Edge Detection' },
+                { name: 'my_utils.h', type: 'Utilities' },
+                { name: 'starter_canvas.h', type: 'Canvas Interface' }
+            ],
+            'Applications': [
+                { name: 'apps/image.cpp', type: 'Image Processing' },
+                { name: 'apps/main_image.cpp', type: 'Main Entry' },
+                { name: 'apps/GWindow.cpp', type: 'Window Management' }
+            ],
+            'Build': [
+                { name: 'Makefile', type: 'Build Configuration' },
+                { name: 'README.md', type: 'Documentation' }
+            ]
+        };
+
+        function loadFileTree() {
+            fileTree.innerHTML = '';
+
+            for (const [folder, fileList] of Object.entries(files)) {
+                const folderDiv = document.createElement('div');
+                folderDiv.className = 'file-tree-item folder';
+                folderDiv.textContent = '📁 ' + folder;
+                fileTree.appendChild(folderDiv);
+
+                fileList.forEach(file => {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.className = 'file-tree-item file';
+                    fileDiv.textContent = '📄 ' + file.name;
+                    fileDiv.onclick = () => loadFile(file.name, file.type);
+                    fileTree.appendChild(fileDiv);
+                });
+            }
+        }
+
+        async function loadFile(filename, filetype) {
+            // Remove active class from all items
+            document.querySelectorAll('.file-tree-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Add active class to clicked item
+            event.target.classList.add('active');
+
+            // In a real implementation, fetch the actual file from the server
+            // For now, we'll show a placeholder
+            codeDisplay.innerHTML = `
+                <div class="code-info">
+                    <h2>${filename}</h2>
+                    <p><strong>Type:</strong> ${filetype}</p>
+                    <p><strong>Note:</strong> To view the actual source code, clone the repository from GitHub or download the files directly.</p>
+                    <p><a href="https://github.com/AaronDiefes/2D-graphics-engine" target="_blank" style="color: #61afef;">View on GitHub →</a></p>
+                </div>
+                <pre><code>// File: ${filename}
+//
+// This graphics engine component handles ${filetype.toLowerCase()}.
+//
+// To protect the source code, the full implementation is available
+// through the GitHub repository.
+//
+// Key features of this file:
+${getFileDescription(filename)}
+
+// For complete source code, visit:
+// https://github.com/AaronDiefes/2D-graphics-engine
+
+</code></pre>
+            `;
+        }
+
+        function getFileDescription(filename) {
+            const descriptions = {
+                'my_canvas.cpp': '// - Canvas drawing operations\n// - Shape rendering\n// - Transformation matrix application',
+                'blend_functions.h': '// - Color blending algorithms\n// - Alpha compositing\n// - Blend mode implementations',
+                'shader_ops.h': '// - Shader pipeline\n// - Gradient rendering\n// - Texture mapping',
+                'Makefile': '# - Build configuration\n# - Compiler flags\n# - Dependency management'
+            };
+            return descriptions[filename] || '// - Core graphics functionality\n// - Performance optimizations\n// - API implementations';
+        }
+    </script>
+</body>
+</html>
