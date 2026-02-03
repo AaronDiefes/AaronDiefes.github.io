@@ -1,0 +1,44 @@
+# WebAssembly build configuration for 2D Graphics Engine
+# Requires Emscripten SDK: source ~/emsdk/emsdk_env.sh
+
+# Compiler
+EMCC = emcc
+
+# Compiler flags
+CXXFLAGS = -std=c++17 -O3 -DNDEBUG -Wno-narrowing
+CXXFLAGS += -I./include
+
+# Emscripten-specific flags
+EMFLAGS = --bind
+EMFLAGS += -s WASM=1
+EMFLAGS += -s ALLOW_MEMORY_GROWTH=1
+EMFLAGS += -s MODULARIZE=1
+EMFLAGS += -s EXPORT_NAME="GraphicsEngine"
+EMFLAGS += -s EXPORTED_RUNTIME_METHODS='["cwrap","ccall"]'
+EMFLAGS += -s NO_EXIT_RUNTIME=1
+EMFLAGS += -s ASSERTIONS=1
+
+# Source files (exclude apps/ and file I/O dependent code)
+CORE_SRC = my_canvas.cpp \
+           my_final.cpp \
+           matrix_transform.cpp \
+           src/GBitmap.cpp \
+           src/GPath.cpp \
+           src/GTime.cpp \
+           wasm_bindings.cpp
+
+# Exclude lodepng file I/O for WASM (browser doesn't need it)
+# src/GBitmap_lode.cpp src/lodepng.cpp
+
+# Output files
+OUTPUT = graphics_engine
+
+all: $(OUTPUT).js
+
+$(OUTPUT).js: $(CORE_SRC)
+	$(EMCC) $(CXXFLAGS) $(EMFLAGS) $(CORE_SRC) -o $(OUTPUT).js
+
+clean:
+	rm -f $(OUTPUT).js $(OUTPUT).wasm $(OUTPUT).wasm.map
+
+.PHONY: all clean

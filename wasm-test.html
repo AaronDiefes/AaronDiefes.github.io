@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Graphics Engine Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        #status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        #status.loading {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+        #status.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        #status.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: block;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 10px 10px 0;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 WASM Graphics Engine Test</h1>
+        <div id="status" class="loading">Loading WebAssembly module...</div>
+
+        <canvas id="canvas" width="600" height="400"></canvas>
+
+        <div class="controls">
+            <button id="testBasic" disabled>Test Basic Shapes</button>
+            <button id="testTransforms" disabled>Test Transformations</button>
+            <button id="testClear" disabled>Clear Canvas</button>
+        </div>
+
+        <h3>Log:</h3>
+        <pre id="log"></pre>
+    </div>
+
+    <script src="graphics_engine.js"></script>
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logPre = document.getElementById('log');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let wasmCanvas = null;
+        let Module = null;
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logPre.textContent += `[${timestamp}] ${message}\n`;
+            logPre.scrollTop = logPre.scrollHeight;
+        }
+
+        function updateStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+        }
+
+        // Initialize WASM module
+        GraphicsEngine().then((module) => {
+            Module = module;
+            log('✓ WebAssembly module loaded successfully');
+
+            // Create canvas wrapper
+            try {
+                wasmCanvas = new Module.CanvasWrapper(600, 400);
+                log('✓ Canvas created: ' + wasmCanvas.getWidth() + 'x' + wasmCanvas.getHeight());
+
+                // Get pixel buffer pointer
+                const pixelPtr = wasmCanvas.getPixelsPtr();
+                log('✓ Pixel buffer at: 0x' + pixelPtr.toString(16));
+
+                updateStatus('✅ WASM Engine Ready!', 'success');
+
+                // Enable buttons
+                document.getElementById('testBasic').disabled = false;
+                document.getElementById('testTransforms').disabled = false;
+                document.getElementById('testClear').disabled = false;
+
+            } catch (e) {
+                log('✗ Error creating canvas: ' + e.message);
+                updateStatus('❌ Error: ' + e.message, 'error');
+            }
+        }).catch((error) => {
+            log('✗ Failed to load WASM module: ' + error);
+            updateStatus('❌ Failed to load WASM module', 'error');
+        });
+
+        // Helper: Transfer WASM pixels to HTML canvas
+        function updateCanvasDisplay() {
+            if (!wasmCanvas || !Module) return;
+
+            const width = wasmCanvas.getWidth();
+            const height = wasmCanvas.getHeight();
+            const pixelPtr = wasmCanvas.getPixelsPtr();
+
+            // Get pixel data from WASM memory (ARGB format)
+            const pixelCount = width * height;
+            const wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+
+            // Create ImageData and convert ARGB to RGBA
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+
+            for (let i = 0; i < pixelCount; i++) {
+                const argb = wasmPixels[i];
+                const a = (argb >> 24) & 0xFF;
+                const r = (argb >> 16) & 0xFF;
+                const g = (argb >> 8) & 0xFF;
+                const b = argb & 0xFF;
+
+                const idx = i * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = a;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // Test: Basic shapes
+        document.getElementById('testBasic').addEventListener('click', () => {
+            log('Drawing basic shapes...');
+
+            // Clear to white
+            wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+
+            // Draw red rectangle
+            wasmCanvas.drawRect(50, 50, 200, 150, 1.0, 0.0, 0.0, 1.0);
+            log('  - Red rectangle at (50, 50)');
+
+            // Draw blue rectangle
+            wasmCanvas.drawRect(150, 100, 200, 150, 0.0, 0.0, 1.0, 0.5);
+            log('  - Blue semi-transparent rectangle at (150, 100)');
+
+            // Draw triangle (convex polygon)
+            const trianglePoints = [300, 50, 500, 50, 400, 200];
+            wasmCanvas.drawConvexPolygon(trianglePoints, 0.0, 1.0, 0.0, 0.8);
+            log('  - Green triangle');
+
+            updateCanvasDisplay();
+            log('✓ Basic shapes rendered');
+        });
+
+        // Test: Transformations
+        document.getElementById('testTransforms').addEventListener('click', () => {
+            log('Testing transformations...');
+
+            wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+
+            // Save state
+            wasmCanvas.save();
+
+            // Translate and rotate
+            wasmCanvas.translate(300, 200);
+            wasmCanvas.rotate(Math.PI / 4);  // 45 degrees
+            wasmCanvas.scale(1.5, 1.5);
+
+            // Draw transformed rectangle
+            wasmCanvas.drawRect(-50, -50, 100, 100, 1.0, 0.5, 0.0, 1.0);
+            log('  - Rotated orange square');
+
+            // Restore state
+            wasmCanvas.restore();
+
+            // Draw untransformed rectangle
+            wasmCanvas.drawRect(450, 50, 100, 100, 0.5, 0.0, 1.0, 1.0);
+            log('  - Normal purple square');
+
+            updateCanvasDisplay();
+            log('✓ Transformations rendered');
+        });
+
+        // Test: Clear
+        document.getElementById('testClear').addEventListener('click', () => {
+            log('Clearing canvas...');
+            wasmCanvas.clear(0.9, 0.9, 0.9, 1.0);
+            updateCanvasDisplay();
+            log('✓ Canvas cleared');
+        });
+    </script>
+</body>
+</html>
