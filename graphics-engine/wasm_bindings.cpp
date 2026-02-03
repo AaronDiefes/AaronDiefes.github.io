@@ -329,6 +329,32 @@ bool loadImageToVFS(const std::string& filename, uintptr_t dataPtr, size_t dataS
     return written == dataSize;
 }
 
+// Debug helper to test file reading
+int testFileRead(const std::string& filename) {
+    // Try to open file
+    FILE* f = fopen(filename.c_str(), "rb");
+    if (!f) return -1;  // File open failed
+
+    // Get file size
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    // Read first 8 bytes to check PNG signature
+    uint8_t header[8];
+    size_t read = fread(header, 1, 8, f);
+    fclose(f);
+
+    if (read != 8) return -2;  // Read failed
+
+    // Check PNG signature: 137 80 78 71 13 10 26 10
+    if (header[0] == 137 && header[1] == 80 && header[2] == 78 && header[3] == 71) {
+        return (int)size;  // Success - return file size
+    }
+
+    return -3;  // Not a PNG
+}
+
 // Emscripten bindings
 EMSCRIPTEN_BINDINGS(graphics_engine) {
     // PathWrapper
@@ -382,6 +408,7 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
     function("createLinearGradient", &createLinearGradient, allow_raw_pointers());
     function("createBitmapShaderFromFile", &createBitmapShaderFromFile, allow_raw_pointers());
     function("loadImageToVFS", &loadImageToVFS);
+    function("testFileRead", &testFileRead);
 
     // Enums
     enum_<GBlendMode>("BlendMode")
