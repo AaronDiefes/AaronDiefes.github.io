@@ -159,88 +159,127 @@
 
         // Helper: Transfer WASM pixels to HTML canvas
         function updateCanvasDisplay() {
-            if (!wasmCanvas || !Module) return;
-
-            const width = wasmCanvas.getWidth();
-            const height = wasmCanvas.getHeight();
-            const pixelPtr = wasmCanvas.getPixelsPtr();
-
-            // Get pixel data from WASM memory (ARGB format)
-            const pixelCount = width * height;
-            const wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
-
-            // Create ImageData and convert ARGB to RGBA
-            const imageData = ctx.createImageData(width, height);
-            const data = imageData.data;
-
-            for (let i = 0; i < pixelCount; i++) {
-                const argb = wasmPixels[i];
-                const a = (argb >> 24) & 0xFF;
-                const r = (argb >> 16) & 0xFF;
-                const g = (argb >> 8) & 0xFF;
-                const b = argb & 0xFF;
-
-                const idx = i * 4;
-                data[idx] = r;
-                data[idx + 1] = g;
-                data[idx + 2] = b;
-                data[idx + 3] = a;
+            if (!wasmCanvas || !Module) {
+                log('✗ Cannot update: wasmCanvas or Module not initialized');
+                return;
             }
 
-            ctx.putImageData(imageData, 0, 0);
+            try {
+                const width = wasmCanvas.getWidth();
+                const height = wasmCanvas.getHeight();
+                const pixelPtr = wasmCanvas.getPixelsPtr();
+
+                console.log('Pixel buffer pointer:', '0x' + pixelPtr.toString(16));
+                console.log('HEAPU32 buffer size:', Module.HEAPU32.buffer.byteLength);
+
+                // Get pixel data from WASM memory (ARGB premultiplied format)
+                const pixelCount = width * height;
+                const wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount);
+
+                console.log('Reading', pixelCount, 'pixels from WASM memory');
+                console.log('First few pixels:', wasmPixels.slice(0, 5));
+
+                // Create ImageData and convert ARGB premultiplied to RGBA non-premultiplied
+                const imageData = ctx.createImageData(width, height);
+                const data = imageData.data;
+
+                for (let i = 0; i < pixelCount; i++) {
+                    const argb = wasmPixels[i];
+                    const a = (argb >> 24) & 0xFF;
+                    let r = (argb >> 16) & 0xFF;
+                    let g = (argb >> 8) & 0xFF;
+                    let b = argb & 0xFF;
+
+                    // Unpremultiply RGB by alpha (pixels are premultiplied in C++)
+                    if (a > 0 && a < 255) {
+                        r = Math.round((r * 255) / a);
+                        g = Math.round((g * 255) / a);
+                        b = Math.round((b * 255) / a);
+                    }
+
+                    const idx = i * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = a;
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                log('✓ Canvas updated (' + pixelCount + ' pixels transferred)');
+            } catch (e) {
+                log('✗ Error updating canvas: ' + e.message);
+                console.error('Canvas update error:', e);
+            }
         }
 
         // Test: Basic shapes
         document.getElementById('testBasic').addEventListener('click', () => {
-            log('Drawing basic shapes...');
+            log('=== Drawing basic shapes ===');
+            console.log('Canvas dimensions:', wasmCanvas.getWidth(), 'x', wasmCanvas.getHeight());
 
             // Clear to white
+            log('Calling clear(1.0, 1.0, 1.0, 1.0)...');
             wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
+            log('  ✓ Clear completed');
 
             // Draw red rectangle
+            log('Calling drawRect(50, 50, 200, 150) - RED...');
             wasmCanvas.drawRect(50, 50, 200, 150, 1.0, 0.0, 0.0, 1.0);
-            log('  - Red rectangle at (50, 50)');
+            log('  ✓ Red rectangle drawn');
 
             // Draw blue rectangle
+            log('Calling drawRect(150, 100, 200, 150) - BLUE...');
             wasmCanvas.drawRect(150, 100, 200, 150, 0.0, 0.0, 1.0, 0.5);
-            log('  - Blue semi-transparent rectangle at (150, 100)');
+            log('  ✓ Blue semi-transparent rectangle drawn');
 
             // Draw triangle (convex polygon)
+            log('Calling drawConvexPolygon() - GREEN triangle...');
             const trianglePoints = [300, 50, 500, 50, 400, 200];
-            wasmCanvas.drawConvexPolygon(trianglePoints, 0.0, 1.0, 0.0, 0.8);
-            log('  - Green triangle');
+            const pointsVector = new Module.VectorFloat();
+            trianglePoints.forEach(p => pointsVector.push_back(p));
+            wasmCanvas.drawConvexPolygon(pointsVector, 0.0, 1.0, 0.0, 0.8);
+            pointsVector.delete();
+            log('  ✓ Green triangle drawn');
 
+            log('Transferring pixels to canvas...');
             updateCanvasDisplay();
-            log('✓ Basic shapes rendered');
+            log('✓✓✓ Basic shapes rendering complete ✓✓✓');
         });
 
         // Test: Transformations
         document.getElementById('testTransforms').addEventListener('click', () => {
-            log('Testing transformations...');
+            log('=== Testing transformations ===');
 
+            log('Clearing canvas...');
             wasmCanvas.clear(1.0, 1.0, 1.0, 1.0);
 
             // Save state
+            log('Saving canvas state...');
             wasmCanvas.save();
 
             // Translate and rotate
+            log('Applying transformations: translate(300, 200), rotate(45°), scale(1.5)...');
             wasmCanvas.translate(300, 200);
             wasmCanvas.rotate(Math.PI / 4);  // 45 degrees
             wasmCanvas.scale(1.5, 1.5);
 
             // Draw transformed rectangle
+            log('Drawing transformed orange square...');
             wasmCanvas.drawRect(-50, -50, 100, 100, 1.0, 0.5, 0.0, 1.0);
-            log('  - Rotated orange square');
+            log('  ✓ Rotated orange square drawn');
 
             // Restore state
+            log('Restoring canvas state...');
             wasmCanvas.restore();
 
             // Draw untransformed rectangle
+            log('Drawing untransformed purple square...');
             wasmCanvas.drawRect(450, 50, 100, 100, 0.5, 0.0, 1.0, 1.0);
-            log('  - Normal purple square');
+            log('  ✓ Normal purple square drawn');
 
+            log('Transferring pixels to canvas...');
             updateCanvasDisplay();
-            log('✓ Transformations rendered');
+            log('✓✓✓ Transformations rendering complete ✓✓✓');
         });
 
         // Test: Clear
