@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Overview - Graphics Engine Documentation</title>
+
+    <!-- Prism.js Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
+
+    <!-- Prism.js Plugins - CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+
+    <!-- Local Documentation Styles -->
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="stylesheet" href="assets/css/code.css">
+
+    <!-- Mermaid.js v11 -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#2E7D32',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#1B5E20',
+                lineColor: '#2E7D32',
+                secondaryColor: '#E8F5E9',
+                tertiaryColor: '#F1F8E9',
+                background: '#ffffff',
+                mainBkg: '#E8F5E9',
+                secondBkg: '#C8E6C9',
+                textColor: '#2c3e50',
+                border1: '#2E7D32',
+                border2: '#66BB6A'
+            }
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="doc-header">
+        <div class="doc-container">
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
+            </nav>
+            <h1>Architecture Overview</h1>
+            <p>System Design and Data Flow</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="doc-container">
+        <div class="content-wrapper">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="index.html">Documentation Index</a>
+                <span class="separator">/</span>
+                <span>Architecture Overview</span>
+            </nav>
+
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>Introduction</h2>
+                <p>
+                    The 2D graphics engine is built on a layered architecture where high-level drawing commands flow through a series of transformations before becoming pixels on screen. Understanding this architecture is essential for navigating the codebase and extending the engine with new features.
+                </p>
+                <p>
+                    This page provides visual diagrams explaining the core systems: the rendering pipeline, canvas abstraction, shader hierarchy, transformation stack, and blend pipeline. Each diagram shows how components interact and where data flows through the system.
+                </p>
+            </section>
+
+            <!-- Section 1: Rendering Pipeline -->
+            <section class="content-section">
+                <h2>1. Rendering Pipeline</h2>
+                <p>
+                    Every draw call—whether <code>drawRect()</code>, <code>drawPolygon()</code>, or <code>drawPath()</code>—flows through this pipeline. The high-level command is transformed into a list of edges, clipped to the viewport, rasterized into pixels, shaded with colors, and composited onto the framebuffer using blend modes.
+                </p>
+
+                <div class="mermaid" role="img" aria-label="Rendering pipeline flowchart showing transformation from draw call to pixels">
+flowchart LR
+    A[Draw Call] --> B[Transform<br/>Apply CTM]
+    B --> C[Clip<br/>Viewport bounds]
+    C --> D[Rasterize<br/>Edges to pixels]
+    D --> E[Shade<br/>Compute color]
+    E --> F[Blend<br/>Composite]
+    F --> G[Pixels<br/>Framebuffer]
+
+    style A fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    style B fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style C fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style D fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style E fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style F fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style G fill:#81C784,stroke:#1B5E20,stroke-width:3px
+                </div>
+
+                <details style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px;">
+                    <summary style="font-weight: 600; cursor: pointer;">Text Alternative</summary>
+                    <p>The rendering pipeline consists of seven stages:</p>
+                    <ol style="line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>Draw Call:</strong> High-level API function (drawRect, drawPolygon, drawPath)</li>
+                        <li><strong>Transform:</strong> Apply current transform matrix (CTM) to shape vertices</li>
+                        <li><strong>Clip:</strong> Clip shape to viewport boundaries</li>
+                        <li><strong>Rasterize:</strong> Convert edges to pixel coordinates via scanline algorithm</li>
+                        <li><strong>Shade:</strong> Compute pixel color using shader (solid, gradient, or bitmap)</li>
+                        <li><strong>Blend:</strong> Composite source color with destination using Porter-Duff blend mode</li>
+                        <li><strong>Pixels:</strong> Write final color to framebuffer</li>
+                    </ol>
+                </details>
+
+                <p style="margin-top: 1.5rem;">
+                    <strong>Key Implementation Files:</strong>
+                </p>
+                <ul style="line-height: 1.8;">
+                    <li><code>my_canvas.cpp</code> - Canvas API and draw call implementations</li>
+                    <li><code>Edge.h</code> - Edge structure for scanline rasterization</li>
+                    <li><code>blend_functions.h</code> - Porter-Duff blend mode implementations</li>
+                    <li><code>shader_ops.h</code> - Shader base class and gradient implementations</li>
+                </ul>
+            </section>
+
+            <!-- Section 2: Canvas Abstraction -->
+            <section class="content-section">
+                <h2>2. Canvas Abstraction</h2>
+                <p>
+                    The <code>GCanvas</code> abstract class defines the public API. The <code>MyCanvas</code> implementation maintains the framebuffer bitmap, CTM stack, and shader state. All drawing operations eventually call <code>blitRow()</code> to write scanlines.
+                </p>
+
+                <div class="mermaid" role="img" aria-label="Class diagram showing GCanvas interface and MyCanvas implementation">
+classDiagram
+    class GCanvas {
+        <<interface>>
+        +drawRect(rect, paint)
+        +drawPolygon(points, paint)
+        +drawPath(path, paint)
+        +drawMesh(mesh, colors, texs, paint)
+        +save()
+        +restore()
+        +concat(matrix)
+    }
+
+    class MyCanvas {
+        -GBitmap fDevice
+        -std::stack~GMatrix~ CTMStack
+        +drawRect(rect, paint)
+        +drawPolygon(points, paint)
+        +drawConvexPolygon(points, paint)
+        -blitRow(y, xLeft, xRight, paint)
+        -clipEdges(edges)
+    }
+
+    class Paint {
+        +GShader* shader
+        +GBlendMode blendMode
+        +GColor color
+    }
+
+    GCanvas <|.. MyCanvas : implements
+    MyCanvas --> Paint : uses
+
+    style GCanvas fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    style MyCanvas fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style Paint fill:#F1F8E9,stroke:#66BB6A,stroke-width:2px
+                </div>
+
+                <details style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px;">
+                    <summary style="font-weight: 600; cursor: pointer;">Text Alternative</summary>
+                    <p>The canvas architecture consists of:</p>
+                    <ul style="line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>GCanvas (interface):</strong> Abstract base class defining public API methods like drawRect, drawPolygon, drawPath, drawMesh, save, restore, concat</li>
+                        <li><strong>MyCanvas (implementation):</strong> Concrete implementation maintaining framebuffer (GBitmap fDevice), CTM stack (std::stack&lt;GMatrix&gt;), and implementing drawing algorithms</li>
+                        <li><strong>Paint:</strong> Encapsulates drawing state including shader pointer, blend mode, and fallback color</li>
+                    </ul>
+                    <p>MyCanvas uses Paint for every draw operation, calling shader and blend functions to produce final pixel colors.</p>
+                </details>
+
+                <p style="margin-top: 1.5rem;">
+                    The <code>blitRow()</code> function is the core rendering primitive. It takes a Y coordinate and X range, samples the shader across that range, and blends each pixel into the framebuffer using the specified blend mode.
+                </p>
+            </section>
+
+            <!-- Section 3: Shader System -->
+            <section class="content-section">
+                <h2>3. Shader System</h2>
+                <p>
+                    Shaders compute pixel colors. The <code>GShader</code> abstract class defines the interface. Subclasses implement solid colors, linear gradients, radial gradients, sweep gradients, bitmap textures, and shader composition. Each shader implements <code>shadeRow()</code> to fill a scanline of colors.
+                </p>
+
+                <div class="mermaid" role="img" aria-label="Shader hierarchy flowchart showing GShader base class and implementations">
+flowchart TD
+    A[GShader<br/>Abstract Base]
+    A --> B[SolidColorShader]
+    A --> C[LinearGradientShader]
+    A --> D[RadialGradientShader]
+    A --> E[AngleGradientShader<br/>Sweep]
+    A --> F[BitmapShader]
+    A --> G[ProxyShader]
+    A --> H[ComposeShader]
+
+    B --> I[shadeRow<br/>Fill with color]
+    C --> J[shadeRow<br/>Linear interpolation]
+    D --> K[shadeRow<br/>Radial distance]
+    E --> L[shadeRow<br/>atan2 angle]
+    F --> M[shadeRow<br/>Texture lookup + tile]
+    G --> N[shadeRow<br/>Transform + delegate]
+    H --> O[shadeRow<br/>Combine two shaders]
+
+    style A fill:#E8F5E9,stroke:#2E7D32,stroke-width:3px
+    style B fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style C fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style D fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style E fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style F fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+    style G fill:#F1F8E9,stroke:#66BB6A,stroke-width:2px
+    style H fill:#F1F8E9,stroke:#66BB6A,stroke-width:2px
+    style I fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style J fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style K fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style L fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style M fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style N fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+    style O fill:#F9FBE7,stroke:#9CCC65,stroke-width:1px
+                </div>
+
+                <details style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px;">
+                    <summary style="font-weight: 600; cursor: pointer;">Text Alternative</summary>
+                    <p>The shader hierarchy consists of:</p>
+                    <ul style="line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>GShader (abstract base):</strong> Defines shadeRow() interface for filling scanlines with colors</li>
+                        <li><strong>SolidColorShader:</strong> Fills entire row with single color</li>
+                        <li><strong>LinearGradientShader:</strong> Linear interpolation between color stops</li>
+                        <li><strong>RadialGradientShader:</strong> Color based on distance from center point</li>
+                        <li><strong>AngleGradientShader (Sweep):</strong> Color based on angle using atan2</li>
+                        <li><strong>BitmapShader:</strong> Samples texels from bitmap with tile modes (Clamp, Repeat, Mirror)</li>
+                        <li><strong>ProxyShader:</strong> Applies transformation matrix before delegating to another shader</li>
+                        <li><strong>ComposeShader:</strong> Combines two shaders (e.g., gradient + texture)</li>
+                    </ul>
+                </details>
+
+                <p style="margin-top: 1.5rem;">
+                    <strong>Shader Creation API:</strong>
+                </p>
+                <pre class="line-numbers"><code class="language-cpp">// Factory functions exposed to WebAssembly
+GShader* createLinearGradient(GPoint p0, GPoint p1,
+    const GColor colors[], int count);
+
+GShader* createRadialGradient(GPoint center, float radius,
+    const GColor colors[], int count);
+
+GShader* createAngleGradient(GPoint center,
+    const GColor colors[], int count);
+
+GShader* createBitmapShader(const GBitmap& bitmap,
+    GMatrix localMatrix, GTileMode tileMode);</code></pre>
+            </section>
+
+            <!-- Section 4: Transformation Stack -->
+            <section class="content-section">
+                <h2>4. Transformation Stack</h2>
+                <p>
+                    The Current Transform Matrix (CTM) stack allows hierarchical transformations. Calling <code>save()</code> pushes the current matrix, <code>concat()</code> multiplies a transformation, and <code>restore()</code> pops back to the saved state. This enables nested transformations like rotating a shape around its center.
+                </p>
+
+                <div class="mermaid" role="img" aria-label="Sequence diagram showing save, concat, draw, restore operations">
+sequenceDiagram
+    participant App as Application
+    participant Canvas as MyCanvas
+    participant Stack as CTM Stack
+
+    App->>Canvas: save()
+    Canvas->>Stack: push(currentCTM)
+    Note over Stack: [Identity]<br/>[Identity]
+
+    App->>Canvas: concat(Translate(100, 50))
+    Canvas->>Stack: top = top * Translate
+    Note over Stack: [Identity]<br/>[Translate(100,50)]
+
+    App->>Canvas: concat(Rotate(45°))
+    Canvas->>Stack: top = top * Rotate
+    Note over Stack: [Identity]<br/>[T * R]
+
+    App->>Canvas: drawRect(...)
+    Note over Canvas: Apply CTM to vertices
+    Canvas-->>App: Rendered
+
+    App->>Canvas: restore()
+    Canvas->>Stack: pop()
+    Note over Stack: [Identity]
+
+    style Canvas fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    style Stack fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px
+                </div>
+
+                <details style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px;">
+                    <summary style="font-weight: 600; cursor: pointer;">Text Alternative</summary>
+                    <p>The transformation stack workflow:</p>
+                    <ol style="line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>save():</strong> Application calls save(), Canvas pushes current CTM onto stack</li>
+                        <li><strong>concat(Translate):</strong> Application concatenates translation, Canvas multiplies top of stack</li>
+                        <li><strong>concat(Rotate):</strong> Application concatenates rotation, Canvas multiplies again (T * R)</li>
+                        <li><strong>drawRect():</strong> Application draws shape, Canvas applies combined transformation to vertices</li>
+                        <li><strong>restore():</strong> Application restores state, Canvas pops stack back to saved matrix</li>
+                    </ol>
+                    <p>This pattern enables complex hierarchical transformations while keeping the API simple.</p>
+                </details>
+
+                <p style="margin-top: 1.5rem;">
+                    <strong>Matrix Operations:</strong>
+                </p>
+                <pre class="line-numbers"><code class="language-cpp">// GMatrix provides these operations
+GMatrix::Translate(float tx, float ty)
+GMatrix::Rotate(float radians)
+GMatrix::Scale(float sx, float sy)
+
+// CTM stack operations in MyCanvas
+void save() {
+    CTMStack.push(CTMStack.top());
+}
+
+void restore() {
+    CTMStack.pop();
+}
+
+void concat(const GMatrix& matrix) {
+    CTMStack.top() = CTMStack.top() * matrix;
+}</code></pre>
+            </section>
+
+            <!-- Section 5: Blend Pipeline -->
+            <section class="content-section">
+                <h2>5. Blend Pipeline</h2>
+                <p>
+                    The Porter-Duff blend modes control how source pixels (from the shader) composite with destination pixels (existing framebuffer). Each mode uses different formulas involving source/destination colors and alpha values. The engine implements 12 standard blend modes.
+                </p>
+
+                <div style="overflow-x: auto; margin: 1.5rem 0;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white;">
+                                <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Blend Mode</th>
+                                <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Formula</th>
+                                <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kClear</code></td>
+                                <td style="padding: 0.75rem;"><code>0</code></td>
+                                <td style="padding: 0.75rem;">Clear to transparent</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kSrc</code></td>
+                                <td style="padding: 0.75rem;"><code>S</code></td>
+                                <td style="padding: 0.75rem;">Replace destination</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kDst</code></td>
+                                <td style="padding: 0.75rem;"><code>D</code></td>
+                                <td style="padding: 0.75rem;">Keep destination</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kSrcOver</code></td>
+                                <td style="padding: 0.75rem;"><code>S + D(1-Sa)</code></td>
+                                <td style="padding: 0.75rem;">Normal alpha blending</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kDstOver</code></td>
+                                <td style="padding: 0.75rem;"><code>D + S(1-Da)</code></td>
+                                <td style="padding: 0.75rem;">Draw behind existing</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kSrcIn</code></td>
+                                <td style="padding: 0.75rem;"><code>S * Da</code></td>
+                                <td style="padding: 0.75rem;">Mask with destination</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kDstIn</code></td>
+                                <td style="padding: 0.75rem;"><code>D * Sa</code></td>
+                                <td style="padding: 0.75rem;">Keep destination inside source</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kSrcOut</code></td>
+                                <td style="padding: 0.75rem;"><code>S * (1-Da)</code></td>
+                                <td style="padding: 0.75rem;">Source outside destination</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kDstOut</code></td>
+                                <td style="padding: 0.75rem;"><code>D * (1-Sa)</code></td>
+                                <td style="padding: 0.75rem;">Destination outside source</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kSrcATop</code></td>
+                                <td style="padding: 0.75rem;"><code>S*Da + D(1-Sa)</code></td>
+                                <td style="padding: 0.75rem;">Source atop destination</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 0.75rem;"><code>kDstATop</code></td>
+                                <td style="padding: 0.75rem;"><code>D*Sa + S(1-Da)</code></td>
+                                <td style="padding: 0.75rem;">Destination atop source</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 0.75rem;"><code>kXor</code></td>
+                                <td style="padding: 0.75rem;"><code>S(1-Da) + D(1-Sa)</code></td>
+                                <td style="padding: 0.75rem;">Exclusive or</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+                    <strong>Visual Representation:</strong> The blend pipeline takes source RGBA and destination RGBA, applies the blend formula, and produces the final RGBA written to the framebuffer.
+                </p>
+
+                <div class="mermaid" role="img" aria-label="Blend pipeline diagram showing source and destination combining">
+flowchart LR
+    A[Source RGBA<br/>From Shader] --> C{Blend Mode}
+    B[Destination RGBA<br/>From Framebuffer] --> C
+    C --> D[Blended RGBA<br/>Written Back]
+
+    style A fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    style B fill:#F1F8E9,stroke:#66BB6A,stroke-width:2px
+    style C fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px
+    style D fill:#81C784,stroke:#1B5E20,stroke-width:3px
+                </div>
+
+                <details style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px;">
+                    <summary style="font-weight: 600; cursor: pointer;">Text Alternative</summary>
+                    <p>The blend pipeline consists of three stages:</p>
+                    <ol style="line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>Source RGBA:</strong> Color computed by shader for the current pixel</li>
+                        <li><strong>Destination RGBA:</strong> Existing color in framebuffer at that pixel location</li>
+                        <li><strong>Blend Mode:</strong> Mathematical formula that combines source and destination (e.g., kSrcOver = S + D(1-Sa))</li>
+                        <li><strong>Blended RGBA:</strong> Final color written back to framebuffer</li>
+                    </ol>
+                    <p>All colors use premultiplied alpha, where RGB channels are already multiplied by the alpha value.</p>
+                </details>
+
+                <p style="margin-top: 1.5rem;">
+                    <strong>Implementation:</strong>
+                </p>
+                <pre class="line-numbers"><code class="language-cpp">// blend_functions.h
+inline GPixel blend_srcover(GPixel src, GPixel dst) {
+    // S + D(1-Sa)
+    unsigned srcA = GPixel_GetA(src);
+    unsigned invAlpha = 255 - srcA;
+    return src + blend_with_alpha(dst, invAlpha);
+}
+
+// blitRow calls blend function for each pixel
+void MyCanvas::blitRow(int y, int xL, int xR, const GPaint& paint) {
+    GPixel row[xR - xL];
+    fShader->shadeRow(xL, y, xR - xL, row);
+
+    GPixel* dstRow = fDevice.getAddr(xL, y);
+    for (int i = 0; i < xR - xL; i++) {
+        dstRow[i] = blendFunc(row[i], dstRow[i]);
+    }
+}</code></pre>
+            </section>
+
+            <!-- Conclusion -->
+            <section class="content-section">
+                <h2>Summary</h2>
+                <p>
+                    These five systems work together to transform high-level drawing commands into pixels:
+                </p>
+                <ul style="line-height: 1.8;">
+                    <li><strong>Rendering Pipeline:</strong> The flow from draw call to pixels</li>
+                    <li><strong>Canvas Abstraction:</strong> Public API and framebuffer management</li>
+                    <li><strong>Shader System:</strong> Hierarchical color computation</li>
+                    <li><strong>Transformation Stack:</strong> Matrix-based coordinate transformations</li>
+                    <li><strong>Blend Pipeline:</strong> Porter-Duff compositing formulas</li>
+                </ul>
+                <p>
+                    For detailed implementation explanations and C++ code, explore the PA-based documentation pages covering each component.
+                </p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="docs-footer">
+            <p>Graphics Engine Documentation - Built with C++ and WebAssembly</p>
+            <div class="footer-nav">
+                <a href="index.html">Documentation Index</a>
+                <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                <a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank">GitHub Repository</a>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js"></script>
+</body>
+</html>
