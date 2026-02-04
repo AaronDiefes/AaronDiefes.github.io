@@ -132,6 +132,41 @@
             margin: 1.5rem 0;
         }
 
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item .caption {
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+        }
+
         .doc-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -226,6 +261,10 @@
 
             .pipeline-arrow {
                 transform: rotate(90deg);
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
 
             .doc-cards {
@@ -342,9 +381,68 @@
             </div>
         </section>
 
+        <!-- Example Gallery -->
+        <section class="section">
+            <h2>Example Renders</h2>
+            <p>
+                Here are some example outputs from the graphics engine, showcasing various rendering capabilities including blend modes, gradients, paths, meshes, and bitmap textures.
+            </p>
+
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="assets/images/gradient_blendmodes.png" alt="Gradient blend modes">
+                    <div class="caption">Porter-Duff Blend Modes</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/color_clock.png" alt="Color clock gradient">
+                    <div class="caption">Radial Gradient with Color Stops</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/cubic_fan.png" alt="Cubic bezier fan">
+                    <div class="caption">Cubic Bezier Curve Tessellation</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/both_mesh.png" alt="Triangle mesh rendering">
+                    <div class="caption">Triangle Mesh with Texture Mapping</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/bitmap_tiling.png" alt="Bitmap tiling modes">
+                    <div class="caption">Bitmap Shader Tile Modes</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/wheel.png" alt="Color wheel">
+                    <div class="caption">Sweep Gradient Color Wheel</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/spock_quad.png" alt="Spock quad rendering">
+                    <div class="caption">Quad Rendering with Bilinear Interpolation</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/stars.png" alt="Star polygons">
+                    <div class="caption">Path Winding Fill Algorithm</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/rings.png" alt="Concentric rings">
+                    <div class="caption">Stroke Rendering with Transformations</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/poly.png" alt="Polygon rendering">
+                    <div class="caption">Convex Polygon Rasterization</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/sweep_mesh.png" alt="Sweep gradient mesh">
+                    <div class="caption">Mesh with Sweep Gradient Shader</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/images/lion_head.png" alt="Lion head texture">
+                    <div class="caption">Bitmap Texture with Mirror Tiling</div>
+                </div>
+            </div>
+        </section>
+
         <!-- Documentation Cards -->
         <section class="section">
-            <h2>Documentation by Programming Assignment</h2>
+            <h2>Explore the Implementation</h2>
             <p>
                 The engine was built incrementally across six programming assignments. Each page explains the algorithms, shows the C++ implementation, and provides interactive demos.
             </p>
