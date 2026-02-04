@@ -224,21 +224,27 @@ Plans:
 
 **Technical Notes:**
 - Create documentation pages:
-  - /docs/architecture.html - system overview with diagrams
+  - /docs/architecture.html - system overview with Mermaid diagrams
   - /docs/api-reference.html - function signatures and usage
   - /docs/implementation.html - algorithm explanations
   - /docs/capabilities.html - feature catalog
 - Extract API documentation from header files (GCanvas.h, GShader.h, etc.)
-- Create architecture diagrams (SVG or Mermaid):
+- Create architecture diagrams with Mermaid:
   - Canvas -> Paint -> Shader -> Blender -> Pixels pipeline
   - Transformation matrix stack
   - Edge list construction and rasterization
 - Link documentation to corresponding demos
-- Style consistently with portfolio design
+- Style consistently with portfolio design (forest green theme)
 
 **Blockers:**
-- Time required to write comprehensive explanations
-- Creating clear diagrams without design tools
+- None identified (research complete)
+
+**Plans:** 4 plans
+Plans:
+- [ ] 06-01-PLAN.md - Architecture Overview page with Mermaid diagrams
+- [ ] 06-02-PLAN.md - API Reference page with function tables
+- [ ] 06-03-PLAN.md - Implementation Details page with algorithm explanations
+- [ ] 06-04-PLAN.md - Capability Showcase page with feature catalog + navigation integration
 
 ---
 
@@ -355,7 +361,7 @@ Plans:
 | 3 - Canvas Integration | Complete | 100% |
 | 4 - Interactive Controls | Complete | 100% |
 | 5 - Code Examples | Complete | 100% |
-| 6 - Documentation System | Pending | 0% |
+| 6 - Documentation System | Planned | 0% |
 | 7 - Testing & Optimization | Pending | 0% |
 | 8 - Visual Polish | Pending | 0% |
 
@@ -371,7 +377,9 @@ Plans:
 4. ~~Phase 3: Integrate with HTML5 Canvas~~
 5. ~~Phase 4: Add interactive parameter controls~~
 6. ~~Plan Phase 5 - Code Examples (7 plans created)~~
-7. **Next:** Execute Phase 5 - Code Examples
+7. ~~Execute Phase 5 - Code Examples~~
+8. ~~Plan Phase 6 - Documentation System (4 plans created)~~
+9. **Next:** Execute Phase 6 - Documentation System
 
 ## Requirement Coverage
 
