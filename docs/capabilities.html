@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capability Showcase - Graphics Engine Documentation</title>
+
+    <!-- Prism.js Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
+
+    <!-- Prism.js Plugins - CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+
+    <!-- Local Documentation Styles -->
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="stylesheet" href="assets/css/code.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="doc-header">
+        <div class="doc-container">
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
+            </nav>
+            <h1>Capability Showcase</h1>
+            <p>Complete Feature Catalog with Links to Docs and Demos</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="doc-container">
+        <div class="content-wrapper">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="index.html">Documentation Index</a>
+                <span class="separator">/</span>
+                <span>Capability Showcase</span>
+            </nav>
+
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>Introduction</h2>
+                <p>
+                    This page provides a comprehensive catalog of all features implemented in the 2D graphics engine. Each feature is linked to its documentation page (for algorithm explanations and C++ code) and its interactive demo (for live, browser-based visualization).
+                </p>
+                <p>
+                    The engine was built incrementally across six programming assignments, starting with basic shape rasterization and progressing to advanced features like Bezier curves, gradient shaders, and Coons patches. This catalog organizes features by category, showing the full scope of the rendering system.
+                </p>
+            </section>
+
+            <!-- Category 1: Core Rendering -->
+            <section class="capability-category">
+                <h2>1. Core Rendering</h2>
+                <p>
+                    Fundamental drawing operations: shape rasterization, edge-list algorithm, Porter-Duff compositing.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Edge Rasterization</td>
+                                <td>Scanline algorithm using sorted edge list for efficient pixel coverage detection</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="core-rendering.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rectangle Drawing</td>
+                                <td>Optimized axis-aligned rectangle fill with clipping</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="core-rendering.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Polygon Drawing</td>
+                                <td>Convex polygon rasterization using edge walking</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="core-rendering.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Porter-Duff Blending</td>
+                                <td>12 compositing modes including src-over, xor, multiply, screen</td>
+                                <td>blend_functions.h</td>
+                                <td>
+                                    <a href="core-rendering.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Polygon Clipping</td>
+                                <td>Sutherland-Hodgman algorithm for viewport clipping</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="core-rendering.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category 2: Shaders & Textures -->
+            <section class="capability-category">
+                <h2>2. Shaders & Textures</h2>
+                <p>
+                    Shader pipeline: solid colors, gradients (linear, radial, sweep), bitmap textures with tile modes.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Solid Color Shader</td>
+                                <td>Simple constant color shader with alpha channel support</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Linear Gradient</td>
+                                <td>Color interpolation along a line with multiple color stops</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Radial Gradient</td>
+                                <td>Circular gradient radiating from center point with color stops</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sweep Gradient</td>
+                                <td>Angle-based gradient (atan2) for color wheels</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="final-features.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Bitmap Shader</td>
+                                <td>Texture mapping with clamp, repeat, and mirror tile modes</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Shader Composition</td>
+                                <td>ProxyShader and ComposeShader for chaining transformations</td>
+                                <td>shader_ops.h</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category 3: Transformations -->
+            <section class="capability-category">
+                <h2>3. Transformations</h2>
+                <p>
+                    2D affine transformations: translate, rotate, scale, shear. Current Transformation Matrix (CTM) stack for hierarchical transforms.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Matrix Transform</td>
+                                <td>3x3 homogeneous coordinate matrix for 2D affine transforms</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CTM Stack</td>
+                                <td>save() and restore() for hierarchical transformation management</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Translate</td>
+                                <td>Move coordinate system by (dx, dy)</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rotate</td>
+                                <td>Rotate coordinate system by angle (radians)</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Scale</td>
+                                <td>Scale coordinate system by (sx, sy)</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="transforms-textures.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category 4: Paths & Curves -->
+            <section class="capability-category">
+                <h2>4. Paths & Curves</h2>
+                <p>
+                    Path construction, winding fill rule, Bezier curve tessellation for smooth curves.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>GPath Construction</td>
+                                <td>Moveto, lineto, quadto, cubicto path building</td>
+                                <td>path_ops.h</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Winding Fill Rule</td>
+                                <td>Non-zero winding rule for complex path filling</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Quadratic Bezier</td>
+                                <td>Smooth quadratic curves with adaptive tessellation</td>
+                                <td>path_ops.h</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Cubic Bezier</td>
+                                <td>Complex cubic curves with adaptive subdivision</td>
+                                <td>path_ops.h</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Path Transformation</td>
+                                <td>Apply arbitrary matrix to path vertices</td>
+                                <td>path_ops.h</td>
+                                <td>
+                                    <a href="paths-gradients.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category 5: Advanced Geometry -->
+            <section class="capability-category">
+                <h2>5. Advanced Geometry</h2>
+                <p>
+                    Triangle meshes, quad rendering, Coons patches for complex surface modeling.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Triangle Mesh</td>
+                                <td>Vertex array with per-vertex colors and texture coordinates</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Quad Rendering</td>
+                                <td>4-point texture mapping with bilinear interpolation</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Coons Patches</td>
+                                <td>Bicubic surface interpolation from 4 boundary curves</td>
+                                <td>my_final.cpp</td>
+                                <td>
+                                    <a href="final-features.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Barycentric Interpolation</td>
+                                <td>Smooth color/texture blending across triangle faces</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="advanced-geometry.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category 6: Optimization & Special Features -->
+            <section class="capability-category">
+                <h2>6. Optimization & Special Features</h2>
+                <p>
+                    Performance optimizations, special effects, and additional rendering features.
+                </p>
+
+                <div class="capability-matrix-wrapper">
+                    <table class="capability-matrix">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Source File</th>
+                                <th>Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Blend Optimization</td>
+                                <td>Fast paths for opaque colors and special blend modes</td>
+                                <td>blend_functions.h</td>
+                                <td>
+                                    <a href="implementation.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SIMD Operations</td>
+                                <td>Vectorized pixel processing for blend and shader ops</td>
+                                <td>blend_functions.h</td>
+                                <td>
+                                    <a href="implementation.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Polygon Spiral Demo</td>
+                                <td>Nested polygons with increasing sides (triangle to 20-gon)</td>
+                                <td>my_canvas.cpp</td>
+                                <td>
+                                    <a href="../wasm-graphics-demo.html" class="demo-link">Demo</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Memory Management</td>
+                                <td>Explicit .delete() for WASM heap objects via Emscripten bindings</td>
+                                <td>graphics_engine.cpp</td>
+                                <td>
+                                    <a href="api-reference.html" class="doc-link">Docs</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer with navigation links -->
+        <footer class="docs-footer">
+            <p>Graphics Engine Documentation - Capability Showcase</p>
+            <nav class="footer-nav">
+                <a href="index.html">Documentation Index</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="api-reference.html">API Reference</a>
+                <a href="implementation.html">Implementation</a>
+                <a href="core-rendering.html">Core Rendering</a>
+                <a href="transforms-textures.html">Transforms & Textures</a>
+                <a href="paths-gradients.html">Paths & Gradients</a>
+                <a href="advanced-geometry.html">Advanced Geometry</a>
+                <a href="final-features.html">Final Features</a>
+                <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                <a href="../index.html">Portfolio</a>
+            </nav>
+        </footer>
+    </main>
+
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js"></script>
+</body>
+</html>

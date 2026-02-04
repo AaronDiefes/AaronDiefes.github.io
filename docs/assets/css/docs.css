@@ -537,3 +537,205 @@ body {
         font-size: 0.8rem;
     }
 }
+
+/* ========================================
+   CAPABILITY MATRIX STYLES
+   ======================================== */
+
+/* Capability category sections */
+.capability-category {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.capability-category:last-child {
+    border-bottom: none;
+}
+
+.capability-category h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #2E7D32;
+}
+
+.capability-category > p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+/* Capability Matrix Table */
+.capability-matrix-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.capability-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.95rem;
+}
+
+.capability-matrix thead {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.capability-matrix thead th {
+    text-align: left;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.capability-matrix tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+}
+
+.capability-matrix tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.capability-matrix tbody tr:last-child {
+    border-bottom: none;
+}
+
+.capability-matrix td {
+    padding: 1rem;
+    vertical-align: top;
+}
+
+/* Feature name column */
+.capability-matrix td:first-child {
+    font-weight: 600;
+    color: #2E7D32;
+    min-width: 150px;
+}
+
+/* Description column */
+.capability-matrix td:nth-child(2) {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Source column */
+.capability-matrix td:nth-child(3) {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* Links column */
+.capability-matrix td:nth-child(4) {
+    white-space: nowrap;
+}
+
+.capability-matrix td a {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.capability-matrix td a.doc-link {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #2E7D32;
+}
+
+.capability-matrix td a.doc-link:hover {
+    background: #2E7D32;
+    color: white;
+}
+
+.capability-matrix td a.demo-link {
+    background: #667eea;
+    color: white;
+    border: 1px solid #667eea;
+}
+
+.capability-matrix td a.demo-link:hover {
+    background: #5568d3;
+    border-color: #5568d3;
+}
+
+/* Responsive Capability Matrix */
+@media (max-width: 768px) {
+    .capability-category h2 {
+        font-size: 1.5rem;
+    }
+
+    .capability-matrix {
+        font-size: 0.85rem;
+    }
+
+    .capability-matrix thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .capability-matrix td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .capability-matrix td:first-child {
+        min-width: 120px;
+    }
+
+    .capability-matrix td:nth-child(3) {
+        font-size: 0.75rem;
+    }
+
+    .capability-matrix td a {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+        margin-right: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .capability-matrix {
+        font-size: 0.8rem;
+    }
+
+    .capability-matrix thead th {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .capability-matrix td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    .capability-matrix td:first-child {
+        min-width: 100px;
+        font-size: 0.85rem;
+    }
+
+    .capability-matrix td:nth-child(3) {
+        font-size: 0.7rem;
+    }
+
+    .capability-matrix td a {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
