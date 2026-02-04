@@ -171,32 +171,34 @@ This roadmap transforms an existing C++ graphics engine into an interactive brow
 **Success Criteria:**
 1. Each demo displays relevant C++ implementation with syntax highlighting
 2. Code view shows actual source from my_canvas.cpp, shader_ops.h, etc.
-3. Multiple code tabs available (API usage, shader implementation, blend modes)
+3. Multiple code tabs available (organized by PA progression)
 4. Code examples exactly correspond to what's executing in the canvas
 5. Syntax highlighting makes code readable and professional
 
 **Technical Notes:**
-- Integrate syntax highlighting library (Prism.js or Highlight.js)
-- Create code snippet database:
-  - Extract relevant sections from .cpp and .h files
-  - Organize by demo and by layer (API, implementation, algorithms)
-- Implement tabbed code view in UI
-- Use data attributes or JSON to map demos to code snippets
-- Include comments in code explaining key techniques
-- Option: fetch actual source files vs inline snippets
+- Integrate Prism.js with VS Code Dark+ theme
+- Documentation organized by programming assignment progression:
+  - PA1+PA2: Core Rendering (shapes, blending, clipping)
+  - PA3: Transformations & Textures (matrices, bitmap shader)
+  - PA4: Paths & Gradients (GPath, winding fill, gradients)
+  - PA5+PA6: Advanced Geometry (curves, meshes, shader composition)
+  - Final: Final Features (sweep gradient, color matrix, strokes, Coons)
+- Landing page includes architecture overview (WASM, pipeline diagram)
+- Each documentation page: explanation + code + embedded demo
 
 **Blockers:**
 - Keeping code snippets in sync with actual implementation
 - Code length vs UI space constraints
 
-**Plans:** 6 plans
+**Plans:** 7 plans
 Plans:
 - [ ] 05-01-PLAN.md - Foundation assets (CSS, JS for tabs and code styling)
-- [ ] 05-02-PLAN.md - Rendering Basics documentation page
-- [ ] 05-03-PLAN.md - Shaders System documentation page
-- [ ] 05-04-PLAN.md - Advanced Features documentation page
-- [ ] 05-05-PLAN.md - Architecture documentation page
-- [ ] 05-06-PLAN.md - Documentation index, portfolio integration, verification
+- [ ] 05-02-PLAN.md - Core Rendering (PA1+PA2) documentation page
+- [ ] 05-03-PLAN.md - Transformations & Textures (PA3) documentation page
+- [ ] 05-04-PLAN.md - Paths & Gradients (PA4) documentation page
+- [ ] 05-05-PLAN.md - Advanced Geometry (PA5+PA6) documentation page
+- [ ] 05-06-PLAN.md - Final Features documentation page
+- [ ] 05-07-PLAN.md - Landing page with architecture, portfolio integration, verification
 
 ---
 
@@ -227,7 +229,7 @@ Plans:
   - /docs/capabilities.html - feature catalog
 - Extract API documentation from header files (GCanvas.h, GShader.h, etc.)
 - Create architecture diagrams (SVG or Mermaid):
-  - Canvas → Paint → Shader → Blender → Pixels pipeline
+  - Canvas -> Paint -> Shader -> Blender -> Pixels pipeline
   - Transformation matrix stack
   - Edge list construction and rasterization
 - Link documentation to corresponding demos
@@ -293,11 +295,11 @@ Plans:
 
 | Phase | Status | Completion |
 |-------|--------|------------|
-| 1 - Build Foundation | ✅ Complete | 100% |
-| 2 - JavaScript Bridge | ✅ Complete | 100% |
-| 3 - Canvas Integration | ✅ Complete | 100% |
-| 4 - Interactive Controls | ✅ Complete | 100% |
-| 5 - Code Examples | 🔄 Planning Complete | 0% |
+| 1 - Build Foundation | Complete | 100% |
+| 2 - JavaScript Bridge | Complete | 100% |
+| 3 - Canvas Integration | Complete | 100% |
+| 4 - Interactive Controls | Complete | 100% |
+| 5 - Code Examples | Planning Complete | 0% |
 | 6 - Documentation System | Pending | 0% |
 | 7 - Testing & Optimization | Pending | 0% |
 
@@ -307,12 +309,12 @@ Plans:
 
 ## Next Steps
 
-1. ✅ ~~Review and approve this roadmap~~
-2. ✅ ~~Phase 1: Install Emscripten and create WASM build configuration~~
-3. ✅ ~~Phase 2: Expose JavaScript API bindings~~
-4. ✅ ~~Phase 3: Integrate with HTML5 Canvas~~
-5. ✅ ~~Phase 4: Add interactive parameter controls~~
-6. ✅ ~~Plan Phase 5 - Code Examples (6 plans created)~~
+1. ~~Review and approve this roadmap~~
+2. ~~Phase 1: Install Emscripten and create WASM build configuration~~
+3. ~~Phase 2: Expose JavaScript API bindings~~
+4. ~~Phase 3: Integrate with HTML5 Canvas~~
+5. ~~Phase 4: Add interactive parameter controls~~
+6. ~~Plan Phase 5 - Code Examples (7 plans created)~~
 7. **Next:** Execute Phase 5 - Code Examples
 
 ## Requirement Coverage
