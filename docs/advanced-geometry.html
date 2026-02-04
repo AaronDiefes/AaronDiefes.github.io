@@ -21,9 +21,9 @@
     <!-- Header -->
     <header class="doc-header">
         <div class="doc-container">
-            <nav class="header-nav">
-                <a href="../index.html" class="nav-link">Portfolio</a>
-                <a href="index.html" class="nav-link">Documentation</a>
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
             </nav>
             <h1>Advanced Geometry</h1>
             <p class="subtitle">PA5: Bezier Curves | PA6: Meshes and Shader Composition</p>
@@ -617,14 +617,17 @@ drawConvexPolygon(points, 3, p);</code></pre>
             </div>
 
             <!-- Footer Navigation -->
-            <footer class="doc-footer">
-                <div class="footer-links">
-                    <a href="index.html" class="footer-link">← Documentation Index</a>
-                    <a href="../index.html" class="footer-link">Portfolio Home →</a>
-                </div>
-                <p class="footer-note">
-                    Advanced geometry enables smooth curves, arbitrary mesh shapes, and flexible shader combinations
-                </p>
+            <footer class="docs-footer">
+                <p>Continue exploring:</p>
+                <nav class="footer-nav">
+                    <a href="index.html">Documentation Index</a>
+                    <a href="core-rendering.html">Core Rendering</a>
+                    <a href="transforms-textures.html">Transformations & Textures</a>
+                    <a href="paths-gradients.html">Paths & Gradients</a>
+                    <a href="final-features.html">Final Features</a>
+                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                    <a href="../index.html">Back to Portfolio</a>
+                </nav>
             </footer>
         </div>
     </main>

@@ -21,6 +21,10 @@
     <!-- Header -->
     <header class="doc-header">
         <div class="doc-container">
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
+            </nav>
             <h1>Paths & Gradients</h1>
             <p>PA4: Vector Paths, Winding Fill, and Color Gradients</p>
         </div>
@@ -518,17 +522,18 @@ bool setContext(const GMatrix& ctm) override {
             </div>
 
             <!-- Footer Navigation -->
-            <section class="footer-nav">
-                <h3>Related Documentation</h3>
-                <ul>
-                    <li><a href="../wasm-graphics-demo.html">Interactive Graphics Demo</a></li>
-                    <li><a href="../index.html">Portfolio Home</a></li>
-                </ul>
-                <p class="footer-note">
-                    Paths enable complex shapes; gradients enable smooth color transitions—together they form the
-                    foundation of modern 2D vector graphics.
-                </p>
-            </section>
+            <footer class="docs-footer">
+                <p>Continue exploring:</p>
+                <nav class="footer-nav">
+                    <a href="index.html">Documentation Index</a>
+                    <a href="core-rendering.html">Core Rendering</a>
+                    <a href="transforms-textures.html">Transformations & Textures</a>
+                    <a href="advanced-geometry.html">Advanced Geometry</a>
+                    <a href="final-features.html">Final Features</a>
+                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                    <a href="../index.html">Back to Portfolio</a>
+                </nav>
+            </footer>
         </div>
     </main>
 

@@ -21,6 +21,10 @@
     <!-- Header -->
     <header class="doc-header">
         <div class="doc-container">
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
+            </nav>
             <h1>Transformations & Textures</h1>
             <p>PA3: Matrices, CTM Stack, and Bitmap Shaders</p>
         </div>
@@ -406,15 +410,17 @@ int clamp_y(int y){
             </div>
 
             <!-- Footer Navigation -->
-            <footer class="doc-footer">
-                <div class="footer-links">
-                    <a href="index.html">&larr; Documentation Home</a>
-                    <a href="gradients.html">Next: Gradients (PA4) &rarr;</a>
-                </div>
-                <p class="footer-note">
-                    Matrix transformations enable flexible positioning and scaling; bitmap shaders enable
-                    texture mapping with multiple tiling behaviors.
-                </p>
+            <footer class="docs-footer">
+                <p>Continue exploring:</p>
+                <nav class="footer-nav">
+                    <a href="index.html">Documentation Index</a>
+                    <a href="core-rendering.html">Core Rendering</a>
+                    <a href="paths-gradients.html">Paths & Gradients</a>
+                    <a href="advanced-geometry.html">Advanced Geometry</a>
+                    <a href="final-features.html">Final Features</a>
+                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                    <a href="../index.html">Back to Portfolio</a>
+                </nav>
             </footer>
         </div>
     </main>

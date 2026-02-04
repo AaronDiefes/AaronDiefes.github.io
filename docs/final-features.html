@@ -21,12 +21,9 @@
     <!-- Header -->
     <header class="doc-header">
         <div class="doc-container">
-            <nav class="breadcrumb">
-                <a href="../index.html">Portfolio</a>
-                <span class="separator">/</span>
-                <a href="index.html">Docs</a>
-                <span class="separator">/</span>
-                <span>Final Features</span>
+            <nav class="docs-nav" style="margin-bottom: 1rem;">
+                <a href="index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none; margin-right: 1rem;">Documentation Index</a>
+                <a href="../index.html" class="nav-link" style="color: rgba(255,255,255,0.9); text-decoration: none;">Portfolio</a>
             </nav>
             <h1>Final Features</h1>
             <p>Advanced Graphics Extensions from the Final Project</p>
@@ -439,21 +436,18 @@ GPoint pt_weighted_avg(float u, float v, GPoint p1, GPoint p2, GPoint p3, GPoint
             </div>
 
             <!-- Footer Navigation -->
-            <section class="content-section" style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #dee2e6;">
-                <h3>More Documentation</h3>
-                <p>Explore other aspects of the graphics engine:</p>
-                <ul>
-                    <li><a href="blend-modes.html">Blend Modes</a> - Color compositing algorithms</li>
-                    <li><a href="shaders.html">Shaders</a> - Gradient and texture shaders</li>
-                    <li><a href="transforms.html">Transformations</a> - Matrix operations and coordinate systems</li>
-                    <li><a href="paths.html">Path Rendering</a> - Vector paths and polygon rendering</li>
-                </ul>
-                <p style="margin-top: 2rem; color: #6c757d; font-style: italic;">
-                    These final project features demonstrate advanced graphics programming skills and creative
-                    problem-solving. They extend the core engine capabilities with sophisticated algorithms
-                    used in professional graphics applications.
-                </p>
-            </section>
+            <footer class="docs-footer">
+                <p>Continue exploring:</p>
+                <nav class="footer-nav">
+                    <a href="index.html">Documentation Index</a>
+                    <a href="core-rendering.html">Core Rendering</a>
+                    <a href="transforms-textures.html">Transformations & Textures</a>
+                    <a href="paths-gradients.html">Paths & Gradients</a>
+                    <a href="advanced-geometry.html">Advanced Geometry</a>
+                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+                    <a href="../index.html">Back to Portfolio</a>
+                </nav>
+            </footer>
         </div>
     </main>
 
