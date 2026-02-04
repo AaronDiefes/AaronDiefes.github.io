@@ -15,6 +15,7 @@ This roadmap transforms an existing C++ graphics engine into an interactive brow
 | 5 - Code Examples | Source code visible alongside demos | CODE-01, CODE-02, CODE-03 | Features |
 | 6 - Documentation System | Engine capabilities fully documented | DOC-01, DOC-02, DOC-03, DOC-04 | Enhancement |
 | 7 - Testing & Optimization | Performance validated and verified | PERF-01, PERF-02, PERF-03, TEST-01, TEST-02, TEST-03 | Polish |
+| 8 - Visual Polish | Professional aesthetic refinement | DESIGN-01, DESIGN-02, DESIGN-03, DESIGN-04 | Final Polish |
 
 ---
 
@@ -291,6 +292,60 @@ Plans:
 
 ---
 
+## Phase 8: Visual Polish
+
+**Goal:** Professional aesthetic refinement across all portfolio pages.
+
+**Dependencies:** Phase 7 (complete feature set tested and optimized)
+
+**Requirements:**
+- DESIGN-01: Typography & Spacing Refinement
+- DESIGN-02: Animation & Transitions
+- DESIGN-03: Visual Hierarchy & Layout
+- DESIGN-04: Responsive Design Polish
+
+**Success Criteria:**
+1. Typography is consistent, readable, and professionally styled across all pages
+2. Smooth transitions and animations enhance user experience without distraction
+3. Visual hierarchy guides users naturally through content
+4. Layout adapts elegantly to all screen sizes (mobile, tablet, desktop)
+5. Color scheme is cohesive and professional throughout portfolio
+
+**Technical Notes:**
+- Typography refinement:
+  - Font pairing (headings vs body)
+  - Line height and letter spacing optimization
+  - Responsive font scaling
+  - Code font improvements
+- Animation & transitions:
+  - Page load animations
+  - Hover states and micro-interactions
+  - Smooth scrolling
+  - Tab transitions
+  - Demo state changes
+- Visual hierarchy:
+  - White space optimization
+  - Section separation and flow
+  - Call-to-action prominence
+  - Content grouping
+- Layout polish:
+  - Grid alignment refinement
+  - Card design consistency
+  - Navigation UX improvements
+  - Footer and header balance
+- Color scheme:
+  - Consistent application of forest green palette
+  - Contrast ratio validation (WCAG AA)
+  - Accent color usage
+  - Background and surface colors
+
+**Blockers:**
+- May require design tools for mockups
+- Animation performance on lower-end devices
+- Balance between visual flair and professional simplicity
+
+---
+
 ## Progress Tracking
 
 | Phase | Status | Completion |
@@ -299,11 +354,12 @@ Plans:
 | 2 - JavaScript Bridge | Complete | 100% |
 | 3 - Canvas Integration | Complete | 100% |
 | 4 - Interactive Controls | Complete | 100% |
-| 5 - Code Examples | Planning Complete | 0% |
+| 5 - Code Examples | In Progress | 67% |
 | 6 - Documentation System | Pending | 0% |
 | 7 - Testing & Optimization | Pending | 0% |
+| 8 - Visual Polish | Pending | 0% |
 
-**Overall Progress:** 57% (4/7 phases complete)
+**Overall Progress:** 54% (4.67/8 phases complete)
 
 ---
 
@@ -319,7 +375,7 @@ Plans:
 
 ## Requirement Coverage
 
-All 27 v1 requirements mapped to phases:
+All v1 requirements mapped to phases (Phase 8 requirements to be added in REQUIREMENTS.md):
 
 **Phase 1:** WASM-01, WASM-02, WASM-03 (3 requirements)
 **Phase 2:** BRIDGE-01, BRIDGE-02, BRIDGE-03, BRIDGE-04 (4 requirements)
@@ -328,8 +384,9 @@ All 27 v1 requirements mapped to phases:
 **Phase 5:** CODE-01, CODE-02, CODE-03 (3 requirements)
 **Phase 6:** DOC-01, DOC-02, DOC-03, DOC-04 (4 requirements)
 **Phase 7:** PERF-01, PERF-02, PERF-03, TEST-01, TEST-02, TEST-03 (6 requirements)
+**Phase 8:** DESIGN-01, DESIGN-02, DESIGN-03, DESIGN-04 (4 requirements - TBD)
 
-**Total:** 27/27 requirements mapped (100% coverage)
+**Total:** 27 v1 requirements + 4 v2 requirements = 31 requirements mapped
 
 ## Out of Scope (v2+)
 

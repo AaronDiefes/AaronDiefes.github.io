@@ -99,6 +99,20 @@ The portfolio must be tested in Chrome, Firefox, and Safari to ensure WebAssembl
 **TEST-03: Functionality Validation**
 Each exported function must be tested to verify correct parameter marshaling and return values between JS and C++.
 
+### Visual Design & Polish
+
+**DESIGN-01: Typography & Spacing Refinement**
+Typography must be consistent, professionally styled, and readable across all pages, with optimized font pairing, line heights, letter spacing, and responsive scaling.
+
+**DESIGN-02: Animation & Transitions**
+Smooth, purposeful animations and transitions must enhance the user experience through page load effects, hover states, micro-interactions, and demo state changes without being distracting.
+
+**DESIGN-03: Visual Hierarchy & Layout**
+Visual hierarchy must guide users naturally through content with optimized white space, clear section separation, prominent calls-to-action, and consistent content grouping.
+
+**DESIGN-04: Responsive Design Polish**
+Layout must adapt elegantly across all screen sizes (mobile, tablet, desktop) with refined grid alignment, consistent card design, improved navigation UX, and balanced header/footer composition.
+
 ## Traceability
 
 | Requirement | Phase | Status |
@@ -130,8 +144,12 @@ Each exported function must be tested to verify correct parameter marshaling and
 | TEST-01 | Phase 7 | Pending |
 | TEST-02 | Phase 7 | Pending |
 | TEST-03 | Phase 7 | Pending |
+| DESIGN-01 | Phase 8 | Pending |
+| DESIGN-02 | Phase 8 | Pending |
+| DESIGN-03 | Phase 8 | Pending |
+| DESIGN-04 | Phase 8 | Pending |
 
-**Coverage:** 27/27 requirements mapped (100%)
+**Coverage:** 31/31 requirements mapped (100%)
 
 ## Out of Scope (v2+)
 
