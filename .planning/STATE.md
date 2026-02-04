@@ -9,9 +9,9 @@
 ## Current Position
 
 **Active Phase:** Phase 5 - Code Examples
-**Active Plan:** 05-06 of 6
-**Status:** In Progress - Plan 05-06 Complete
-**Last Updated:** 2026-02-04
+**Active Plan:** 05-05 of 6
+**Status:** In Progress - Plan 05-05 Complete
+**Last Updated:** 2026-02-03
 
 **Progress:**
 ```
@@ -77,6 +77,12 @@ Overall: [█████████████████---] 61% (4.67/7 ph
 - 4 tabs: edge rasterization, rectangle drawing, Porter-Duff blending, polygon clipping
 - 7 C++ code snippets from my_canvas.cpp, blend_functions.h, Edge.h
 - Embedded blend-modes demo via iframe
+- Plan 05-05: Advanced Geometry documentation complete
+- advanced-geometry.html (645 lines): PA5+PA6 with Bezier curves, meshes, shader composition
+- 4 tabs: Bezier curves, triangle meshes, quad rendering, shader composition
+- C++ code from path_ops.h, my_canvas.cpp, shader_ops.h
+- Adaptive tessellation, texture mapping matrices, ProxyShader/ComposeShader patterns
+- Embedded paths and mesh demos via iframes
 - Plan 05-06: Final Features documentation complete
 - final-features.html (473 lines): Advanced final project features
 - 3 tabs: sweep gradient (atan2), position-based gradient, Coons patches
@@ -90,33 +96,35 @@ None pending.
 None currently identified.
 
 ### Technical Debt
-- Documentation pages not yet created (Phase 5 Plans 03-05)
+- Documentation pages not yet created (Phase 5 Plans 03-04)
 - Architecture documentation missing (Phase 6 work)
 - Performance profiling not done (Phase 7 work)
 
 ## Session Continuity
 
 **What Just Happened:**
-- ✅ Completed Plan 05-06: Final Features documentation page
-- 📄 Created final-features.html (473 lines) with 3 tabs
-- 🧮 Documented sweep gradient with atan2 angle math
-- 📐 Documented position-based gradient color stops
-- 🎨 Documented Coons patches (TB + LR - Corners formula)
-- 💻 Extracted C++ code from shader_ops.h and my_final.cpp
-- 📦 Committed 1 task: 078fcf7
+- ✅ Completed Plan 05-05: Advanced Geometry documentation page
+- 📄 Created advanced-geometry.html (645 lines) with 4 tabs
+- 🎨 Documented Bezier curve tessellation (PA5): adaptive segment calculation
+- 🔺 Documented triangle mesh rendering (PA6): texture mapping with transformation matrices
+- 📐 Documented quad rendering: bilinear interpolation with subdivision
+- 🧩 Documented shader composition: ProxyShader and ComposeShader patterns
+- 💻 Extracted C++ code from path_ops.h, my_canvas.cpp, shader_ops.h
+- 🎬 Embedded paths and mesh demos via iframe (#demo=paths, #demo=mesh)
+- 📦 Committed 1 task: 1b214a7
 
 **What's Next:**
-- 📋 Continue Phase 5: Plans 03-05 (remaining documentation pages)
-- 🎯 Build 3 more documentation pages: Shaders, Transforms, Advanced Geometry
+- 📋 Continue Phase 5: Plans 03-04 (remaining documentation pages)
+- 🎯 Build 2 more documentation pages: Shaders, Transformations
 - 📊 Each page will feature C++ code with live demo integration
+- Note: Plans 02, 05, 06 complete; Plans 03-04 remaining
 
 **Context for Next Session:**
 Phase 5 is 67% complete (4/6 plans done). Remaining pages follow established pattern:
 - Plan 03: Shaders (linear, radial, bitmap shaders)
 - Plan 04: Transformations (matrix operations)
-- Plan 05: Advanced Geometry (paths, polygon rendering)
 
-All pages use shared assets (docs.css, code.css, tabs.js). Final Features page demonstrates complete tab structure with mathematical explanations before code. Note: final-features.html references wasm-graphics-demo.html#demo=sweep-gradient for iframe - assumes URL hash preset loading is implemented.
+Advanced Geometry page demonstrates complex multi-algorithm documentation with 4 tabs. Bezier curves show adaptive tessellation math: E = (A - 2B + C)*0.25, segments = ceil(sqrt(mag_E * 4)). Meshes show transformation matrix construction (T, P, P*inv(T)) for texture mapping. Shader composition shows decorator pattern (ProxyShader wraps shader with extra transform, ComposeShader modulates two shader outputs). All pages use shared assets (docs.css, code.css, tabs.js). Plans 02, 05, 06 are complete.
 
 ## Files Structure
 
