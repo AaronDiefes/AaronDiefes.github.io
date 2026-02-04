@@ -9,14 +9,14 @@
 ## Current Position
 
 **Active Phase:** Phase 5 - Code Examples
-**Active Plan:** 05-01 of 6
-**Status:** In Progress - Plan 05-01 Complete
-**Last Updated:** 2026-02-03
+**Active Plan:** 05-06 of 6
+**Status:** In Progress - Plan 05-06 Complete
+**Last Updated:** 2026-02-04
 
 **Progress:**
 ```
-Phase 5: [███-----------------] 17% (1/6 plans complete)
-Overall: [█████████████████---] 59% (4.17/7 phases complete)
+Phase 5: [████████████████----] 67% (4/6 plans complete)
+Overall: [█████████████████---] 61% (4.67/7 phases complete)
 ```
 
 ## Performance Metrics
@@ -70,6 +70,16 @@ Overall: [█████████████████---] 59% (4.17/7 ph
 - code.css (182 lines): Prism.js overrides, copy button, line highlighting
 - tabs.js (142 lines): accessible tab navigation with ARIA
 - test-assets.html: integration validation with C++ code examples
+- Plan 05-02: Core Rendering documentation complete
+- core-rendering.html (435 lines): PA1+PA2 algorithms with C++ code
+- 4 tabs: edge rasterization, rectangle drawing, Porter-Duff blending, polygon clipping
+- 7 C++ code snippets from my_canvas.cpp, blend_functions.h, Edge.h
+- Embedded blend-modes demo via iframe
+- Plan 05-06: Final Features documentation complete
+- final-features.html (473 lines): Advanced final project features
+- 3 tabs: sweep gradient (atan2), position-based gradient, Coons patches
+- C++ code from shader_ops.h (AngleGradientShader) and my_final.cpp
+- Mathematical explanations (TB + LR - Corners formula for Coons)
 
 ### Current Todos
 None pending.
@@ -78,7 +88,7 @@ None pending.
 None currently identified.
 
 ### Technical Debt
-- Documentation pages not yet created (Phase 5 Plans 02-06)
+- Documentation pages not yet created (Phase 5 Plans 03-05)
 - Architecture documentation missing (Phase 6 work)
 - Performance profiling not done (Phase 7 work)
 
