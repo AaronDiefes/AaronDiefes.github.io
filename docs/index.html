@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - C++ Graphics Engine</title>
+
+    <!-- Prism.js Theme for code snippets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
+
+    <!-- Prism.js Plugins -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+
+    <!-- Local Styles -->
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="stylesheet" href="assets/css/code.css">
+
+    <style>
+        /* Landing page specific styles */
+        .landing-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .landing-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .landing-header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        .landing-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .landing-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s;
+        }
+
+        .landing-nav a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            background: white;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .pipeline-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pipeline-step {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pipeline-step h4 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .code-snippet {
+            margin: 1.5rem 0;
+        }
+
+        .doc-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .doc-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .doc-card h3 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            color: white;
+        }
+
+        .doc-card .pa-label {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-card p {
+            margin: 0;
+            opacity: 0.95;
+            color: white;
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s, color 0.3s;
+            border: 2px solid #667eea;
+        }
+
+        .quick-link:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .landing-header h1 {
+                font-size: 2rem;
+            }
+
+            .landing-header p {
+                font-size: 1.1rem;
+            }
+
+            .section {
+                padding: 2rem;
+            }
+
+            .pipeline-diagram {
+                flex-direction: column;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+
+            .doc-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .landing-header {
+                padding: 3rem 1rem 2rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .quick-links {
+                flex-direction: column;
+            }
+
+            .quick-link {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="landing-header">
+        <h1>Graphics Engine Documentation</h1>
+        <p>C++ Implementation with WebAssembly</p>
+        <nav class="landing-nav">
+            <a href="../index.html">Portfolio</a>
+            <a href="../wasm-graphics-demo.html">Interactive Demo</a>
+            <a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank">GitHub</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Architecture Overview Section -->
+        <section class="section">
+            <h2>Architecture Overview</h2>
+
+            <h3>What is this engine?</h3>
+            <p>
+                This is a <strong>2D graphics rendering engine</strong> built from scratch in C++. It takes high-level drawing commands (like "draw a rectangle" or "fill a path with a gradient") and produces the actual pixel colors you see on screen.
+            </p>
+            <p>
+                The engine implements a subset of functionality found in production libraries like <a href="https://skia.org/" target="_blank" style="color: #667eea;">Skia</a> (used by Chrome and Android) and <a href="https://www.cairographics.org/" target="_blank" style="color: #667eea;">Cairo</a>. It includes shape drawing, matrix transformations, shader systems, path rendering, and Porter-Duff alpha blending.
+            </p>
+
+            <h3>How does C++ run in the browser?</h3>
+            <p>
+                The engine is compiled to <strong>WebAssembly (WASM)</strong> using <strong>Emscripten</strong>. WebAssembly is a low-level bytecode format that runs in modern browsers at near-native speed. This means the same C++ code that would render on a desktop runs directly in your browser—no server required.
+            </p>
+
+            <div class="code-snippet">
+                <p><strong>Build Command (from Makefile.wasm):</strong></p>
+                <pre class="line-numbers"><code class="language-bash"># Compile C++ to WebAssembly
+emcc -std=c++17 -O3 \
+     --bind \
+     -s WASM=1 \
+     -s ALLOW_MEMORY_GROWTH=1 \
+     -s MODULARIZE=1 \
+     my_canvas.cpp wasm_bindings.cpp \
+     -o graphics_engine.js</code></pre>
+            </div>
+
+            <p>
+                This produces two files: <code>graphics_engine.wasm</code> (132KB of compiled C++ code) and <code>graphics_engine.js</code> (the JavaScript glue code to load and interact with the WASM module).
+            </p>
+
+            <h3>The Rendering Pipeline</h3>
+            <p>
+                Every shape drawn on screen passes through this pipeline. Each step transforms the abstract "draw a rectangle" command into concrete pixel colors in the framebuffer.
+            </p>
+
+            <div class="pipeline-diagram">
+                <div class="pipeline-step">
+                    <h4>Draw Call</h4>
+                    <p>High-level command</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Transform</h4>
+                    <p>Apply CTM matrix</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Clip</h4>
+                    <p>Constrain to viewport</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Rasterize</h4>
+                    <p>Edges to pixels</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Shade</h4>
+                    <p>Compute color</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Blend</h4>
+                    <p>Composite layers</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <h4>Pixels</h4>
+                    <p>Final framebuffer</p>
+                </div>
+            </div>
+
+            <h3>How JavaScript and WASM communicate</h3>
+            <p>
+                Emscripten provides <code>EMSCRIPTEN_BINDINGS</code> to expose C++ classes and functions to JavaScript. This creates a bridge between the WASM module and the browser's JavaScript environment.
+            </p>
+
+            <div class="code-snippet">
+                <p><strong>Example Bindings (from wasm_bindings.cpp):</strong></p>
+                <pre class="line-numbers"><code class="language-cpp">EMSCRIPTEN_BINDINGS(graphics_engine) {
+    // Expose Canvas API
+    class_&lt;CanvasWrapper&gt;("CanvasWrapper")
+        .constructor&lt;int, int&gt;()
+        .function("drawRect", &CanvasWrapper::drawRect)
+        .function("save", &CanvasWrapper::save)
+        .function("restore", &CanvasWrapper::restore)
+        .function("translate", &CanvasWrapper::translate);
+
+    // Expose Shader factories
+    function("createLinearGradient", &createLinearGradient);
+    function("createBitmapShaderFromFile", &createBitmapShaderFromFile);
+
+    // Expose enums
+    enum_&lt;GBlendMode&gt;("BlendMode")
+        .value("SrcOver", GBlendMode::kSrcOver)
+        .value("Xor", GBlendMode::kXor);
+}</code></pre>
+            </div>
+
+            <p>
+                Once the WASM module is loaded, JavaScript can call these functions directly. For rendering, the pixel buffer is transferred from WASM memory to an HTML5 Canvas using <code>ImageData</code>. The engine writes ARGB pixels, which are converted to RGBA and displayed at 60fps.
+            </p>
+        </section>
+
+        <!-- Documentation Cards -->
+        <section class="section">
+            <h2>Documentation by Programming Assignment</h2>
+            <p>
+                The engine was built incrementally across six programming assignments. Each page explains the algorithms, shows the C++ implementation, and provides interactive demos.
+            </p>
+
+            <div class="doc-cards">
+                <a href="core-rendering.html" class="doc-card">
+                    <span class="pa-label">PA1 + PA2</span>
+                    <h3>Core Rendering</h3>
+                    <p>Edge rasterization, shape drawing, Porter-Duff blend modes, polygon clipping</p>
+                </a>
+
+                <a href="transforms-textures.html" class="doc-card">
+                    <span class="pa-label">PA3</span>
+                    <h3>Transformations & Textures</h3>
+                    <p>Matrix math, CTM stack, bitmap shader with tile modes</p>
+                </a>
+
+                <a href="paths-gradients.html" class="doc-card">
+                    <span class="pa-label">PA4</span>
+                    <h3>Paths & Gradients</h3>
+                    <p>GPath construction, winding fill, linear and radial gradients</p>
+                </a>
+
+                <a href="advanced-geometry.html" class="doc-card">
+                    <span class="pa-label">PA5 + PA6</span>
+                    <h3>Advanced Geometry</h3>
+                    <p>Bezier curves, triangle meshes, quad rendering, shader composition</p>
+                </a>
+
+                <a href="final-features.html" class="doc-card">
+                    <span class="pa-label">Final Project</span>
+                    <h3>Final Features</h3>
+                    <p>Sweep gradient, color matrix, stroke polygon, Coons patches</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="section">
+            <h2>Explore Further</h2>
+            <div class="quick-links">
+                <a href="../wasm-graphics-demo.html" class="quick-link">Try Interactive Demos →</a>
+                <a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" class="quick-link">View Source on GitHub →</a>
+                <a href="../index.html" class="quick-link">Back to Portfolio →</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Built with C++ and WebAssembly</p>
+        <p>Explore the C++ implementation that powers the interactive demos</p>
+    </footer>
+
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js"></script>
+</body>
+</html>
