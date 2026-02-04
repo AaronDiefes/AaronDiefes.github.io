@@ -273,42 +273,40 @@
     </header>
 
     <div class="container">
-        <!-- Architecture Overview Section -->
+        <!-- About the Engine -->
         <section class="section">
-            <h2>Architecture Overview</h2>
+            <h2>About the 2D Graphics Engine</h2>
 
-            <h3>What is this engine?</h3>
+            <h3>What is this?</h3>
             <p>
-                This is a <strong>2D graphics rendering engine</strong> built from scratch in C++. It takes high-level drawing commands (like "draw a rectangle" or "fill a path with a gradient") and produces the actual pixel colors you see on screen.
+                This is a <strong>2D graphics API</strong> similar to OpenGL, but focused on 2D rendering instead of 3D. Just like OpenGL provides functions for drawing triangles and applying textures in 3D space, this engine provides a complete API for 2D drawing operations.
             </p>
             <p>
-                The engine implements a subset of functionality found in production libraries like <a href="https://skia.org/" target="_blank" style="color: #667eea;">Skia</a> (used by Chrome and Android) and <a href="https://www.cairographics.org/" target="_blank" style="color: #667eea;">Cairo</a>. It includes shape drawing, matrix transformations, shader systems, path rendering, and Porter-Duff alpha blending.
+                It's a software renderer built from scratch in C++, implementing functionality found in production libraries like <strong>Skia</strong> (used by Chrome and Android), <strong>Cairo</strong> (used by GTK and Firefox), and the HTML5 Canvas API. You give it high-level drawing commands—"draw a rectangle," "fill a path with a gradient," "apply a matrix transformation"—and it produces the actual pixel colors on screen.
             </p>
-
-            <h3>How does C++ run in the browser?</h3>
             <p>
-                The engine is compiled to <strong>WebAssembly (WASM)</strong> using <strong>Emscripten</strong>. WebAssembly is a low-level bytecode format that runs in modern browsers at near-native speed. This means the same C++ code that would render on a desktop runs directly in your browser—no server required.
+                <strong>Key Features:</strong>
             </p>
+            <ul style="line-height: 1.8; color: #555;">
+                <li><strong>Shape Drawing:</strong> Rectangles, polygons, paths with curves</li>
+                <li><strong>Transformations:</strong> 2D affine matrices (translate, rotate, scale) with CTM stack</li>
+                <li><strong>Shaders:</strong> Solid colors, linear/radial/sweep gradients, bitmap textures with tile modes</li>
+                <li><strong>Compositing:</strong> Porter-Duff blend modes (12 modes including src-over, xor, multiply)</li>
+                <li><strong>Path Rendering:</strong> Winding fill rule, Bezier curve tessellation</li>
+                <li><strong>Advanced Geometry:</strong> Triangle meshes, Coons patches, shader composition</li>
+            </ul>
 
-            <div class="code-snippet">
-                <p><strong>Build Command (from Makefile.wasm):</strong></p>
-                <pre class="line-numbers"><code class="language-bash"># Compile C++ to WebAssembly
-emcc -std=c++17 -O3 \
-     --bind \
-     -s WASM=1 \
-     -s ALLOW_MEMORY_GROWTH=1 \
-     -s MODULARIZE=1 \
-     my_canvas.cpp wasm_bindings.cpp \
-     -o graphics_engine.js</code></pre>
-            </div>
-
-            <p>
-                This produces two files: <code>graphics_engine.wasm</code> (132KB of compiled C++ code) and <code>graphics_engine.js</code> (the JavaScript glue code to load and interact with the WASM module).
-            </p>
+            <h3>Technologies Used</h3>
+            <ul style="line-height: 1.8; color: #555;">
+                <li><strong>C++17:</strong> Core rendering engine implementation with hand-optimized rasterization algorithms</li>
+                <li><strong>WebAssembly:</strong> Compiles C++ to bytecode that runs at near-native speed in the browser</li>
+                <li><strong>Emscripten:</strong> Toolchain for compiling C++ to WebAssembly and generating JavaScript bindings</li>
+                <li><strong>HTML5 Canvas API:</strong> Display target for the rendered pixel buffer (ARGB → RGBA at 60fps)</li>
+            </ul>
 
             <h3>The Rendering Pipeline</h3>
             <p>
-                Every shape drawn on screen passes through this pipeline. Each step transforms the abstract "draw a rectangle" command into concrete pixel colors in the framebuffer.
+                Every draw call flows through this pipeline, transforming high-level commands into pixel colors:
             </p>
 
             <div class="pipeline-diagram">
@@ -347,37 +345,6 @@ emcc -std=c++17 -O3 \
                     <p>Final framebuffer</p>
                 </div>
             </div>
-
-            <h3>How JavaScript and WASM communicate</h3>
-            <p>
-                Emscripten provides <code>EMSCRIPTEN_BINDINGS</code> to expose C++ classes and functions to JavaScript. This creates a bridge between the WASM module and the browser's JavaScript environment.
-            </p>
-
-            <div class="code-snippet">
-                <p><strong>Example Bindings (from wasm_bindings.cpp):</strong></p>
-                <pre class="line-numbers"><code class="language-cpp">EMSCRIPTEN_BINDINGS(graphics_engine) {
-    // Expose Canvas API
-    class_&lt;CanvasWrapper&gt;("CanvasWrapper")
-        .constructor&lt;int, int&gt;()
-        .function("drawRect", &CanvasWrapper::drawRect)
-        .function("save", &CanvasWrapper::save)
-        .function("restore", &CanvasWrapper::restore)
-        .function("translate", &CanvasWrapper::translate);
-
-    // Expose Shader factories
-    function("createLinearGradient", &createLinearGradient);
-    function("createBitmapShaderFromFile", &createBitmapShaderFromFile);
-
-    // Expose enums
-    enum_&lt;GBlendMode&gt;("BlendMode")
-        .value("SrcOver", GBlendMode::kSrcOver)
-        .value("Xor", GBlendMode::kXor);
-}</code></pre>
-            </div>
-
-            <p>
-                Once the WASM module is loaded, JavaScript can call these functions directly. For rendering, the pixel buffer is transferred from WASM memory to an HTML5 Canvas using <code>ImageData</code>. The engine writes ARGB pixels, which are converted to RGBA and displayed at 60fps.
-            </p>
         </section>
 
         <!-- Documentation Cards -->
