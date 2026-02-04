@@ -18,6 +18,10 @@
 #include <memory>
 #include <vector>
 
+// Forward declare shader factory functions from shader_ops.h
+std::unique_ptr<GShader> GCreateRadialGradientShader(const GPoint& center, float radius, const GColor colors[], int count, GTileMode tileMode);
+std::unique_ptr<GShader> GCreateAngleGradientShader(GPoint p0, GPoint p1, const GColor colors[], int count);
+
 using namespace emscripten;
 
 /**
@@ -301,6 +305,44 @@ ShaderWrapper* createLinearGradient(float x0, float y0, float x1, float y1,
     return nullptr;
 }
 
+ShaderWrapper* createRadialGradient(float centerX, float centerY, float radius,
+                                    const std::vector<float>& colors, int tileMode) {
+    GPoint center{centerX, centerY};
+
+    // Convert colors
+    size_t count = colors.size() / 4;
+    std::vector<GColor> gcolors(count);
+    for (size_t i = 0; i < count; ++i) {
+        gcolors[i] = GColor::RGBA(colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3]);
+    }
+
+    auto shader = GCreateRadialGradientShader(center, radius, gcolors.data(), count,
+                                              static_cast<GTileMode>(tileMode));
+    if (shader) {
+        return new ShaderWrapper(std::move(shader));
+    }
+    return nullptr;
+}
+
+ShaderWrapper* createAngleGradient(float x0, float y0, float x1, float y1,
+                                  const std::vector<float>& colors) {
+    GPoint p0{x0, y0};
+    GPoint p1{x1, y1};
+
+    // Convert colors
+    size_t count = colors.size() / 4;
+    std::vector<GColor> gcolors(count);
+    for (size_t i = 0; i < count; ++i) {
+        gcolors[i] = GColor::RGBA(colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3]);
+    }
+
+    auto shader = GCreateAngleGradientShader(p0, p1, gcolors.data(), count);
+    if (shader) {
+        return new ShaderWrapper(std::move(shader));
+    }
+    return nullptr;
+}
+
 ShaderWrapper* createBitmapShaderFromFile(const std::string& filename,
                                           float m0, float m1, float m2,
                                           float m3, float m4, float m5,
@@ -416,6 +458,8 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
 
     // Shader factory functions
     function("createLinearGradient", &createLinearGradient, allow_raw_pointers());
+    function("createRadialGradient", &createRadialGradient, allow_raw_pointers());
+    function("createAngleGradient", &createAngleGradient, allow_raw_pointers());
     function("createBitmapShaderFromFile", &createBitmapShaderFromFile, allow_raw_pointers());
     function("loadImageToVFS", &loadImageToVFS);
     function("testFileRead", &testFileRead);
