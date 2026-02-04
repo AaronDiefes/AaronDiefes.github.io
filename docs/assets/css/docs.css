@@ -59,13 +59,13 @@ body {
 }
 
 .breadcrumb a {
-    color: #667eea;
+    color: #2E7D32;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .breadcrumb a:hover {
-    color: #764ba2;
+    color: #1B5E20;
     text-decoration: underline;
 }
 
@@ -96,7 +96,7 @@ body {
     color: #2c3e50;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #2E7D32;
 }
 
 .content-section p {
@@ -135,19 +135,19 @@ body {
 }
 
 [role="tab"]:hover {
-    color: #667eea;
+    color: #2E7D32;
     background-color: #f8f9fa;
 }
 
 [role="tab"]:focus {
-    outline: 2px solid #667eea;
+    outline: 2px solid #2E7D32;
     outline-offset: -2px;
     z-index: 1;
 }
 
 [role="tab"][aria-selected="true"] {
-    color: #667eea;
-    border-bottom-color: #667eea;
+    color: #2E7D32;
+    border-bottom-color: #2E7D32;
     background-color: white;
     font-weight: 600;
 }
@@ -222,14 +222,14 @@ body {
 }
 
 .footer-nav a {
-    color: #667eea;
+    color: #2E7D32;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .footer-nav a:hover {
-    color: #764ba2;
+    color: #1B5E20;
     text-decoration: underline;
 }
 
@@ -290,7 +290,7 @@ body {
     }
 
     [role="tab"][aria-selected="true"] {
-        border-left-color: #667eea;
+        border-left-color: #2E7D32;
         border-bottom-color: #e0e0e0;
     }
 }
