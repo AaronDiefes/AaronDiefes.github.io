@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Core Rendering (PA1 + PA2) - Graphics Engine Documentation</title>
+    <title>Core Rendering  - Graphics Engine Documentation</title>
 
     <!-- Prism.js CDN for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
@@ -21,7 +21,7 @@
             <a href="../index.html" class="nav-link">Portfolio</a>
         </nav>
         <h1>Core Rendering</h1>
-        <p class="subtitle">PA1: Lines and Blending | PA2: Polygons and Clipping</p>
+        <p class="subtitle">Edge Rasterization, Shape Drawing, and Blend Modes</p>
     </header>
 
     <main class="docs-content">
@@ -31,7 +31,7 @@
                 Core rendering forms the foundation of the entire graphics engine. Every shape drawn on screen—whether a simple rectangle or a complex curved path—ultimately becomes a collection of edges that are rasterized into pixels through a scanline algorithm.
             </p>
             <p>
-                Programming Assignment 1 (PA1) establishes the fundamental building blocks: drawing rectangles, implementing edge-based rasterization, and creating a full Porter-Duff alpha blending system. PA2 extends this foundation to handle arbitrary convex polygons with viewport clipping, enabling the rendering of triangles, pentagons, and any other convex shape.
+                This section establishes the fundamental building blocks: drawing rectangles, implementing edge-based rasterization, and creating a full Porter-Duff alpha blending system. It then extends this foundation to handle arbitrary convex polygons with viewport clipping, enabling the rendering of triangles, pentagons, and any other convex shape.
             </p>
             <p>
                 This page covers the core algorithms that make it all work: how shapes are converted to edges, how those edges are walked scanline-by-scanline, how alpha values are properly composited, and how shapes are clipped to stay within the viewport boundaries.
@@ -412,7 +412,7 @@ GPixel xor_mode(GPixel src, GPixel dest){
         </section>
 
         <footer class="docs-footer">
-            <p>Graphics Engine Documentation - Core Rendering (PA1+PA2)</p>
+            <p>Graphics Engine Documentation - Core Rendering </p>
             <nav class="footer-nav">
                 <a href="index.html">Documentation Index</a>
                 <a href="architecture.html">Architecture</a>
