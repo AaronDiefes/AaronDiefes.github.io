@@ -394,40 +394,8 @@ for (int i = 0; i < width; i++) {
                             <strong>Why separate?</strong> This allows shaders to compute colors optimally (e.g., vectorized gradient interpolation) without interleaving with blend operations. The temporary buffer stays in L1 cache, so the extra copy is nearly free (~1 cycle per pixel).
                         </p>
                     </div>
-
-                    <div class="content-block">
-                        <h4>Performance Summary</h4>
-                        <p>
-                            These memory optimizations combine to achieve:
-                        </p>
-                        <ul style="line-height: 1.8; color: #555;">
-                            <li>95%+ L1 cache hit rate for framebuffer access</li>
-                            <li>0.5-1.0 cycles per pixel memory latency (hidden by prefetching)</li>
-                            <li>Sustained 8-12 GB/s memory bandwidth (near theoretical max for DDR4)</li>
-                        </ul>
-                        <p>
-                            For reference, a 1920×1080 60 FPS renderer processes ~500 million pixels/sec. With careful memory management, the engine sustains this rate even on mid-range hardware.
-                        </p>
-                    </div>
                 </div>
             </div>
-
-            <!-- Summary -->
-            <section class="content-section">
-                <h2>Summary</h2>
-                <p>
-                    Performance optimization in software rendering is about micro-optimizations that compound at scale:
-                </p>
-                <ul style="line-height: 1.8; color: #555;">
-                    <li><strong>Fixed-point division</strong> – 10x faster than integer division, exact for 8-bit values</li>
-                    <li><strong>Blend fast paths</strong> – Opaque/transparent detection eliminates 80%+ of blend work in typical scenes</li>
-                    <li><strong>Static dispatch</strong> – Eliminates function call overhead (15 cycles → 2 cycles per pixel)</li>
-                    <li><strong>Scanline rendering</strong> – Sequential memory access achieves 95%+ cache hit rate</li>
-                </ul>
-                <p>
-                    Together, these techniques enable real-time 60 FPS rendering on modern CPUs without GPU acceleration.
-                </p>
-            </section>
         </div>
 
         <!-- Footer -->
