@@ -8,6 +8,7 @@
     <!-- Design System -->
     <link rel="stylesheet" href="assets/css/design-system.css">
     <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/breadcrumbs.css">
 
     <!-- Prism.js CDN for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
@@ -26,11 +27,22 @@
             <span class="hamburger-icon"></span>
         </button>
         <ul id="nav-menu" class="nav-links" hidden>
-            <li><a href="../index.html">Portfolio</a></li>
-            <li><a href="../wasm-graphics-demo.html">Demo</a></li>
-            <li><a href="index.html">Documentation</a></li>
-            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#about">About</a></li>
+            <li><a href="https://github.com/AaronDiefes" target="_blank">GitHub</a></li>
         </ul>
+    </nav>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="../index.html">Home</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="../wasm-graphics-demo.html">Graphics Engine</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="index.html">Documentation</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><span aria-current="page">Core Rendering</span></li>
+        </ol>
     </nav>
     <header class="docs-header">
         <h1>Core Rendering</h1>
