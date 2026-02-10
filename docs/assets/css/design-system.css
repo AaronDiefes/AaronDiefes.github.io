@@ -104,3 +104,56 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ========================================
+   INTERACTIVE STATES
+   ======================================== */
+
+/* Standard button/link hover transition */
+a, button, [role="tab"], .btn, .project-card, .repo-item {
+  transition: background var(--timing-instant) var(--easing-standard),
+              color var(--timing-instant) var(--easing-standard),
+              transform var(--timing-instant) var(--easing-standard),
+              box-shadow var(--timing-standard) var(--easing-standard),
+              border-color var(--timing-instant) var(--easing-standard);
+}
+
+/* Focus-visible for keyboard users only (not mouse clicks) */
+a:focus-visible,
+button:focus-visible,
+[role="tab"]:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Subtle press effect for buttons */
+button:active:not(:disabled),
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   TYPOGRAPHY BASE
+   ======================================== */
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--leading-heading);
+}
+
+code, pre, .code-snippet {
+  font-family: var(--font-mono);
+  line-height: var(--leading-code);
+}
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
