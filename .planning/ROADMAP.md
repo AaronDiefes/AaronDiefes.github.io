@@ -302,7 +302,7 @@ Plans:
 
 ## Phase 8: Visual Polish
 
-**Goal:** Professional aesthetic refinement across all portfolio pages.
+**Goal:** Unified green palette, consistent navigation, and professional micro-interactions across all portfolio pages.
 
 **Dependencies:** Phase 7 (complete feature set tested and optimized)
 
@@ -352,6 +352,13 @@ Plans:
 - Animation performance on lower-end devices
 - Balance between visual flair and professional simplicity
 
+**Plans:** 4 plans
+Plans:
+- [ ] 08-01-PLAN.md — Design system CSS tokens and purple-to-green color migration
+- [ ] 08-02-PLAN.md — Consistent navigation with accessible hamburger menu
+- [ ] 08-03-PLAN.md — Animations, micro-interactions, typography, and responsive polish
+- [ ] 08-04-PLAN.md — Visual verification checkpoint (human review)
+
 ---
 
 ## Progress Tracking
@@ -365,7 +372,7 @@ Plans:
 | 5 - Code Examples | Complete | 100% (6/7 plans, 1 rejected) |
 | 6 - Documentation System | Incomplete | 0% (3/4 plans rejected, 1 remaining) |
 | 7 - Testing & Optimization | Skipped | N/A |
-| 8 - Visual Polish | Ready to Plan | 0% |
+| 8 - Visual Polish | Planned | 0% (4 plans created) |
 
 **Overall Progress:** 63% (5/8 phases complete)
 
@@ -383,7 +390,8 @@ Plans:
 6. ~~Plan Phase 5 - Code Examples (7 plans created)~~
 7. ~~Execute Phase 5 - Code Examples~~
 8. ~~Plan Phase 6 - Documentation System (4 plans created)~~
-9. **Next:** Execute Phase 6 - Documentation System
+9. ~~Plan Phase 8 - Visual Polish (4 plans created)~~
+10. **Next:** Execute Phase 8 - Visual Polish
 
 ## Requirement Coverage
 
@@ -396,7 +404,7 @@ All v1 requirements mapped to phases (Phase 8 requirements to be added in REQUIR
 **Phase 5:** CODE-01, CODE-02, CODE-03 (3 requirements)
 **Phase 6:** DOC-01, DOC-02, DOC-03, DOC-04 (4 requirements)
 **Phase 7:** PERF-01, PERF-02, PERF-03, TEST-01, TEST-02, TEST-03 (6 requirements)
-**Phase 8:** DESIGN-01, DESIGN-02, DESIGN-03, DESIGN-04 (4 requirements - TBD)
+**Phase 8:** DESIGN-01, DESIGN-02, DESIGN-03, DESIGN-04 (4 requirements)
 
 **Total:** 27 v1 requirements + 4 v2 requirements = 31 requirements mapped
 
