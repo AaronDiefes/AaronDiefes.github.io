@@ -6,6 +6,7 @@
     <title>C++ Graphics Engine (WebAssembly) - Aaron Diefes</title>
     <link rel="stylesheet" href="docs/assets/css/design-system.css">
     <link rel="stylesheet" href="docs/assets/css/nav.css">
+    <link rel="stylesheet" href="docs/assets/css/breadcrumbs.css">
     <style>
         * {
             margin: 0;
@@ -318,11 +319,20 @@
             <span class="hamburger-icon"></span>
         </button>
         <ul id="nav-menu" class="nav-links" hidden>
-            <li><a href="index.html">Portfolio</a></li>
-            <li><a href="#" class="active" aria-current="page">Demo</a></li>
-            <li><a href="docs/index.html">Documentation</a></li>
-            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#projects">Projects</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="https://github.com/AaronDiefes" target="_blank">GitHub</a></li>
         </ul>
+    </nav>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="index.html">Home</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="wasm-graphics-demo.html">Graphics Engine</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><span aria-current="page">Interactive Demo</span></li>
+        </ol>
     </nav>
     <div class="container">
         <header>
