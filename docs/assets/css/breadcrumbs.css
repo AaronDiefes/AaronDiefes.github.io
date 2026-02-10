@@ -1,0 +1,61 @@
+/* Breadcrumb navigation component */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 0.5rem);
+  padding: var(--space-sm, 0.75rem) 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+  flex-wrap: wrap;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 0.5rem);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 0.5rem);
+}
+
+.breadcrumbs a {
+  color: var(--color-primary, #2E7D32);
+  text-decoration: none;
+  transition: color var(--timing-instant, 150ms) ease;
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-primary-dark, #1B5E20);
+  text-decoration: underline;
+}
+
+.breadcrumbs a:focus-visible {
+  outline: 2px solid var(--color-primary, #2E7D32);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.breadcrumbs .separator {
+  color: var(--color-text-secondary, #666);
+  user-select: none;
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: var(--color-text-primary, #2c3e50);
+  font-weight: 500;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .breadcrumbs {
+    font-size: 0.8125rem;
+    padding: var(--space-xs, 0.5rem) 0;
+  }
+}
