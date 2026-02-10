@@ -191,15 +191,15 @@ This roadmap transforms an existing C++ graphics engine into an interactive brow
 - Keeping code snippets in sync with actual implementation
 - Code length vs UI space constraints
 
-**Plans:** 7 plans
+**Plans:** 6 plans (1 rejected by user)
 Plans:
-- [ ] 05-01-PLAN.md - Foundation assets (CSS, JS for tabs and code styling)
-- [ ] 05-02-PLAN.md - Core Rendering (PA1+PA2) documentation page
-- [ ] 05-03-PLAN.md - Transformations & Textures (PA3) documentation page
-- [ ] 05-04-PLAN.md - Paths & Gradients (PA4) documentation page
-- [ ] 05-05-PLAN.md - Advanced Geometry (PA5+PA6) documentation page
-- [ ] 05-06-PLAN.md - Final Features documentation page
-- [ ] 05-07-PLAN.md - Landing page with architecture, portfolio integration, verification
+- [x] 05-01-PLAN.md - Foundation assets (CSS, JS for tabs and code styling)
+- [x] 05-02-PLAN.md - Core Rendering (PA1+PA2) documentation page
+- [x] 05-03-PLAN.md - Transformations & Textures (PA3) documentation page
+- [x] 05-04-PLAN.md - Paths & Gradients (PA4) documentation page
+- [x] 05-05-PLAN.md - Advanced Geometry (PA5+PA6) documentation page
+- [x] 05-06-PLAN.md - Final Features documentation page
+- [x] ~~05-07-PLAN.md - Landing page~~ **REJECTED** - See 05-07-REJECTED.md
 
 ---
 
@@ -239,12 +239,14 @@ Plans:
 **Blockers:**
 - None identified (research complete)
 
-**Plans:** 4 plans
+**Plans:** 1 plan (3 rejected by user)
 Plans:
-- [ ] 06-01-PLAN.md - Architecture Overview page with Mermaid diagrams
-- [ ] 06-02-PLAN.md - API Reference page with function tables
-- [ ] 06-03-PLAN.md - Implementation Details page with algorithm explanations
+- [x] ~~06-01-PLAN.md - Architecture Overview~~ **REJECTED** - See 06-01-REJECTED.md
+- [x] ~~06-02-PLAN.md - API Reference~~ **REJECTED** - See 06-02-REJECTED.md
+- [x] ~~06-03-PLAN.md - Implementation Details~~ **REJECTED** - See 06-03-REJECTED.md
 - [ ] 06-04-PLAN.md - Capability Showcase page with feature catalog + navigation integration
+
+**Note:** Plans 06-01 through 06-03 were never deployed to the live site and user confirmed these pages should NOT be added. The live site has 7 documentation pages total, which is the desired structure.
 
 ---
 
@@ -360,12 +362,14 @@ Plans:
 | 2 - JavaScript Bridge | Complete | 100% |
 | 3 - Canvas Integration | Complete | 100% |
 | 4 - Interactive Controls | Complete | 100% |
-| 5 - Code Examples | Complete | 100% |
-| 6 - Documentation System | Planned | 0% |
-| 7 - Testing & Optimization | Pending | 0% |
-| 8 - Visual Polish | Pending | 0% |
+| 5 - Code Examples | Complete | 100% (6/7 plans, 1 rejected) |
+| 6 - Documentation System | Incomplete | 0% (3/4 plans rejected, 1 remaining) |
+| 7 - Testing & Optimization | Skipped | N/A |
+| 8 - Visual Polish | Ready to Plan | 0% |
 
 **Overall Progress:** 63% (5/8 phases complete)
+
+**Note:** Phase 7 (Testing & Optimization) was completed locally but never deployed. Skipping to Phase 8 (Visual Polish) based on user request to work with live site code.
 
 ---
 
