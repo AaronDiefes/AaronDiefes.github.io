@@ -666,14 +666,14 @@ body {
 }
 
 .capability-matrix td a.demo-link {
-    background: #667eea;
+    background: var(--color-primary);
     color: white;
-    border: 1px solid #667eea;
+    border: 1px solid var(--color-primary);
 }
 
 .capability-matrix td a.demo-link:hover {
-    background: #5568d3;
-    border-color: #5568d3;
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
 }
 
 /* Responsive Capability Matrix */

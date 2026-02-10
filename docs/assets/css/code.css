@@ -82,7 +82,7 @@ div.code-toolbar > .toolbar .toolbar-item {
 }
 
 div.code-toolbar > .toolbar button {
-    background: #667eea;
+    background: var(--color-primary);
     color: white;
     border: none;
     padding: 0.4rem 0.8rem;
@@ -94,7 +94,7 @@ div.code-toolbar > .toolbar button {
 }
 
 div.code-toolbar > .toolbar button:hover {
-    background: #764ba2;
+    background: var(--color-primary-dark);
 }
 
 div.code-toolbar > .toolbar button:focus {
