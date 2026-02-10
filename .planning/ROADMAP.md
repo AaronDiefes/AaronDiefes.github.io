@@ -352,12 +352,14 @@ Plans:
 - Animation performance on lower-end devices
 - Balance between visual flair and professional simplicity
 
-**Plans:** 4 plans
+**Plans:** 6 plans
 Plans:
-- [ ] 08-01-PLAN.md — Design system CSS tokens and purple-to-green color migration
-- [ ] 08-02-PLAN.md — Consistent navigation with accessible hamburger menu
-- [ ] 08-03-PLAN.md — Animations, micro-interactions, typography, and responsive polish
-- [ ] 08-04-PLAN.md — Visual verification checkpoint (human review)
+- [ ] 08-01-PLAN.md — Design system CSS tokens + link to all pages
+- [ ] 08-02-PLAN.md — Purple-to-green color migration
+- [ ] 08-03-PLAN.md — Navigation assets (nav.css + nav.js)
+- [ ] 08-04-PLAN.md — Add navigation to all pages + cleanup old nav
+- [ ] 08-05-PLAN.md — Animations, micro-interactions, typography, and responsive polish
+- [ ] 08-06-PLAN.md — Visual verification checkpoint (human review)
 
 ---
 
@@ -372,7 +374,7 @@ Plans:
 | 5 - Code Examples | Complete | 100% (6/7 plans, 1 rejected) |
 | 6 - Documentation System | Incomplete | 0% (3/4 plans rejected, 1 remaining) |
 | 7 - Testing & Optimization | Skipped | N/A |
-| 8 - Visual Polish | Planned | 0% (4 plans created) |
+| 8 - Visual Polish | Planned | 0% (6 plans created) |
 
 **Overall Progress:** 63% (5/8 phases complete)
 
@@ -390,7 +392,7 @@ Plans:
 6. ~~Plan Phase 5 - Code Examples (7 plans created)~~
 7. ~~Execute Phase 5 - Code Examples~~
 8. ~~Plan Phase 6 - Documentation System (4 plans created)~~
-9. ~~Plan Phase 8 - Visual Polish (4 plans created)~~
+9. ~~Plan Phase 8 - Visual Polish (6 plans created)~~
 10. **Next:** Execute Phase 8 - Visual Polish
 
 ## Requirement Coverage
