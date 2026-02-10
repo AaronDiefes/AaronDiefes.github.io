@@ -237,18 +237,6 @@ case GPath::kCubic: {
     }
     break;
 }</code></pre>
-
-                    <h4>Interactive Demo</h4>
-                    <p class="demo-instruction">
-                        <strong>Paths with Bezier Curves:</strong> Paths containing curves are flattened into line segments.
-                        The tessellation algorithm decides how many segments are needed for smooth appearance. Draw paths and
-                        observe how curves are automatically tessellated.
-                    </p>
-                    <div class="demo-container">
-                        <iframe src="../wasm-graphics-demo.html#demo=paths"
-                                loading="lazy"
-                                title="Bezier Curve Paths Demo"></iframe>
-                    </div>
                 </div>
 
                 <!-- Tab Panel 2: Triangle Meshes -->
@@ -356,11 +344,6 @@ if(colors == nullptr && texs != nullptr){
                         coordinates. Drag vertices to see how the mesh deforms while maintaining texture mapping. The texture
                         follows the geometry, demonstrating correct barycentric interpolation.
                     </p>
-                    <div class="demo-container">
-                        <iframe src="../wasm-graphics-demo.html#demo=mesh"
-                                loading="lazy"
-                                title="Triangle Mesh Demo"></iframe>
-                    </div>
                 </div>
 
                 <!-- Tab Panel 3: Quad Rendering -->
@@ -640,25 +623,6 @@ drawConvexPolygon(points, 3, p);</code></pre>
                     </p>
                 </div>
             </div>
-
-            <!-- Footer Navigation -->
-            <footer class="docs-footer">
-                <p>Graphics Engine Documentation - Advanced Geometry </p>
-                <nav class="footer-nav">
-                    <a href="index.html">Documentation Index</a>
-                    <a href="architecture.html">Architecture</a>
-                    <a href="api-reference.html">API Reference</a>
-                    <a href="implementation.html">Implementation</a>
-                    <a href="capabilities.html">Capabilities</a>
-                    <a href="core-rendering.html">Core Rendering</a>
-                    <a href="transforms-textures.html">Transforms & Textures</a>
-                    <a href="paths-gradients.html">Paths & Gradients</a>
-                    <a href="final-features.html">Final Features</a>
-                <a href="optimization-performance.html">Optimization & Performance</a>
-                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
-                    <a href="../index.html">Portfolio</a>
-                </nav>
-            </footer>
         </div>
     </main>
 

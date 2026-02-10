@@ -196,21 +196,6 @@ GMatrix GMatrix::Rotate(float radians){
         dst[i].y = mapped_y;
     }
 }</code></pre>
-
-                    <!-- Demo Section -->
-                    <div class="demo-section">
-                        <h4>Interactive Demo</h4>
-                        <p>
-                            Adjust rotation, scale, and translation controls to see how the Current Transform Matrix
-                            (CTM) transforms the rendered shape. Notice how the matrix composition combines multiple
-                            transformations into a single operation.
-                        </p>
-                        <div class="iframe-container">
-                            <iframe src="../wasm-graphics-demo.html#demo=transforms"
-                                    loading="lazy"
-                                    title="Matrix Transformations Demo"></iframe>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Tab 2: CTM Stack -->
@@ -415,43 +400,8 @@ int clamp_y(int y){
       y_prime += inv[1];
     }
   }</code></pre>
-
-                    <!-- Demo Section -->
-                    <div class="demo-section">
-                        <h4>Interactive Demo</h4>
-                        <p>
-                            Change the tile mode to see how the texture extends beyond its bounds. Watch how <strong>Clamp</strong>
-                            extends edge pixels, <strong>Repeat</strong> wraps the texture seamlessly, and <strong>Mirror</strong>
-                            creates a ping-pong reflection pattern. You can also adjust the texture scale and rotation to see
-                            how transformations affect texture sampling.
-                        </p>
-                        <div class="iframe-container">
-                            <iframe src="../wasm-graphics-demo.html#demo=bitmap-shader"
-                                    loading="lazy"
-                                    title="Bitmap Shader Tile Modes Demo"></iframe>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            <!-- Footer Navigation -->
-            <footer class="docs-footer">
-                <p>Graphics Engine Documentation - Transforms & Textures </p>
-                <nav class="footer-nav">
-                    <a href="index.html">Documentation Index</a>
-                    <a href="architecture.html">Architecture</a>
-                    <a href="api-reference.html">API Reference</a>
-                    <a href="implementation.html">Implementation</a>
-                    <a href="capabilities.html">Capabilities</a>
-                    <a href="core-rendering.html">Core Rendering</a>
-                    <a href="paths-gradients.html">Paths & Gradients</a>
-                    <a href="advanced-geometry.html">Advanced Geometry</a>
-                    <a href="final-features.html">Final Features</a>
-                <a href="optimization-performance.html">Optimization & Performance</a>
-                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
-                    <a href="../index.html">Portfolio</a>
-                </nav>
-            </footer>
         </div>
     </main>
 

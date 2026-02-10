@@ -521,11 +521,11 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">1. Core Rendering</h3>
                         <p style="color: #666; margin-bottom: 1rem;">Fundamental drawing operations: shape rasterization, edge-list algorithm, Porter-Duff compositing.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>Edge Rasterization</strong> – Scanline algorithm using sorted edge list for efficient pixel coverage <span style="color: #999;">(my_canvas.cpp)</span> → <a href="core-rendering.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Rectangle Drawing</strong> – Optimized axis-aligned rectangle fill with clipping <span style="color: #999;">(my_canvas.cpp)</span> → <a href="core-rendering.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Polygon Drawing</strong> – Convex polygon rasterization using edge walking <span style="color: #999;">(my_canvas.cpp)</span> → <a href="core-rendering.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Porter-Duff Blending</strong> – 12 compositing modes including src-over, xor, multiply <span style="color: #999;">(blend_functions.h)</span> → <a href="core-rendering.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Polygon Clipping</strong> – Sutherland-Hodgman algorithm for viewport clipping <span style="color: #999;">(my_canvas.cpp)</span> → <a href="core-rendering.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>Edge Rasterization</strong> – Scanline algorithm using sorted edge list for efficient pixel coverage</li>
+                            <li><strong>Rectangle Drawing</strong> – Optimized axis-aligned rectangle fill with clipping</li>
+                            <li><strong>Polygon Drawing</strong> – Convex polygon rasterization using edge walking</li>
+                            <li><strong>Porter-Duff Blending</strong> – 12 compositing modes including src-over, xor, multiply</li>
+                            <li><strong>Polygon Clipping</strong> – Sutherland-Hodgman algorithm for viewport clipping</li>
                         </ul>
                     </div>
 
@@ -534,12 +534,12 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">2. Shaders & Textures</h3>
                         <p style="color: #666; margin-bottom: 1rem;">Shader pipeline: solid colors, gradients (linear, radial, sweep), bitmap textures with tile modes.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>Solid Color Shader</strong> – Simple constant color shader with alpha channel support <span style="color: #999;">(shader_ops.h)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Linear Gradient</strong> – Color interpolation along a line with multiple color stops <span style="color: #999;">(shader_ops.h)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Radial Gradient</strong> – Circular gradient radiating from center point <span style="color: #999;">(shader_ops.h)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Sweep Gradient</strong> – Angle-based gradient (atan2) for color wheels <span style="color: #999;">(shader_ops.h)</span> → <a href="final-features.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Bitmap Shader</strong> – Texture mapping with clamp, repeat, and mirror tile modes <span style="color: #999;">(shader_ops.h)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Shader Composition</strong> – ProxyShader and ComposeShader for chaining transformations <span style="color: #999;">(shader_ops.h)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>Solid Color Shader</strong> – Simple constant color shader with alpha channel support</li>
+                            <li><strong>Linear Gradient</strong> – Color interpolation along a line with multiple color stops</li>
+                            <li><strong>Radial Gradient</strong> – Circular gradient radiating from center point</li>
+                            <li><strong>Sweep Gradient</strong> – Angle-based gradient (atan2) for color wheels</li>
+                            <li><strong>Bitmap Shader</strong> – Texture mapping with clamp, repeat, and mirror tile modes</li>
+                            <li><strong>Shader Composition</strong> – ProxyShader and ComposeShader for chaining transformations</li>
                         </ul>
                     </div>
 
@@ -548,11 +548,11 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">3. Transformations</h3>
                         <p style="color: #666; margin-bottom: 1rem;">2D affine transformations: translate, rotate, scale, shear. Current Transformation Matrix (CTM) stack for hierarchical transforms.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>Matrix Transform</strong> – 3x3 homogeneous coordinate matrix for 2D affine transforms <span style="color: #999;">(my_canvas.cpp)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>CTM Stack</strong> – save() and restore() for hierarchical transformation management <span style="color: #999;">(my_canvas.cpp)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Translate</strong> – Move coordinate system by (dx, dy) <span style="color: #999;">(my_canvas.cpp)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Rotate</strong> – Rotate coordinate system by angle (radians) <span style="color: #999;">(my_canvas.cpp)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Scale</strong> – Scale coordinate system by (sx, sy) <span style="color: #999;">(my_canvas.cpp)</span> → <a href="transforms-textures.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>Matrix Transform</strong> – 3x3 homogeneous coordinate matrix for 2D affine transforms</li>
+                            <li><strong>CTM Stack</strong> – save() and restore() for hierarchical transformation management</li>
+                            <li><strong>Translate</strong> – Move coordinate system by (dx, dy)</li>
+                            <li><strong>Rotate</strong> – Rotate coordinate system by angle (radians)</li>
+                            <li><strong>Scale</strong> – Scale coordinate system by (sx, sy)</li>
                         </ul>
                     </div>
 
@@ -561,11 +561,11 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">4. Paths & Curves</h3>
                         <p style="color: #666; margin-bottom: 1rem;">Path construction, winding fill rule, Bezier curve tessellation for smooth curves.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>GPath Construction</strong> – Moveto, lineto, quadto, cubicto path building <span style="color: #999;">(path_ops.h)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Winding Fill Rule</strong> – Non-zero winding rule for complex path filling <span style="color: #999;">(my_canvas.cpp)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Quadratic Bezier</strong> – Smooth quadratic curves with adaptive tessellation <span style="color: #999;">(path_ops.h)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Cubic Bezier</strong> – Complex cubic curves with adaptive subdivision <span style="color: #999;">(path_ops.h)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Path Transformation</strong> – Apply arbitrary matrix to path vertices <span style="color: #999;">(path_ops.h)</span> → <a href="paths-gradients.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>GPath Construction</strong> – Moveto, lineto, quadto, cubicto path building</li>
+                            <li><strong>Winding Fill Rule</strong> – Non-zero winding rule for complex path filling</li>
+                            <li><strong>Quadratic Bezier</strong> – Smooth quadratic curves with adaptive tessellation</li>
+                            <li><strong>Cubic Bezier</strong> – Complex cubic curves with adaptive subdivision</li>
+                            <li><strong>Path Transformation</strong> – Apply arbitrary matrix to path vertices</li>
                         </ul>
                     </div>
 
@@ -574,10 +574,10 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">5. Advanced Geometry</h3>
                         <p style="color: #666; margin-bottom: 1rem;">Triangle meshes, quad rendering, Coons patches for complex surface modeling.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>Triangle Mesh</strong> – Vertex array with per-vertex colors and texture coordinates <span style="color: #999;">(my_canvas.cpp)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Quad Rendering</strong> – 4-point texture mapping with bilinear interpolation <span style="color: #999;">(my_canvas.cpp)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Coons Patches</strong> – Bicubic surface interpolation from 4 boundary curves <span style="color: #999;">(my_final.cpp)</span> → <a href="final-features.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Barycentric Interpolation</strong> – Smooth color/texture blending across triangle faces <span style="color: #999;">(my_canvas.cpp)</span> → <a href="advanced-geometry.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>Triangle Mesh</strong> – Vertex array with per-vertex colors and texture coordinates</li>
+                            <li><strong>Quad Rendering</strong> – 4-point texture mapping with bilinear interpolation</li>
+                            <li><strong>Coons Patches</strong> – Bicubic surface interpolation from 4 boundary curves</li>
+                            <li><strong>Barycentric Interpolation</strong> – Smooth color/texture blending across triangle faces</li>
                         </ul>
                     </div>
 
@@ -586,10 +586,10 @@
                         <h3 style="color: #2E7D32; font-size: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #2E7D32;">6. Optimization & Performance</h3>
                         <p style="color: #666; margin-bottom: 1rem;">Performance optimizations for real-time software rendering.</p>
                         <ul style="line-height: 2; color: #555;">
-                            <li><strong>Fixed-Point Division</strong> – Fast div255 approximation using shifts (10x faster) <span style="color: #999;">(my_utils.h)</span> → <a href="optimization-performance.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Blend Fast Paths</strong> – Alpha-based optimization (opaque/transparent shortcuts) <span style="color: #999;">(blend_functions.h)</span> → <a href="optimization-performance.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Static Dispatch</strong> – Template-based blend dispatch (eliminates function call overhead) <span style="color: #999;">(blend_functions.h)</span> → <a href="optimization-performance.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
-                            <li><strong>Scanline Rendering</strong> – Sequential memory access for 95%+ cache hit rate <span style="color: #999;">(my_canvas.cpp)</span> → <a href="optimization-performance.html" style="color: #2E7D32; font-weight: 500;">Docs</a></li>
+                            <li><strong>Fixed-Point Division</strong> – Fast div255 approximation using shifts (10x faster)</li>
+                            <li><strong>Blend Fast Paths</strong> – Alpha-based optimization (opaque/transparent shortcuts)</li>
+                            <li><strong>Static Dispatch</strong> – Template-based blend dispatch (eliminates function call overhead)</li>
+                            <li><strong>Scanline Rendering</strong> – Sequential memory access for 95%+ cache hit rate</li>
                         </ul>
                     </div>
                 </div>

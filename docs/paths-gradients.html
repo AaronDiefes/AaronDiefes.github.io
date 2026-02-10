@@ -308,21 +308,6 @@ for(int y = yMin; y < yMax; y++){
                         <strong>Mathematical Insight:</strong> The winding number counts how many times the path winds around a point.
                         This topological property makes the algorithm robust to path complexity and ensures consistent results.
                     </p>
-
-                    <!-- Demo Section -->
-                    <div class="demo-section">
-                        <h4>Interactive Demo</h4>
-                        <p class="demo-instruction">
-                            Draw paths with the winding fill rule. Notice how overlapping regions are filled based on the
-                            winding number—regions where the path winds multiple times remain filled, while regions where
-                            winding cancels out are left empty.
-                        </p>
-                        <div class="iframe-container">
-                            <iframe src="../wasm-graphics-demo.html#demo=paths"
-                                    title="Path Winding Fill Demo"
-                                    loading="lazy"></iframe>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Tab Panel 3: Linear Gradient -->
@@ -415,21 +400,6 @@ void shadeRow(int x, int y, int c, GPixel row[]) override{
                         <strong>Performance Note:</strong> The inverse matrix computation happens once during setup.
                         Per-pixel shading only performs multiplication and addition—no trigonometry or square roots required.
                     </p>
-
-                    <!-- Demo Section -->
-                    <div class="demo-section">
-                        <h4>Interactive Demo</h4>
-                        <p class="demo-instruction">
-                            Adjust the gradient colors and direction. The projection onto the gradient line determines each
-                            pixel's t-value, which interpolates between color stops. Try different tile modes to see how the
-                            gradient extends beyond its defined bounds.
-                        </p>
-                        <div class="iframe-container">
-                            <iframe src="../wasm-graphics-demo.html#demo=linear-gradient"
-                                    title="Linear Gradient Demo"
-                                    loading="lazy"></iframe>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Tab Panel 4: Radial Gradient -->
@@ -528,42 +498,8 @@ bool setContext(const GMatrix& ctm) override {
                         modern CPUs have fast hardware implementations. For extremely performance-critical applications, consider
                         pre-computing a lookup table or using approximations.
                     </p>
-
-                    <!-- Demo Section -->
-                    <div class="demo-section">
-                        <h4>Interactive Demo</h4>
-                        <p class="demo-instruction">
-                            Watch how the gradient radiates from the center point. The distance calculation determines each pixel's
-                            color—closer pixels receive colors from the start of the gradient, while distant pixels receive colors
-                            from the end. Try adjusting the radius and center position.
-                        </p>
-                        <div class="iframe-container">
-                            <iframe src="../wasm-graphics-demo.html#demo=radial-gradient"
-                                    title="Radial Gradient Demo"
-                                    loading="lazy"></iframe>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            <!-- Footer Navigation -->
-            <footer class="docs-footer">
-                <p>Graphics Engine Documentation - Paths & Gradients </p>
-                <nav class="footer-nav">
-                    <a href="index.html">Documentation Index</a>
-                    <a href="architecture.html">Architecture</a>
-                    <a href="api-reference.html">API Reference</a>
-                    <a href="implementation.html">Implementation</a>
-                    <a href="capabilities.html">Capabilities</a>
-                    <a href="core-rendering.html">Core Rendering</a>
-                    <a href="transforms-textures.html">Transforms & Textures</a>
-                    <a href="advanced-geometry.html">Advanced Geometry</a>
-                    <a href="final-features.html">Final Features</a>
-                <a href="optimization-performance.html">Optimization & Performance</a>
-                    <a href="../wasm-graphics-demo.html">Interactive Demo</a>
-                    <a href="../index.html">Portfolio</a>
-                </nav>
-            </footer>
         </div>
     </main>
 
