@@ -7,6 +7,7 @@
 
     <!-- Design System -->
     <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
 
     <!-- Prism.js Theme for code snippets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
@@ -300,6 +301,19 @@
     </style>
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="../index.html">Portfolio</a></li>
+            <li><a href="../wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="#" class="active" aria-current="page">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <header class="landing-header">
         <h1>Graphics Engine Documentation</h1>
         <p>C++ Implementation with WebAssembly</p>
@@ -598,5 +612,6 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js"></script>
+    <script src="assets/js/nav.js"></script>
 </body>
 </html>

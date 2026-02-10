@@ -7,6 +7,7 @@
 
     <!-- Design System -->
     <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
 
     <!-- Prism.js Theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
@@ -21,6 +22,19 @@
     <link rel="stylesheet" href="assets/css/code.css">
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="../index.html">Portfolio</a></li>
+            <li><a href="../wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="index.html">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <!-- Header -->
     <header class="doc-header">
         <div class="doc-container">
@@ -445,5 +459,6 @@ int clamp_y(int y){
 
     <!-- Local Tab Script -->
     <script src="assets/js/tabs.js"></script>
+    <script src="assets/js/nav.js"></script>
 </body>
 </html>

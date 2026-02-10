@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D Graphics Engine Demo - Aaron Diefes</title>
     <link rel="stylesheet" href="docs/assets/css/design-system.css">
+    <link rel="stylesheet" href="docs/assets/css/nav.css">
     <style>
         * {
             margin: 0;
@@ -98,7 +99,7 @@
         }
 
         button:hover {
-            background: #5568d3;
+            background: #1B5E20;
         }
 
         button.secondary {
@@ -157,14 +158,37 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .content {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="index.html">Portfolio</a></li>
+            <li><a href="wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="docs/index.html">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <div class="container">
         <header>
             <h1>2D Graphics Engine Demo</h1>
@@ -394,5 +418,6 @@
         // Draw initial shape
         drawShape();
     </script>
+    <script src="docs/assets/js/nav.js"></script>
 </body>
 </html>

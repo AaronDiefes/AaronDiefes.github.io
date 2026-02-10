@@ -7,6 +7,7 @@
 
     <!-- Design System -->
     <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
 
     <!-- Prism.js CDN for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
@@ -18,6 +19,19 @@
     <link rel="stylesheet" href="assets/css/code.css">
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="../index.html">Portfolio</a></li>
+            <li><a href="../wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="index.html">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <header class="docs-header">
         <nav class="docs-nav">
             <a href="index.html" class="nav-link">Documentation Index</a>
@@ -443,5 +457,6 @@ GPixel xor_mode(GPixel src, GPixel dest){
 
     <!-- Local tabs script -->
     <script src="assets/js/tabs.js" defer></script>
+    <script src="assets/js/nav.js"></script>
 </body>
 </html>

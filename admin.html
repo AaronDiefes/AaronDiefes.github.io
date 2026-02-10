@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Source Code - Admin Access</title>
     <link rel="stylesheet" href="docs/assets/css/design-system.css">
+    <link rel="stylesheet" href="docs/assets/css/nav.css">
     <style>
         * {
             margin: 0;
@@ -80,7 +81,7 @@
         }
 
         button:hover {
-            background: #5568d3;
+            background: #1B5E20;
         }
 
         .error {
@@ -229,9 +230,32 @@
         .comment { color: #5c6370; font-style: italic; }
         .function { color: #61afef; }
         .type { color: #e5c07b; }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="index.html">Portfolio</a></li>
+            <li><a href="wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="docs/index.html">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <!-- Login Form -->
     <div class="login-container" id="loginContainer">
         <h1>🔒 Source Code Access</h1>
@@ -416,5 +440,6 @@ ${getFileDescription(filename)}
             return descriptions[filename] || '// - Core graphics functionality\n// - Performance optimizations\n// - API implementations';
         }
     </script>
+    <script src="docs/assets/js/nav.js"></script>
 </body>
 </html>

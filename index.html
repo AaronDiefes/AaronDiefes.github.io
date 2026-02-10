@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aaron Diefes - Software Engineer</title>
     <link rel="stylesheet" href="docs/assets/css/design-system.css">
+    <link rel="stylesheet" href="docs/assets/css/nav.css">
     <style>
         * {
             margin: 0;
@@ -27,13 +28,13 @@
         }
 
         header h1 {
-            font-size: 3rem;
+            font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
             margin-bottom: 0.5rem;
             font-weight: 700;
         }
 
         header p {
-            font-size: 1.3rem;
+            font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
             opacity: 0.95;
         }
 
@@ -54,7 +55,7 @@
         .section h2 {
             color: #2c3e50;
             margin-bottom: 1.5rem;
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
             border-bottom: 3px solid #2E7D32;
             padding-bottom: 0.5rem;
         }
@@ -122,6 +123,11 @@
             background: #f0f0f0;
         }
 
+        .btn:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
         .btn.secondary {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -159,6 +165,11 @@
             padding: 0.5rem 1.25rem;
             border-radius: 25px;
             font-weight: 500;
+            transition: transform var(--timing-instant);
+        }
+
+        .skill-badge:hover {
+            transform: scale(1.05);
         }
 
         .github-repos {
@@ -176,6 +187,11 @@
             background: #f8f9fa;
             border-left: 4px solid #2E7D32;
             border-radius: 4px;
+            transition: transform var(--timing-instant) var(--easing-standard), box-shadow var(--timing-standard) var(--easing-standard);
+        }
+
+        .repo-item:hover {
+            transform: translateX(4px);
         }
 
         .repo-item h4 {
@@ -233,9 +249,47 @@
                 padding: 2rem;
             }
         }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+                border-radius: 8px;
+            }
+
+            .project-card {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                display: block;
+                text-align: center;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="#" class="nav-brand">Aaron Diefes</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="#" class="active" aria-current="page">Portfolio</a></li>
+            <li><a href="wasm-graphics-demo.html">Demo</a></li>
+            <li><a href="docs/index.html">Documentation</a></li>
+            <li><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank">Source Code</a></li>
+        </ul>
+    </nav>
     <header>
         <h1>Aaron Diefes</h1>
         <p>Software Engineer & Graphics Programmer</p>
@@ -322,5 +376,6 @@
         </p>
         <p style="margin-top: 1rem; opacity: 0.8;">&copy; 2026 Aaron Diefes. All rights reserved.</p>
     </footer>
+    <script src="docs/assets/js/nav.js"></script>
 </body>
 </html>
