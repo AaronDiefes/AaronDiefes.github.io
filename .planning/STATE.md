@@ -2,16 +2,17 @@
 
 ## Project Reference
 
-**Core Value:** Transform an existing C++ 2D graphics engine into an interactive web portfolio that demonstrates advanced graphics capabilities through live, browser-based demos.
+**Core Value:** Showcase technical depth through interactive project demonstrations with comprehensive documentation.
 
-**Current Focus:** Phase 5 - Code Examples (source code visibility alongside demos)
+**Current Milestone:** v1.1 - CPU Simulator (interactive step-through demo + documentation)
 
 ## Current Position
 
-**Active Phase:** Phase 8 - Visual Polish
-**Active Plan:** 08-07 (Navigation Redesign)
-**Status:** Complete
-**Last Updated:** 2026-02-10
+**Milestone:** v1.1 - CPU Simulator
+**Phase:** Not started (defining requirements)
+**Plan:** —
+**Status:** Defining requirements
+**Last Updated:** 2026-02-11
 
 **Progress:**
 ```
