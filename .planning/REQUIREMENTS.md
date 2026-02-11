@@ -1,163 +1,113 @@
-# Requirements - WebAssembly Graphics Engine Portfolio
+# Requirements: CPU Simulator Project
 
-## Version 1.0 Requirements
+**Defined:** 2026-02-11
+**Core Value:** Showcase technical depth through interactive project demonstrations with comprehensive documentation.
 
-### Build System & Compilation
+## Milestone v1.1 Requirements
 
-**WASM-01: Emscripten Build Configuration**
-The build system must compile the C++ graphics engine to WebAssembly using Emscripten, producing .wasm and .js files that can be loaded in browsers.
+Requirements for adding CPU simulator to portfolio. Each maps to roadmap phases.
 
-**WASM-02: Module Interface Definitions**
-The compilation must export specific C++ functions to JavaScript using EMSCRIPTEN_BINDINGS, enabling JS to call canvas operations, transformations, and shader functions.
+### Core Simulation Engine
 
-**WASM-03: Memory Management**
-The WASM module must properly manage heap memory for canvas buffers, allowing JavaScript to allocate bitmap memory and pass pixel data between JS and C++.
+- [ ] **SIM-01**: CPU state machine implements 5-stage pipeline (Fetch, Decode, Execute, Memory, Writeback)
+- [ ] **SIM-02**: Simulator supports 32 registers (32-bit each) with read/write operations
+- [ ] **SIM-03**: Simulator implements data memory (1KB minimum) with load/store capability
+- [ ] **SIM-04**: Instruction set includes 8-10 core RISC instructions (add, sub, addi, lw, sw, beq, j, etc.)
+- [ ] **SIM-05**: Simulator detects data hazards (RAW dependencies) and inserts stalls
+- [ ] **SIM-06**: Program counter tracks current instruction address
 
-### JavaScript Bridge
+### Interactive Demo
 
-**BRIDGE-01: Canvas Creation API**
-JavaScript code must be able to create canvas instances through the WASM module, specifying width and height dimensions.
+- [ ] **DEMO-01**: Demo page provides step-forward control (execute one instruction)
+- [ ] **DEMO-02**: Demo page provides step-backward control (rewind one instruction)
+- [ ] **DEMO-03**: Demo page provides play/pause controls with adjustable speed
+- [ ] **DEMO-04**: Demo page provides reset control (return to program start)
+- [ ] **DEMO-05**: Demo page provides jump-to-instruction capability (click on instruction)
+- [ ] **DEMO-06**: Demo page includes code editor (textarea) to modify programs
+- [ ] **DEMO-07**: Demo page includes 2+ pre-loaded programs (basic instructions + Fibonacci)
 
-**BRIDGE-02: Drawing Function Bindings**
-All core drawing operations (clear, drawRect, drawConvexPolygon, drawPath) must be callable from JavaScript with proper parameter marshaling.
+### Visualization
 
-**BRIDGE-03: Transformation Functions**
-Matrix transformations (translate, rotate, scale, save/restore) must be accessible from JavaScript with correct coordinate system mapping.
-
-**BRIDGE-04: Shader Bindings**
-JavaScript must be able to create and apply shaders (solid color, bitmap, gradient) to paint operations through the WASM interface.
-
-### Canvas Integration
-
-**CANVAS-01: Pixel Buffer Transfer**
-The system must efficiently transfer pixel data from WASM memory to HTML5 Canvas using ImageData, updating the visible canvas each frame.
-
-**CANVAS-02: Coordinate System Mapping**
-Engine coordinates must correctly map to canvas pixel coordinates, accounting for any differences between C++ and HTML5 Canvas coordinate systems.
-
-**CANVAS-03: Real-time Rendering**
-Canvas updates must occur at interactive speeds (30+ FPS) for smooth user interaction with controls.
-
-### Interactive UI
-
-**UI-01: Demo Preset Selector**
-Users must be able to switch between predefined demo scenes showcasing different engine capabilities (shapes, gradients, transformations, blend modes).
-
-**UI-02: Parameter Controls**
-Each demo must provide interactive controls (sliders, color pickers, dropdowns) that modify rendering parameters in real-time.
-
-**UI-03: Visual Feedback**
-Control changes must immediately update the canvas display, providing instant visual feedback of parameter effects.
-
-**UI-04: Responsive Layout**
-The interface must work on desktop screens with a split layout (controls sidebar, canvas main area) matching the graphics-demo.html design pattern.
-
-### Code Examples
-
-**CODE-01: Syntax-Highlighted Examples**
-Each demo must display the relevant C++ source code with syntax highlighting, showing the actual implementation.
-
-**CODE-02: Code-to-Visual Mapping**
-The displayed code must correspond directly to what's running in the canvas, helping users understand the relationship between code and output.
-
-**CODE-03: Multiple Code Views**
-Users must be able to view different layers of the implementation (high-level API calls, shader implementation, blend mode logic).
+- [ ] **VIZ-01**: Pipeline stage visualization shows all 5 stages with current instruction in each
+- [ ] **VIZ-02**: Register visualization displays all 32 registers with values
+- [ ] **VIZ-03**: Register visualization highlights registers that changed in current cycle
+- [ ] **VIZ-04**: Memory visualization shows data memory addresses with values
+- [ ] **VIZ-05**: Instruction display shows current instruction with field breakdown (opcode, rs, rt, rd, immediate)
+- [ ] **VIZ-06**: Execution state displays cycle count and instruction count
+- [ ] **VIZ-07**: Hazard visualization highlights data hazards with color-coding
+- [ ] **VIZ-08**: Hazard visualization shows stall bubbles in pipeline stages
 
 ### Documentation
 
-**DOC-01: Architecture Overview**
-Documentation must explain the graphics engine architecture (canvas abstraction, shader system, blend pipeline, path rendering).
+- [ ] **DOC-01**: Landing page explains CPU project and links to demo + docs
+- [ ] **DOC-02**: Pipeline Basics doc page explains 5-stage pipeline concept
+- [ ] **DOC-03**: ALU Design doc page explains Carry-Lookahead adder
+- [ ] **DOC-04**: Instruction Set doc page documents all implemented instructions
+- [ ] **DOC-05**: MultDiv doc page explains Booth's multiplication algorithm
+- [ ] **DOC-06**: Advanced Features doc page covers hazards and forwarding
+- [ ] **DOC-07**: All doc pages include code snippets from actual Verilog implementation
+- [ ] **DOC-08**: All doc pages link to GitHub repo for full source code
 
-**DOC-02: API Reference**
-Each exported function must have documentation describing parameters, return values, and usage examples.
+### Portfolio Integration
 
-**DOC-03: Implementation Details**
-Technical documentation must explain key algorithms (edge-list rasterization, scanline rendering, matrix transformations).
+- [ ] **INT-01**: CPU project integrated into portfolio homepage (project card)
+- [ ] **INT-02**: CPU demo page uses existing design system (forest green palette)
+- [ ] **INT-03**: CPU documentation pages include breadcrumb navigation
+- [ ] **INT-04**: CPU pages integrated into site-wide navigation
+- [ ] **INT-05**: CPU project follows same structure as graphics engine (demo + docs/)
 
-**DOC-04: Capability Showcase**
-Documentation must catalog all engine features with descriptions of what each does and where to see it demonstrated.
+### Performance & Quality
 
-### Performance & Optimization
+- [ ] **PERF-01**: Step-through interactions respond in < 100ms
+- [ ] **PERF-02**: Demo page loads in < 3 seconds
+- [ ] **PERF-03**: Animations maintain 30+ FPS
+- [ ] **QUAL-01**: All documentation pages pass WCAG 2.1 AA contrast requirements
+- [ ] **QUAL-02**: Demo controls are keyboard-accessible
 
-**PERF-01: Load Time**
-The WASM module and page assets must load in under 5 seconds on a typical broadband connection (WASM bundle < 5MB).
+## Future Requirements (v2.0+)
 
-**PERF-02: Frame Rate**
-Interactive demos must maintain 30+ FPS during parameter manipulation to ensure smooth user experience.
+Deferred to future milestones. Tracked but not in current roadmap.
 
-**PERF-03: Memory Efficiency**
-Canvas memory usage must be reasonable for typical demo resolutions (800x600 or smaller), avoiding memory leaks during repeated operations.
+### Advanced Features
+- **ADV-01**: Forwarding visualization showing data bypass paths
+- **ADV-02**: Branch prediction visualization
+- **ADV-03**: CPI (cycles per instruction) calculation and display
+- **ADV-04**: Performance comparison across programs
+- **ADV-05**: Export execution trace to JSON/CSV
 
-### Testing & Validation
+### Enhanced Interactivity
+- **ENH-01**: Breakpoint support (pause at specific instruction)
+- **ENH-02**: Watch expressions for register/memory values
+- **ENH-03**: Step-over (skip to next instruction in same function)
+- **ENH-04**: Custom instruction set editor
 
-**TEST-01: Visual Regression Tests**
-Known-good output images must be compared against WASM-rendered output to verify rendering correctness after compilation.
+## Out of Scope
 
-**TEST-02: Cross-Browser Verification**
-The portfolio must be tested in Chrome, Firefox, and Safari to ensure WebAssembly compatibility.
+Explicitly excluded. Documented to prevent scope creep.
 
-**TEST-03: Functionality Validation**
-Each exported function must be tested to verify correct parameter marshaling and return values between JS and C++.
-
-### Visual Design & Polish
-
-**DESIGN-01: Typography & Spacing Refinement**
-Typography must be consistent, professionally styled, and readable across all pages, with optimized font pairing, line heights, letter spacing, and responsive scaling.
-
-**DESIGN-02: Animation & Transitions**
-Smooth, purposeful animations and transitions must enhance the user experience through page load effects, hover states, micro-interactions, and demo state changes without being distracting.
-
-**DESIGN-03: Visual Hierarchy & Layout**
-Visual hierarchy must guide users naturally through content with optimized white space, clear section separation, prominent calls-to-action, and consistent content grouping.
-
-**DESIGN-04: Responsive Design Polish**
-Layout must adapt elegantly across all screen sizes (mobile, tablet, desktop) with refined grid alignment, consistent card design, improved navigation UX, and balanced header/footer composition.
+| Feature | Reason |
+|---------|--------|
+| Multi-core simulation | Adds overwhelming complexity, not core to pipeline education |
+| Cache hierarchy visualization | Scope creep - v1.1 focuses on pipeline, not memory hierarchy |
+| Comprehensive ISA (full MIPS/RISC-V) | 8-10 instructions demonstrate competence without overwhelming |
+| Cycle-accurate timing | Not needed for educational visualization |
+| Real Verilog execution | Simulating conceptually, not running actual hardware |
+| Assembly compiler | Use pre-assembled examples, not building a toolchain |
+| Mobile-first responsive | Portfolio is desktop-first, mobile enhancement is v2.0+ |
 
 ## Traceability
 
+Which phases cover which requirements. Updated during roadmap creation.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WASM-01 | Phase 1 | Pending |
-| WASM-02 | Phase 1 | Pending |
-| WASM-03 | Phase 1 | Pending |
-| BRIDGE-01 | Phase 2 | Pending |
-| BRIDGE-02 | Phase 2 | Pending |
-| BRIDGE-03 | Phase 2 | Pending |
-| BRIDGE-04 | Phase 2 | Pending |
-| CANVAS-01 | Phase 3 | Pending |
-| CANVAS-02 | Phase 3 | Pending |
-| CANVAS-03 | Phase 3 | Pending |
-| UI-01 | Phase 4 | Pending |
-| UI-02 | Phase 4 | Pending |
-| UI-03 | Phase 4 | Pending |
-| UI-04 | Phase 4 | Pending |
-| CODE-01 | Phase 5 | Pending |
-| CODE-02 | Phase 5 | Pending |
-| CODE-03 | Phase 5 | Pending |
-| DOC-01 | Phase 6 | Pending |
-| DOC-02 | Phase 6 | Pending |
-| DOC-03 | Phase 6 | Pending |
-| DOC-04 | Phase 6 | Pending |
-| PERF-01 | Phase 7 | Pending |
-| PERF-02 | Phase 7 | Pending |
-| PERF-03 | Phase 7 | Pending |
-| TEST-01 | Phase 7 | Pending |
-| TEST-02 | Phase 7 | Pending |
-| TEST-03 | Phase 7 | Pending |
-| DESIGN-01 | Phase 8 | Pending |
-| DESIGN-02 | Phase 8 | Pending |
-| DESIGN-03 | Phase 8 | Pending |
-| DESIGN-04 | Phase 8 | Pending |
+| (To be filled by roadmapper) | — | — |
 
-**Coverage:** 31/31 requirements mapped (100%)
+**Coverage:**
+- Milestone v1.1 requirements: 35 total
+- Mapped to phases: (pending roadmap)
+- Unmapped: (pending roadmap)
 
-## Out of Scope (v2+)
-
-- Mobile device optimization
-- Touch gesture controls
-- Downloadable WASM library package
-- Advanced shader editor (user-created shaders)
-- 3D graphics capabilities
-- Animation timeline/keyframe editor
-- Performance profiling tools in UI
-- WebGL acceleration
+---
+*Requirements defined: 2026-02-11*
+*Last updated: 2026-02-11 after initial definition*
