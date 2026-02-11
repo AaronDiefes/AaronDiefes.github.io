@@ -7,24 +7,24 @@
 
 Requirements for adding CPU simulator to portfolio. Each maps to roadmap phases.
 
-### Core Simulation Engine
+### Animation Framework & Data Structures
 
-- [ ] **SIM-01**: CPU state machine implements 5-stage pipeline (Fetch, Decode, Execute, Memory, Writeback)
-- [ ] **SIM-02**: Simulator supports 32 registers (32-bit each) with read/write operations
-- [ ] **SIM-03**: Simulator implements data memory (1KB minimum) with load/store capability
-- [ ] **SIM-04**: Instruction set includes 8-10 core RISC instructions (add, sub, addi, lw, sw, beq, j, etc.)
-- [ ] **SIM-05**: Simulator detects data hazards (RAW dependencies) and inserts stalls
-- [ ] **SIM-06**: Program counter tracks current instruction address
+- [ ] **ANIM-01**: Data structures represent CPU state (pipeline stages, registers, memory, PC)
+- [ ] **ANIM-02**: Pre-scripted sequences define program execution step-by-step
+- [ ] **ANIM-03**: Animation system can step forward/backward through sequences
+- [ ] **ANIM-04**: Program sequences include 8-10 core RISC instructions (add, sub, addi, lw, sw, beq, j)
+- [ ] **ANIM-05**: Hazard sequences show data dependencies and stalls
+- [ ] **ANIM-06**: Timing system controls animation playback speed
 
 ### Interactive Demo
 
-- [ ] **DEMO-01**: Demo page provides step-forward control (execute one instruction)
-- [ ] **DEMO-02**: Demo page provides step-backward control (rewind one instruction)
+- [ ] **DEMO-01**: Demo page provides step-forward control (advance one animation step)
+- [ ] **DEMO-02**: Demo page provides step-backward control (rewind one animation step)
 - [ ] **DEMO-03**: Demo page provides play/pause controls with adjustable speed
-- [ ] **DEMO-04**: Demo page provides reset control (return to program start)
-- [ ] **DEMO-05**: Demo page provides jump-to-instruction capability (click on instruction)
-- [ ] **DEMO-06**: Demo page includes code editor (textarea) to modify programs
-- [ ] **DEMO-07**: Demo page includes 2+ pre-loaded programs (basic instructions + Fibonacci)
+- [ ] **DEMO-04**: Demo page provides reset control (return to animation start)
+- [ ] **DEMO-05**: Demo page provides jump-to-step capability (click on instruction to jump)
+- [ ] **DEMO-06**: Demo page includes program selector to switch between examples
+- [ ] **DEMO-07**: Demo page includes 2+ pre-scripted programs (basic instructions + Fibonacci)
 
 ### Visualization
 
@@ -101,13 +101,60 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | — | — |
+| ANIM-01 | Phase 9 | Pending |
+| ANIM-02 | Phase 9 | Pending |
+| ANIM-03 | Phase 9 | Pending |
+| ANIM-04 | Phase 9 | Pending |
+| ANIM-05 | Phase 12 | Pending |
+| ANIM-06 | Phase 9 | Pending |
+| DEMO-01 | Phase 11 | Pending |
+| DEMO-02 | Phase 11 | Pending |
+| DEMO-03 | Phase 11 | Pending |
+| DEMO-04 | Phase 11 | Pending |
+| DEMO-05 | Phase 11 | Pending |
+| DEMO-06 | Phase 11 | Pending |
+| DEMO-07 | Phase 11 | Pending |
+| VIZ-01 | Phase 10 | Pending |
+| VIZ-02 | Phase 10 | Pending |
+| VIZ-03 | Phase 10 | Pending |
+| VIZ-04 | Phase 11 | Pending |
+| VIZ-05 | Phase 11 | Pending |
+| VIZ-06 | Phase 10 | Pending |
+| VIZ-07 | Phase 12 | Pending |
+| VIZ-08 | Phase 12 | Pending |
+| DOC-01 | Phase 13 | Pending |
+| DOC-02 | Phase 13 | Pending |
+| DOC-03 | Phase 13 | Pending |
+| DOC-04 | Phase 13 | Pending |
+| DOC-05 | Phase 14 | Pending |
+| DOC-06 | Phase 14 | Pending |
+| DOC-07 | Phase 14 | Pending |
+| DOC-08 | Phase 14 | Pending |
+| INT-01 | Phase 15 | Pending |
+| INT-02 | Phase 15 | Pending |
+| INT-03 | Phase 15 | Pending |
+| INT-04 | Phase 15 | Pending |
+| INT-05 | Phase 15 | Pending |
+| PERF-01 | Phase 15 | Pending |
+| PERF-02 | Phase 15 | Pending |
+| PERF-03 | Phase 15 | Pending |
+| QUAL-01 | Phase 15 | Pending |
+| QUAL-02 | Phase 15 | Pending |
 
 **Coverage:**
 - Milestone v1.1 requirements: 35 total
-- Mapped to phases: (pending roadmap)
-- Unmapped: (pending roadmap)
+- Mapped to phases: 35/35 (100%)
+- Unmapped: 0
+
+**Coverage validation:**
+- Phase 9: 5 requirements (ANIM-01, ANIM-02, ANIM-03, ANIM-04, ANIM-06)
+- Phase 10: 4 requirements (VIZ-01, VIZ-02, VIZ-03, VIZ-06)
+- Phase 11: 9 requirements (DEMO-01 through DEMO-07, VIZ-04, VIZ-05)
+- Phase 12: 3 requirements (ANIM-05, VIZ-07, VIZ-08)
+- Phase 13: 4 requirements (DOC-01, DOC-02, DOC-03, DOC-04)
+- Phase 14: 4 requirements (DOC-05, DOC-06, DOC-07, DOC-08)
+- Phase 15: 10 requirements (INT-01 through INT-05, PERF-01 through PERF-03, QUAL-01, QUAL-02)
 
 ---
 *Requirements defined: 2026-02-11*
-*Last updated: 2026-02-11 after initial definition*
+*Last updated: 2026-02-11 (traceability complete)*
