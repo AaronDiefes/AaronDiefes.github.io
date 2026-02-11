@@ -10,28 +10,30 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 ## Current Position
 
 Phase: 9 of 15 (Core Simulation Engine)
-Plan: 1 of TBD (completed)
+Plan: 3 of TBD (completed)
 Status: Ready for next plan
-Last activity: 2026-02-11 — Completed 09-01: Core data structures (CPUState and InstructionSet)
+Last activity: 2026-02-11 — Completed 09-03: Sequence generator, programs, and integration tests
 
 Progress: [████████░░░░░░░░░░░░] 53% (8/15 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1 (Phase 9 in progress)
-- Average duration: 2 min 28 sec
-- Total execution time: 2 min 28 sec
+- Total plans completed: 3 (Phase 9 in progress)
+- Average duration: 2 min 33 sec
+- Total execution time: 7 min 40 sec
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | v1.0 (Phases 1-8) | Complete | N/A | N/A |
-| Phase 9 | 1 | 2m 28s | 2m 28s |
+| Phase 9 | 3 | 7m 40s | 2m 33s |
 
 **Recent Trend:**
 - 09-01: 2m 28s (core data structures)
+- 09-02: 2m 3s (animation framework)
+- 09-03: 3m 19s (sequence generator and programs)
 
 *Consistent execution velocity established*
 
@@ -53,6 +55,13 @@ Recent decisions affecting current work:
 - 09-01: Register $0 hardwired to zero via getRegister/setRegister protection
 - 09-01: Execute functions compute results without mutating state (pure functions)
 - 09-01: Visualization metadata tracked in CPUState for Phase 10+ animation
+- 09-02: Base FPS of 2 (500ms per frame at 1x) for educational CPU simulation pacing
+- 09-02: Speed range 0.25x-4x with named presets for UI convenience
+- 09-02: Generic AnimationEngine design decoupled from CPU state for testability
+- 09-02: CustomEvent 'cpu:framechange' on window for loose coupling with UI
+- 09-03: Non-pipelined simulation for Phase 9 (each instruction completes all 5 stages before next)
+- 09-03: SequenceGenerator clones state per stage, clearing change tracking between stages
+- 09-03: Async generateSequenceAsync with 10-instruction chunking for Phase 11+ longer programs
 
 ### Pending Todos
 
@@ -65,9 +74,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-01-PLAN.md (Core data structures: CPUState and InstructionSet)
+Stopped at: Completed 09-03-PLAN.md (Sequence generator, programs, and integration tests)
 Resume file: None
 
 ---
 *State initialized: 2026-02-11*
-*Last updated: 2026-02-11T23:48:00Z*
+*Last updated: 2026-02-11T23:52:27Z*
