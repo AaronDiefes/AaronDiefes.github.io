@@ -58,10 +58,12 @@
   3. Animation system can step forward and backward through pre-scripted sequences
   4. Program sequences include 8-10 core RISC instructions (add, sub, addi, lw, sw, beq, j) with correct state changes
   5. Timing system controls animation playback speed (adjustable from slow walkthrough to fast demonstration)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 09-01: TBD
+- [ ] 09-01-PLAN.md — CPU State data structures & Instruction Set definitions (ANIM-01, ANIM-04)
+- [ ] 09-02-PLAN.md — Animation Engine & Timing Controller (ANIM-03, ANIM-06)
+- [ ] 09-03-PLAN.md — Sequence Generator, pre-scripted programs & integration tests (ANIM-02, ANIM-04)
 
 #### Phase 10: Basic Visualization
 **Goal**: Visual representation of pipeline stages, registers, and execution state during animation playback
