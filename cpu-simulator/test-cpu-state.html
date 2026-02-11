@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPUState Test</title>
+</head>
+<body>
+  <h1>CPUState Test Console</h1>
+  <p>Open the browser console to see test results.</p>
+
+  <script src="src/core/cpu-state.js"></script>
+  <script>
+    console.log('=== CPUState Tests ===\n');
+
+    // Test 1: Create instance
+    const s = CPUState.createInitial();
+    console.log('✓ Test 1: Created instance:', s);
+
+    // Test 2: Verify pipeline stages
+    const stages = Object.keys(s.pipeline);
+    const expectedStages = ['IF', 'ID', 'EX', 'MEM', 'WB'];
+    const stagesMatch = JSON.stringify(stages) === JSON.stringify(expectedStages);
+    console.log('✓ Test 2: Pipeline stages:', stages, stagesMatch ? 'PASS' : 'FAIL');
+
+    // Test 3: Verify registers
+    const registersLength = s.registers.length === 32;
+    const registerZero = s.registers[0] === 0;
+    console.log('✓ Test 3: Registers length:', s.registers.length, registersLength ? 'PASS' : 'FAIL');
+    console.log('  Register $0:', s.registers[0], registerZero ? 'PASS' : 'FAIL');
+
+    // Test 4: Verify memory
+    const memoryLength = s.memory.length === 256;
+    console.log('✓ Test 4: Memory length:', s.memory.length, memoryLength ? 'PASS' : 'FAIL');
+
+    // Test 5: Verify clone independence
+    const c = s.clone();
+    c.pc = 100;
+    const cloneIndependent = s.pc === 0 && c.pc === 100;
+    console.log('✓ Test 5: Clone independence - original PC:', s.pc, 'cloned PC:', c.pc, cloneIndependent ? 'PASS' : 'FAIL');
+
+    // Test 6: Verify register $0 protection
+    s.setRegister(0, 999);
+    const registerProtection = s.getRegister(0) === 0;
+    console.log('✓ Test 6: Register $0 protection:', s.getRegister(0), registerProtection ? 'PASS' : 'FAIL');
+
+    // Test 7: Verify change tracking
+    s.setRegister(8, 42);
+    const changeTracking = s.changedRegisters.has(8);
+    console.log('✓ Test 7: Change tracking - changedRegisters has 8:', changeTracking ? 'PASS' : 'FAIL');
+    console.log('  Changed registers:', Array.from(s.changedRegisters));
+
+    // Test 8: Verify memory access
+    s.setMemory(0, 100);
+    const memoryAccess = s.getMemory(0) === 100;
+    console.log('✓ Test 8: Memory access:', s.getMemory(0), memoryAccess ? 'PASS' : 'FAIL');
+    console.log('  Changed memory:', Array.from(s.changedMemory));
+
+    // Summary
+    console.log('\n=== All Tests Complete ===');
+    const allPassed = stagesMatch && registersLength && registerZero && memoryLength &&
+                      cloneIndependent && registerProtection && changeTracking && memoryAccess;
+    console.log('Result:', allPassed ? '✓ ALL TESTS PASSED' : '✗ SOME TESTS FAILED');
+  </script>
+</body>
+</html>
