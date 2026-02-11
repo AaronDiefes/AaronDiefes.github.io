@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstructionSet Test</title>
+</head>
+<body>
+  <h1>InstructionSet Test Console</h1>
+  <p>Open the browser console to see test results.</p>
+
+  <script src="src/core/cpu-state.js"></script>
+  <script src="src/core/instruction-set.js"></script>
+  <script>
+    console.log('=== InstructionSet Tests ===\n');
+
+    // Test 1: Get ADD instruction
+    const add = InstructionSet.get('ADD');
+    const test1 = add && add.type === 'R';
+    console.log('✓ Test 1: InstructionSet.get("ADD").type === "R":', test1 ? 'PASS' : 'FAIL');
+
+    // Test 2: Get LW instruction
+    const lw = InstructionSet.get('LW');
+    const test2 = lw && lw.type === 'I';
+    console.log('✓ Test 2: InstructionSet.get("LW").type === "I":', test2 ? 'PASS' : 'FAIL');
+
+    // Test 3: Get NOP instruction
+    const nop = InstructionSet.get('NOP');
+    const test3 = nop && nop.type === 'NOP';
+    console.log('✓ Test 3: InstructionSet.get("NOP").type === "NOP":', test3 ? 'PASS' : 'FAIL');
+
+    // Test 4: isMemoryInstruction
+    const test4 = InstructionSet.isMemoryInstruction('LW') === true;
+    console.log('✓ Test 4: InstructionSet.isMemoryInstruction("LW") === true:', test4 ? 'PASS' : 'FAIL');
+
+    // Test 5: isBranch
+    const test5 = InstructionSet.isBranch('BEQ') === true;
+    console.log('✓ Test 5: InstructionSet.isBranch("BEQ") === true:', test5 ? 'PASS' : 'FAIL');
+
+    // Test 6: writesToRegister
+    const test6a = InstructionSet.writesToRegister('ADD') === true;
+    const test6b = InstructionSet.writesToRegister('SW') === false;
+    const test6 = test6a && test6b;
+    console.log('✓ Test 6: writesToRegister("ADD") === true, writesToRegister("SW") === false:', test6 ? 'PASS' : 'FAIL');
+
+    // Test 7: createInstruction
+    const addi = InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 10 });
+    const test7 = addi.mnemonic === 'ADDI' && addi.type === 'I' && addi.rs === 0 && addi.rt === 8 && addi.immediate === 10;
+    console.log('✓ Test 7: createInstruction("ADDI", {...}):', test7 ? 'PASS' : 'FAIL');
+    console.log('  Created:', addi);
+
+    // Test 8: All 8 instructions exist
+    const mnemonics = InstructionSet.getAllMnemonics();
+    const expectedMnemonics = ['ADD', 'SUB', 'ADDI', 'LW', 'SW', 'BEQ', 'J', 'NOP'];
+    const test8 = expectedMnemonics.every(m => mnemonics.includes(m));
+    console.log('✓ Test 8: All 8 mnemonics exist:', test8 ? 'PASS' : 'FAIL');
+    console.log('  Mnemonics:', mnemonics.join(', '));
+
+    // Test 9: Execute ADD instruction
+    const state = CPUState.createInitial();
+    state.setRegister(8, 10);
+    state.setRegister(9, 20);
+    const addInstr = InstructionSet.createInstruction('ADD', { rs: 8, rt: 9, rd: 10 });
+    const addResult = add.execute(state, addInstr);
+    const test9 = addResult.aluResult === 30 && addResult.writeReg === 10 && addResult.writeData === 30;
+    console.log('✓ Test 9: Execute ADD (10 + 20 = 30):', test9 ? 'PASS' : 'FAIL');
+    console.log('  Result:', addResult);
+
+    // Test 10: Execute BEQ instruction (branch taken)
+    state.setRegister(1, 5);
+    state.setRegister(2, 5);
+    state.pc = 0;
+    const beqInstr = InstructionSet.createInstruction('BEQ', { rs: 1, rt: 2, immediate: 4 });
+    const beqResult = InstructionSet.get('BEQ').execute(state, beqInstr);
+    const test10 = beqResult.zero === true && beqResult.branchTarget === 16;
+    console.log('✓ Test 10: Execute BEQ (rs=rt, branch taken):', test10 ? 'PASS' : 'FAIL');
+    console.log('  Result:', beqResult);
+
+    // Summary
+    console.log('\n=== All Tests Complete ===');
+    const allPassed = test1 && test2 && test3 && test4 && test5 && test6 && test7 && test8 && test9 && test10;
+    console.log('Result:', allPassed ? '✓ ALL TESTS PASSED' : '✗ SOME TESTS FAILED');
+  </script>
+</body>
+</html>
