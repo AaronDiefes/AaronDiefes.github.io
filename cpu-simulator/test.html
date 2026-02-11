@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPU Simulator - Integration Tests</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .summary {
+      font-size: 18px;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .summary.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .summary.failure {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .test-results {
+      margin-top: 20px;
+    }
+
+    .test-section {
+      margin-bottom: 30px;
+    }
+
+    .test-section h2 {
+      font-size: 18px;
+      color: #495057;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .test-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .test-item.pass {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .test-item.fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .test-item .label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .error-details {
+      margin-top: 4px;
+      padding: 8px;
+      background: #fff;
+      border-left: 3px solid #dc3545;
+      font-size: 12px;
+      color: #6c757d;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CPU Simulator - Integration Tests</h1>
+    <p style="color: #6c757d; margin-bottom: 20px;">Testing all Phase 9 modules: CPUState, InstructionSet, TimingController, AnimationEngine, SequenceGenerator, and Programs</p>
+
+    <div id="summary" class="loading">Running tests...</div>
+    <div id="results" class="test-results"></div>
+  </div>
+
+  <!-- Load modules in dependency order -->
+  <script src="src/core/cpu-state.js"></script>
+  <script src="src/core/instruction-set.js"></script>
+  <script src="src/animation/timing-controller.js"></script>
+  <script src="src/animation/animation-engine.js"></script>
+  <script src="src/core/sequence-generator.js"></script>
+  <script src="src/programs/basic-instructions.js"></script>
+  <script src="src/programs/fibonacci.js"></script>
+
+  <!-- Test suite -->
+  <script>
+    (function() {
+      'use strict';
+
+      // Test framework
+      let passCount = 0;
+      let failCount = 0;
+      const results = [];
+
+      function test(name, fn) {
+        try {
+          fn();
+          passCount++;
+          results.push({ name, pass: true });
+        } catch (e) {
+          failCount++;
+          results.push({ name, pass: false, error: e.message });
+        }
+      }
+
+      function assert(condition, message) {
+        if (!condition) {
+          throw new Error(message || 'Assertion failed');
+        }
+      }
+
+      function assertEquals(actual, expected, message) {
+        if (actual !== expected) {
+          throw new Error(message || `Expected ${expected}, got ${actual}`);
+        }
+      }
+
+      // Run tests when DOM is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        runAllTests();
+        displayResults();
+      });
+
+      function runAllTests() {
+        // Module 1: CPUState
+        test('CPUState creates with 5 pipeline stages', function() {
+          const state = CPUState.createInitial();
+          assert(state.pipeline.IF, 'IF stage exists');
+          assert(state.pipeline.ID, 'ID stage exists');
+          assert(state.pipeline.EX, 'EX stage exists');
+          assert(state.pipeline.MEM, 'MEM stage exists');
+          assert(state.pipeline.WB, 'WB stage exists');
+        });
+
+        test('CPUState has 32 registers initialized to 0', function() {
+          const state = CPUState.createInitial();
+          assertEquals(state.registers.length, 32, 'Should have 32 registers');
+          for (let i = 0; i < 32; i++) {
+            assertEquals(state.getRegister(i), 0, `Register $${i} should be 0`);
+          }
+        });
+
+        test('CPUState has 256-word memory', function() {
+          const state = CPUState.createInitial();
+          assertEquals(state.memory.length, 256, 'Should have 256 words');
+        });
+
+        test('CPUState.clone() produces independent copy', function() {
+          const state = CPUState.createInitial();
+          state.setRegister(1, 42);
+          const cloned = state.clone();
+          assertEquals(cloned.getRegister(1), 42, 'Cloned register should match');
+          cloned.setRegister(1, 99);
+          assertEquals(state.getRegister(1), 42, 'Original should not change');
+          assertEquals(cloned.getRegister(1), 99, 'Clone should change');
+        });
+
+        test('Register $0 remains 0 after write', function() {
+          const state = CPUState.createInitial();
+          state.setRegister(0, 999);
+          assertEquals(state.getRegister(0), 0, 'Register $0 should always be 0');
+        });
+
+        test('setRegister tracks changed registers', function() {
+          const state = CPUState.createInitial();
+          state.setRegister(5, 100);
+          assert(state.changedRegisters.has(5), 'Changed register should be tracked');
+        });
+
+        test('setMemory tracks changed addresses', function() {
+          const state = CPUState.createInitial();
+          state.setMemory(16, 200);
+          assert(state.changedMemory.has(16), 'Changed memory should be tracked');
+        });
+
+        // Module 2: InstructionSet
+        test('InstructionSet defines 8 instructions', function() {
+          const mnemonics = InstructionSet.getAllMnemonics();
+          assertEquals(mnemonics.length, 8, 'Should have 8 instructions');
+        });
+
+        test('InstructionSet.get() returns correct types', function() {
+          const add = InstructionSet.get('ADD');
+          assertEquals(add.type, 'R', 'ADD should be R-type');
+          const lw = InstructionSet.get('LW');
+          assertEquals(lw.type, 'I', 'LW should be I-type');
+          const beq = InstructionSet.get('BEQ');
+          assertEquals(beq.type, 'B', 'BEQ should be B-type');
+        });
+
+        test('InstructionSet.createInstruction() creates valid object', function() {
+          const inst = InstructionSet.createInstruction('ADD', { rs: 1, rt: 2, rd: 3 });
+          assertEquals(inst.mnemonic, 'ADD', 'Mnemonic should match');
+          assertEquals(inst.rs, 1, 'rs should be 1');
+          assertEquals(inst.rt, 2, 'rt should be 2');
+          assertEquals(inst.rd, 3, 'rd should be 3');
+        });
+
+        test('InstructionSet.isMemoryInstruction() correct', function() {
+          assert(InstructionSet.isMemoryInstruction('LW'), 'LW is memory');
+          assert(InstructionSet.isMemoryInstruction('SW'), 'SW is memory');
+          assert(!InstructionSet.isMemoryInstruction('ADD'), 'ADD is not memory');
+        });
+
+        test('InstructionSet.isBranch() correct', function() {
+          assert(InstructionSet.isBranch('BEQ'), 'BEQ is branch');
+          assert(InstructionSet.isBranch('J'), 'J is branch');
+          assert(!InstructionSet.isBranch('ADD'), 'ADD is not branch');
+        });
+
+        // Module 3: TimingController
+        test('TimingController default speed is 1.0', function() {
+          const tc = new TimingController();
+          assertEquals(tc.getSpeed(), 1.0, 'Default speed should be 1.0');
+        });
+
+        test('TimingController clamps speed to bounds', function() {
+          const tc = new TimingController();
+          tc.setSpeed(10);
+          assertEquals(tc.getSpeed(), 4.0, 'Speed should clamp to max 4.0');
+          tc.setSpeed(0.1);
+          assertEquals(tc.getSpeed(), 0.25, 'Speed should clamp to min 0.25');
+        });
+
+        test('TimingController frame interval calculation correct', function() {
+          const tc = new TimingController();
+          tc.setSpeed(1.0);
+          assertEquals(tc.getFrameInterval(), 500, '1x should be 500ms');
+          tc.setSpeed(2.0);
+          assertEquals(tc.getFrameInterval(), 250, '2x should be 250ms');
+          tc.setSpeed(0.5);
+          assertEquals(tc.getFrameInterval(), 1000, '0.5x should be 1000ms');
+        });
+
+        // Module 4: AnimationEngine
+        test('AnimationEngine loads frames and resets to 0', function() {
+          const engine = new AnimationEngine();
+          const frames = [{ id: 0 }, { id: 1 }, { id: 2 }];
+          engine.loadFrames(frames);
+          assertEquals(engine.getCurrentFrameIndex(), 0, 'Should start at frame 0');
+          assertEquals(engine.getTotalFrames(), 3, 'Should have 3 frames');
+        });
+
+        test('AnimationEngine stepForward/stepBackward navigate correctly', function() {
+          const engine = new AnimationEngine();
+          const frames = [{ id: 0 }, { id: 1 }, { id: 2 }];
+          engine.loadFrames(frames);
+
+          const advanced = engine.stepForward();
+          assert(advanced, 'Should advance to frame 1');
+          assertEquals(engine.getCurrentFrameIndex(), 1, 'Should be at frame 1');
+
+          const back = engine.stepBackward();
+          assert(back, 'Should go back to frame 0');
+          assertEquals(engine.getCurrentFrameIndex(), 0, 'Should be back at frame 0');
+        });
+
+        test('AnimationEngine jumpToFrame works', function() {
+          const engine = new AnimationEngine();
+          const frames = [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }];
+          engine.loadFrames(frames);
+
+          engine.jumpToFrame(2);
+          assertEquals(engine.getCurrentFrameIndex(), 2, 'Should jump to frame 2');
+        });
+
+        test('AnimationEngine boundary checks (start/end)', function() {
+          const engine = new AnimationEngine();
+          const frames = [{ id: 0 }, { id: 1 }];
+          engine.loadFrames(frames);
+
+          const back = engine.stepBackward();
+          assert(!back, 'Cannot go before frame 0');
+          assertEquals(engine.getCurrentFrameIndex(), 0, 'Should stay at frame 0');
+
+          engine.stepForward();
+          const forward = engine.stepForward();
+          assert(!forward, 'Cannot go beyond last frame');
+          assertEquals(engine.getCurrentFrameIndex(), 1, 'Should stay at last frame');
+        });
+
+        test('AnimationEngine dispatches cpu:framechange event', function() {
+          const engine = new AnimationEngine();
+          const frames = [{ id: 0 }, { id: 1 }];
+          engine.loadFrames(frames);
+
+          let eventFired = false;
+          window.addEventListener('cpu:framechange', function() {
+            eventFired = true;
+          }, { once: true });
+
+          engine.stepForward();
+          assert(eventFired, 'Event should fire on frame change');
+        });
+
+        // Module 5: SequenceGenerator
+        test('SequenceGenerator produces correct frame count', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 10 }),
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 9, immediate: 20 })
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          // 1 initial + 5 frames per instruction * 2 = 11 frames
+          assertEquals(result.frames.length, 11, 'Should have 11 frames');
+        });
+
+        test('ADDI instruction sets register correctly', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 42 })
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          const lastFrame = result.frames[result.frames.length - 1];
+          assertEquals(lastFrame.getRegister(8), 42, 'Register $8 should be 42');
+        });
+
+        test('ADD instruction computes sum correctly', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 10 }),
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 9, immediate: 20 }),
+            InstructionSet.createInstruction('ADD', { rs: 8, rt: 9, rd: 10 })
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          const lastFrame = result.frames[result.frames.length - 1];
+          assertEquals(lastFrame.getRegister(10), 30, 'Register $10 should be 30');
+        });
+
+        test('SW stores to memory correctly', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 100 }),
+            InstructionSet.createInstruction('SW', { rs: 0, rt: 8, immediate: 16 })
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          const lastFrame = result.frames[result.frames.length - 1];
+          assertEquals(lastFrame.getMemory(16), 100, 'Memory[16] should be 100');
+        });
+
+        test('LW loads from memory correctly', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 200 }),
+            InstructionSet.createInstruction('SW', { rs: 0, rt: 8, immediate: 20 }),
+            InstructionSet.createInstruction('LW', { rs: 0, rt: 9, immediate: 20 })
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          const lastFrame = result.frames[result.frames.length - 1];
+          assertEquals(lastFrame.getRegister(9), 200, 'Register $9 should be 200');
+        });
+
+        test('BEQ branches when equal', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 10 }),
+            InstructionSet.createInstruction('BEQ', { rs: 8, rt: 8, immediate: 2 }),
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 9, immediate: 99 })  // Should be skipped
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          const lastFrame = result.frames[result.frames.length - 1];
+          // PC should skip over the third instruction
+          // After BEQ at PC=4, branch taken means PC = 4 + 2*4 = 12
+          assertEquals(lastFrame.pc, 12, 'PC should be 12 after branch');
+          assertEquals(lastFrame.getRegister(9), 0, 'Register $9 should still be 0 (instruction skipped)');
+        });
+
+        test('Register $0 stays 0 through sequence', function() {
+          const program = [
+            InstructionSet.createInstruction('ADDI', { rs: 0, rt: 8, immediate: 10 }),
+            InstructionSet.createInstruction('ADD', { rs: 8, rt: 8, rd: 0 })  // Try to write to $0
+          ];
+          const result = SequenceGenerator.generateSequence(program);
+          // Check all frames
+          for (let i = 0; i < result.frames.length; i++) {
+            assertEquals(result.frames[i].getRegister(0), 0, `Frame ${i}: Register $0 should be 0`);
+          }
+        });
+
+        // Module 6: Integration
+        test('Basic program generates valid sequence', function() {
+          assert(BASIC_PROGRAM, 'BASIC_PROGRAM exists');
+          assert(BASIC_PROGRAM.instructions.length >= 7, 'Should have at least 7 instructions');
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          assert(result.frames.length > 0, 'Should generate frames');
+        });
+
+        test('Fibonacci program generates valid sequence', function() {
+          assert(FIBONACCI_PROGRAM, 'FIBONACCI_PROGRAM exists');
+          assert(FIBONACCI_PROGRAM.instructions.length >= 10, 'Should have at least 10 instructions');
+          const result = SequenceGenerator.generateSequence(FIBONACCI_PROGRAM.instructions);
+          assert(result.frames.length > 0, 'Should generate frames');
+        });
+
+        test('AnimationEngine can load and navigate basic program', function() {
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          const engine = new AnimationEngine();
+          engine.loadFrames(result.frames);
+          assertEquals(engine.getCurrentFrameIndex(), 0, 'Should start at frame 0');
+          engine.stepForward();
+          assert(engine.getCurrentFrameIndex() > 0, 'Should advance frame');
+        });
+
+        test('AnimationEngine can load and navigate fibonacci program', function() {
+          const result = SequenceGenerator.generateSequence(FIBONACCI_PROGRAM.instructions);
+          const engine = new AnimationEngine();
+          engine.loadFrames(result.frames);
+          assertEquals(engine.getCurrentFrameIndex(), 0, 'Should start at frame 0');
+          engine.stepForward();
+          assert(engine.getCurrentFrameIndex() > 0, 'Should advance frame');
+        });
+
+        test('Frame change events fire with correct state data', function() {
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          const engine = new AnimationEngine();
+          engine.loadFrames(result.frames);
+
+          let eventData = null;
+          window.addEventListener('cpu:framechange', function(e) {
+            eventData = e.detail;
+          }, { once: true });
+
+          engine.stepForward();
+          assert(eventData !== null, 'Event should fire');
+          assert(eventData.state, 'Event should have state');
+          assert(typeof eventData.index === 'number', 'Event should have index');
+        });
+
+        test('CPU_PROGRAMS registry exists', function() {
+          assert(CPU_PROGRAMS, 'CPU_PROGRAMS exists');
+          assert(CPU_PROGRAMS.basic, 'CPU_PROGRAMS.basic exists');
+          assert(CPU_PROGRAMS.fibonacci, 'CPU_PROGRAMS.fibonacci exists');
+        });
+
+        test('Basic program final state has correct register values', function() {
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          // Find the last frame before the J instruction loops back
+          // The J instruction is at the end, so get frame just before it
+          let targetFrame = null;
+          for (let i = result.frames.length - 1; i >= 0; i--) {
+            const frame = result.frames[i];
+            // Find a frame where $10 and $12 are set (after the ADD and LW)
+            if (frame.getRegister(10) > 0 && frame.getRegister(12) > 0) {
+              targetFrame = frame;
+              break;
+            }
+          }
+
+          assert(targetFrame !== null, 'Should find valid final state');
+          assertEquals(targetFrame.getRegister(8), 10, '$8 should be 10');
+          assertEquals(targetFrame.getRegister(9), 20, '$9 should be 20');
+          assertEquals(targetFrame.getRegister(10), 30, '$10 should be 30');
+          assertEquals(targetFrame.getRegister(12), 30, '$12 should be 30 (loaded from memory)');
+        });
+      }
+
+      function displayResults() {
+        const summaryEl = document.getElementById('summary');
+        const resultsEl = document.getElementById('results');
+
+        // Summary
+        const total = passCount + failCount;
+        if (failCount === 0) {
+          summaryEl.className = 'summary success';
+          summaryEl.textContent = `✓ All ${total} tests passed!`;
+        } else {
+          summaryEl.className = 'summary failure';
+          summaryEl.textContent = `✗ ${failCount} of ${total} tests failed`;
+        }
+
+        // Group results by module
+        const sections = {
+          'CPUState': [],
+          'InstructionSet': [],
+          'TimingController': [],
+          'AnimationEngine': [],
+          'SequenceGenerator': [],
+          'Integration': []
+        };
+
+        results.forEach(result => {
+          let section = 'Integration';
+          if (result.name.includes('CPUState')) section = 'CPUState';
+          else if (result.name.includes('InstructionSet')) section = 'InstructionSet';
+          else if (result.name.includes('TimingController')) section = 'TimingController';
+          else if (result.name.includes('AnimationEngine')) section = 'AnimationEngine';
+          else if (result.name.includes('ADDI') || result.name.includes('ADD') ||
+                   result.name.includes('SW') || result.name.includes('LW') ||
+                   result.name.includes('BEQ') || result.name.includes('Register $0') ||
+                   result.name.includes('SequenceGenerator')) section = 'SequenceGenerator';
+
+          sections[section].push(result);
+        });
+
+        // Render sections
+        Object.keys(sections).forEach(sectionName => {
+          if (sections[sectionName].length === 0) return;
+
+          const sectionDiv = document.createElement('div');
+          sectionDiv.className = 'test-section';
+
+          const title = document.createElement('h2');
+          title.textContent = sectionName;
+          sectionDiv.appendChild(title);
+
+          sections[sectionName].forEach(result => {
+            const item = document.createElement('div');
+            item.className = 'test-item ' + (result.pass ? 'pass' : 'fail');
+
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = result.pass ? 'PASS' : 'FAIL';
+            item.appendChild(label);
+
+            const name = document.createTextNode(result.name);
+            item.appendChild(name);
+
+            if (!result.pass && result.error) {
+              const error = document.createElement('div');
+              error.className = 'error-details';
+              error.textContent = result.error;
+              item.appendChild(error);
+            }
+
+            sectionDiv.appendChild(item);
+          });
+
+          resultsEl.appendChild(sectionDiv);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
