@@ -1,572 +1,687 @@
 # Phase 10: Basic Visualization - Research
 
 **Researched:** 2026-02-11
-**Domain:** Vanilla JavaScript DOM-based CPU visualization
-**Confidence:** MEDIUM-HIGH
+**Domain:** SVG-based block diagram visualization for 5-stage pipelined processor
+**Confidence:** HIGH
 
 ## Summary
 
-Phase 10 requires building interactive DOM-based visualizations for a 5-stage CPU pipeline and 32-register file. The visualization must display current pipeline state, register values, and highlight changes during animation playback.
+This phase re-implements the CPU visualization using SVG-based block diagrams instead of the existing text-based stage cards. The user has decided to replace the simple "IF: ADD $t0, $t1, $t2" stage cards with a hardware block diagram showing functional units (Instruction Memory, Register File, ALU, Data Memory), pipeline registers (F/D, D/X, X/M, M/W), multiplexers, and data flow paths. The visualization will show which instruction is in each pipeline stage, highlight active components, and display register values via tooltips.
 
-The existing codebase uses vanilla JavaScript with no frameworks, following a consistent design system with CSS custom properties. The CPUState class already tracks visualization metadata (changedRegisters, activeStages) making Phase 10 a pure UI layer that listens to 'cpu:framechange' events and updates DOM accordingly.
+Research confirms SVG is the optimal choice for this task: vector graphics ensure scalability, CSS enables smooth active/inactive state transitions, and JavaScript DOM manipulation provides straightforward component highlighting. Standard SVG primitives (`<rect>`, `<polygon>`, `<text>`, `<g>`) combined with proper namespace handling (`createElementNS`) deliver performant interactive diagrams.
 
-The standard approach is CSS Grid for dashboard layout (pipeline stages + register grid), DocumentFragment/template tags for efficient DOM updates, and ARIA live regions for accessibility. No external libraries needed - pure HTML/CSS/JS aligns with project constraints.
+**Primary recommendation:** Build SVG diagram with grouped components, use CSS classes for active/inactive states, implement tooltip hover with native `<title>` elements, and leverage existing event system (`cpu:framechange`) for state updates.
 
-**Primary recommendation:** Use CSS Grid two-column layout (pipeline visualization left, register grid right), event-driven updates via 'cpu:framechange' listener, and CSS classes for highlighting changed elements with transitions.
+<user_constraints>
+## User Constraints (from CONTEXT.md)
+
+### Locked Decisions
+
+**Visual Approach:**
+- SVG-based block diagram rendering (vector graphics, scalable, animatable paths)
+- Not canvas-based or HTML/CSS positioned elements
+
+**Components to Display:**
+- Major functional blocks: Instruction Memory, Register File, ALU, Data Memory
+- Pipeline registers: F/D, D/X, X/M, M/W (latches between stages)
+- Multiplexers and control logic (the mux triangles from slide diagrams)
+- PC (program counter) and adder logic
+- Any other vital components needed for completeness
+
+**Information Display During Execution:**
+- Instructions in each pipeline stage - Show which instruction is currently in F/D, D/X, X/M, M/W registers
+- Active component highlighting - Visual indication of which component is active (ALU lights up during EX, Memory lights up during MEM)
+- Register file contents - Display register values being read/written
+- **NOT included:** Values on data path wires (no "0x0400" labels on every wire)
+
+**Interaction Model:**
+- Tooltip on hover only - show basic component info when hovering over blocks
+- No click-to-expand modals or sidebars
+- Simple, non-intrusive information display
+
+**Layout and Supplementary Displays:**
+- Block diagram is the primary visualization
+- **Keep:** Register values grid (32 registers with hex values)
+- **Remove:** Stage cards showing "IF: ADD $t0, $t1, $t2" (redundant - block diagram shows this visually)
+- **Remove:** Cycle/instruction counter text (can be integrated into diagram or removed)
+
+### Claude's Discretion
+
+- Exact SVG layout and spacing
+- Color scheme for active/inactive states (should complement existing forest green theme)
+- Tooltip styling and content
+- Animation timing and transitions
+- Component sizing and positioning details
+
+### Reference Material
+
+**Duke ECE 350 slide decks:**
+- Slide 09: Pipelined Processors
+- URL: https://people.duke.edu/~tkb13/courses/ece350-2023fa/
+- Shows Insn Mem (left), Register File (center), ALU/SX (center-right), Data Mem (right)
+- Pipeline registers labeled F/D, D/X, X/M, M/W in red
+- Multiplexers shown as blue triangular shapes
+
+### Deferred Ideas (OUT OF SCOPE)
+
+None - discussion stayed within phase scope (visualization only, not adding new CPU features or controls)
+</user_constraints>
 
 ## Standard Stack
 
-### Core (Already in Place)
+### Core
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
-| Vanilla JS | ES6+ | DOM manipulation, event handling | Project constraint (no frameworks) |
-| CSS Grid | Native | Dashboard layout structure | Universal browser support (97%+) |
-| CSS Custom Properties | Native | Theming, dynamic styling | Already used in design-system.css |
-| CustomEvent API | Native | cpu:framechange communication | Already implemented in AnimationEngine |
+| Vanilla SVG | SVG 1.1 / SVG 2 | Vector graphics rendering | Native browser support, no dependencies, scales infinitely |
+| JavaScript DOM API | Native | SVG manipulation via `createElementNS` | Standard approach for dynamic SVG creation |
+| CSS3 | Native | Styling and transitions | Hardware-accelerated animations, declarative state changes |
 
-### Supporting (Native Browser APIs)
-| API | Purpose | When to Use |
-|-----|---------|-------------|
-| DocumentFragment | Batch DOM updates | Building register grid (32 elements) |
-| &lt;template&gt; tag | Reusable UI fragments | Pipeline stage cards, register cells |
-| ARIA live regions | Accessibility announcements | Dynamic content changes for screen readers |
-| CSS transitions | Visual feedback | Highlighting changed registers/stages |
+### Supporting
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| `structuredClone()` | ES2022 | Deep cloning state (existing) | Already used in Phase 9 for CPU state |
+| Custom Events API | Native | Event communication (existing) | Already used - `cpu:framechange` events |
+| `Uint32Array` | ES2015 | Register/memory storage (existing) | Already used in Phase 9 for 32-bit values |
 
 ### Alternatives Considered
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
-| CSS Grid | Flexbox only | Grid handles 2D layout better for dashboard structure |
-| Inline styles | CSS classes | Classes more maintainable, enable transitions |
-| React/Vue | Vanilla JS | Would add framework weight (project constraint: vanilla JS) |
-| Canvas API | DOM elements | DOM provides accessibility, easier styling, text selection |
+| SVG | HTML5 Canvas | Canvas requires full redraws, harder to manipulate individual elements, no DOM access to components |
+| SVG | HTML/CSS positioning | User explicitly rejected - harder to maintain complex diagrams, scaling issues |
+| Vanilla JS | D3.js | Overkill for static diagram with state updates - adds 250KB dependency for features we don't need |
+| Vanilla JS | JointJS | Designed for graph editing, not static processor diagrams - adds complexity |
+| Native `<title>` | Custom tooltip library | User wants simple tooltips - native `<title>` is accessible and works on all elements |
 
 **Installation:**
-No installation required - all native browser APIs.
+```bash
+# No installation required - all native browser APIs
+```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
 ```
-cpu-simulator/
-├── src/
-│   ├── visualization/
-│   │   ├── pipeline-view.js         # Pipeline stage visualization
-│   │   ├── register-view.js         # Register file visualization
-│   │   ├── execution-view.js        # Cycle/instruction counters
-│   │   └── cpu-visualizer.js        # Main coordinator
-│   └── assets/
-│       └── css/
-│           └── visualization.css    # Visualization-specific styles
-└── demo.html                        # Main interactive demo page
+cpu-simulator/src/visualization/
+├── block-diagram-view.js      # New: SVG block diagram component
+├── register-view.js            # Keep: Register grid (user decision)
+├── execution-view.js           # Remove or integrate: Cycle/instruction counter
+├── cpu-visualizer.js           # Update: Remove PipelineView, add BlockDiagramView
+└── visualization.css           # Update: Add SVG-specific styles
 ```
 
-### Pattern 1: Event-Driven View Updates
-**What:** Listen to 'cpu:framechange' events and update DOM based on CPUState changes
-**When to use:** All visualization components - decouples rendering from animation logic
+### Pattern 1: SVG Component Creation with Namespace
+
+**What:** Use `createElementNS` with correct SVG namespace for all SVG element creation
+
+**When to use:** Every time you create SVG elements dynamically (`<svg>`, `<rect>`, `<text>`, `<g>`, `<polygon>`, etc.)
+
 **Example:**
 ```javascript
-// Source: Existing AnimationEngine implementation
-class PipelineView {
-  constructor(containerElement) {
-    this.container = containerElement;
-    this.setupEventListener();
-  }
+// Source: MDN - Namespaces crash course
+// https://developer.mozilla.org/en-US/docs/Web/SVG/Namespaces_Crash_Course
 
-  setupEventListener() {
-    window.addEventListener('cpu:framechange', (event) => {
-      this.render(event.detail.state);
-    });
-  }
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  render(cpuState) {
-    // Update pipeline stage display based on cpuState.pipeline
-    // Use cpuState.activeStages to highlight active stages
-  }
-}
-```
+function createSVGElement(tagName, attributes = {}) {
+  const element = document.createElementNS(SVG_NS, tagName);
 
-### Pattern 2: CSS Grid Dashboard Layout
-**What:** Two-dimensional layout with named grid areas for pipeline, registers, controls
-**When to use:** Main demo page structure
-**Example:**
-```css
-/* Source: CSS Grid layout patterns 2026 */
-.cpu-dashboard {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "header header"
-    "pipeline registers"
-    "controls controls";
-  gap: var(--space-lg);
-}
-
-.pipeline-view { grid-area: pipeline; }
-.register-view { grid-area: registers; }
-.controls { grid-area: controls; }
-
-/* Responsive: stack on mobile */
-@media (max-width: 768px) {
-  .cpu-dashboard {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header"
-      "pipeline"
-      "registers"
-      "controls";
-  }
-}
-```
-
-### Pattern 3: DocumentFragment for Batch DOM Updates
-**What:** Build DOM structure in memory before inserting to minimize reflows
-**When to use:** Initial render of 32-register grid, pipeline stage cards
-**Example:**
-```javascript
-// Source: MDN DocumentFragment best practices
-function buildRegisterGrid(registerValues) {
-  const fragment = document.createDocumentFragment();
-
-  for (let i = 0; i < 32; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'register-cell';
-    cell.dataset.register = i;
-    cell.innerHTML = `
-      <div class="register-name">$${i}</div>
-      <div class="register-value">${formatHex(registerValues[i])}</div>
-    `;
-    fragment.appendChild(cell);
-  }
-
-  return fragment;
-}
-
-// Single DOM insertion
-container.appendChild(buildRegisterGrid(state.registers));
-```
-
-### Pattern 4: CSS Class-Based Highlighting
-**What:** Toggle CSS classes for changed registers/active stages instead of inline styles
-**When to use:** Visual feedback for state changes during animation
-**Example:**
-```javascript
-// Update changed registers
-function highlightChangedRegisters(cpuState) {
-  // Clear previous highlights
-  document.querySelectorAll('.register-cell.changed')
-    .forEach(el => el.classList.remove('changed'));
-
-  // Add new highlights
-  cpuState.changedRegisters.forEach(regNum => {
-    const cell = document.querySelector(`[data-register="${regNum}"]`);
-    cell.classList.add('changed');
+  // Set attributes (no namespace for most SVG attributes)
+  Object.entries(attributes).forEach(([key, value]) => {
+    element.setAttribute(key, value);
   });
+
+  return element;
 }
+
+// Usage
+const rect = createSVGElement('rect', {
+  x: 10,
+  y: 10,
+  width: 100,
+  height: 50,
+  class: 'alu-component'
+});
 ```
 
-```css
-/* CSS handles animation timing */
-.register-cell {
-  transition: background var(--timing-standard) var(--easing-standard);
-}
+**Critical:** Use `setAttribute()` not `setAttributeNS()` for standard SVG attributes (x, y, width, height, class). Only use `setAttributeNS()` for namespaced attributes like `xlink:href`.
 
-.register-cell.changed {
-  background: var(--color-accent-light);
-  animation: pulse 500ms ease-out;
-}
+### Pattern 2: Grouped Components for Hardware Blocks
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-```
+**What:** Use `<g>` elements to group related shapes that represent a single hardware component
 
-### Pattern 5: Monospace Alignment for Hex Values
-**What:** Use monospace fonts and fixed-width formatting for register/memory values
-**When to use:** Register display, memory display, binary/hex formatting
+**When to use:** For each major component (ALU, Register File, Memory, Muxes) that will be styled/highlighted as a unit
+
 **Example:**
 ```javascript
-// Source: Hex editor display patterns
-function formatHex(value) {
-  return '0x' + value.toString(16).toUpperCase().padStart(8, '0');
+// Instruction Memory component (left side)
+const instrMem = createSVGElement('g', {
+  class: 'component instruction-memory',
+  'data-component': 'IMEM'
+});
+
+// Background rectangle
+const rect = createSVGElement('rect', {
+  x: 20,
+  y: 100,
+  width: 120,
+  height: 80,
+  rx: 4
+});
+
+// Label
+const label = createSVGElement('text', {
+  x: 80,
+  y: 145,
+  'text-anchor': 'middle'
+});
+label.textContent = 'Instruction\nMemory';
+
+// Tooltip (native SVG)
+const title = createSVGElement('title');
+title.textContent = 'Instruction Memory - Fetches instructions from program';
+
+instrMem.appendChild(title);
+instrMem.appendChild(rect);
+instrMem.appendChild(label);
+```
+
+### Pattern 3: CSS-Driven State Changes
+
+**What:** Use CSS classes to control active/inactive visual states, leveraging hardware-accelerated transitions
+
+**When to use:** For component highlighting, pipeline register emphasis, data flow animation
+
+**Example:**
+```css
+/* Base component styling */
+.component rect {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-width: 2;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
 }
 
-function formatBinary(value) {
-  return '0b' + value.toString(2).padStart(32, '0');
+/* Active state highlighting */
+.component.active rect {
+  fill: var(--color-active-light);
+  stroke: var(--color-primary);
+  stroke-width: 3;
+}
+
+/* Component-specific colors (match existing stage colors) */
+.alu-component.active rect {
+  fill: #FFF3E0;
+  stroke: var(--stage-ex-color); /* Orange - already defined */
+}
+
+.register-file.active rect {
+  fill: #E3F2FD;
+  stroke: var(--stage-id-color); /* Blue */
+}
+
+.data-memory.active rect {
+  fill: #F3E5F5;
+  stroke: var(--stage-mem-color); /* Purple */
 }
 ```
 
+**JavaScript usage:**
+```javascript
+// Update active components based on CPU state
+function updateComponentStates(state) {
+  // Clear all active states
+  document.querySelectorAll('.component.active')
+    .forEach(el => el.classList.remove('active'));
+
+  // Highlight active components
+  if (state.pipeline.EX.active) {
+    document.querySelector('[data-component="ALU"]')
+      .classList.add('active');
+  }
+
+  if (state.pipeline.MEM.active && state.pipeline.MEM.memRead) {
+    document.querySelector('[data-component="DMEM"]')
+      .classList.add('active');
+  }
+}
+```
+
+### Pattern 4: ViewBox for Responsive Scaling
+
+**What:** Define SVG coordinate system with `viewBox`, let CSS control actual size
+
+**When to use:** Always - ensures diagram scales responsively across different screen sizes
+
+**Example:**
+```javascript
+// Source: MDN - preserveAspectRatio
+// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/preserveAspectRatio
+
+const svg = createSVGElement('svg', {
+  viewBox: '0 0 800 400',  // Internal coordinate system (800x400 units)
+  preserveAspectRatio: 'xMidYMid meet',  // Center and scale to fit
+  class: 'block-diagram'
+});
+```
+
 ```css
-.register-value, .memory-value {
+/* Let container control size, viewBox controls proportions */
+.block-diagram {
+  width: 100%;
+  height: auto;
+  max-width: 1200px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+```
+
+**Effect:** Diagram maintains aspect ratio, scales smoothly, works on any viewport size.
+
+### Pattern 5: Pipeline Register Emphasis
+
+**What:** Visually distinguish pipeline registers (F/D, D/X, X/M, M/W) as vertical red bars between stages, show current instruction in each
+
+**When to use:** To match reference architecture style and clearly delineate pipeline boundaries
+
+**Example:**
+```javascript
+// F/D pipeline register (between IF and ID stages)
+const fdRegister = createSVGElement('g', {
+  class: 'pipeline-register',
+  'data-pipeline-reg': 'FD'
+});
+
+// Vertical bar (red, matching reference slides)
+const bar = createSVGElement('rect', {
+  x: 160,
+  y: 80,
+  width: 8,
+  height: 240,
+  rx: 2
+});
+
+// Label
+const label = createSVGElement('text', {
+  x: 164,
+  y: 60,
+  'text-anchor': 'middle',
+  class: 'pipeline-label'
+});
+label.textContent = 'F/D';
+
+// Instruction display (updated dynamically)
+const instrText = createSVGElement('text', {
+  x: 164,
+  y: 340,
+  'text-anchor': 'middle',
+  class: 'pipeline-instruction',
+  'data-instruction-display': 'FD'
+});
+instrText.textContent = 'NOP';
+
+fdRegister.appendChild(bar);
+fdRegister.appendChild(label);
+fdRegister.appendChild(instrText);
+```
+
+```css
+.pipeline-register rect {
+  fill: #EF5350;  /* Red - matches reference slides */
+  stroke: #C62828;
+  stroke-width: 1;
+}
+
+.pipeline-label {
+  font-size: 14px;
+  font-weight: bold;
+  fill: #C62828;
+}
+
+.pipeline-instruction {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums; /* Fixed-width digits */
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  fill: var(--color-text);
+}
+```
+
+### Pattern 6: Multiplexer Triangles
+
+**What:** Represent multiplexers as blue triangular shapes (polygons) matching reference architecture style
+
+**When to use:** For all data path selection points (ALU input selection, write-back data selection, PC update selection)
+
+**Example:**
+```javascript
+// Source: MDN - SVG polygon
+// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polygon
+
+// Multiplexer before ALU (selects register vs immediate)
+const mux = createSVGElement('g', {
+  class: 'multiplexer',
+  'data-mux': 'ALU_SRC'
+});
+
+// Triangle pointing right
+const triangle = createSVGElement('polygon', {
+  points: '300,140 320,155 300,170',  // x,y pairs for triangle vertices
+  class: 'mux-shape'
+});
+
+const title = createSVGElement('title');
+title.textContent = 'ALU Source MUX - Selects register or immediate value';
+
+mux.appendChild(title);
+mux.appendChild(triangle);
+```
+
+```css
+.mux-shape {
+  fill: #2196F3;  /* Blue - matches reference slides */
+  stroke: #1976D2;
+  stroke-width: 1;
+  opacity: 0.8;
+}
+
+.multiplexer.active .mux-shape {
+  opacity: 1.0;
+  stroke-width: 2;
 }
 ```
 
 ### Anti-Patterns to Avoid
-- **Updating DOM on every frame during fast playback:** Use requestAnimationFrame throttling or batch updates to prevent performance issues
-- **Inline styles for highlighting:** Use CSS classes to enable transitions and maintain separation of concerns
-- **Creating new DOM nodes on every update:** Update textContent/classList only; create structure once
-- **Global querySelector every update:** Cache element references in view constructors
-- **Synchronous rendering blocking animation loop:** Keep render functions lightweight (<16ms)
+
+- **Using `innerHTML` for large SVG structures:** While `innerHTML` works for SVG, it causes full DOM reparse. Use DocumentFragment + `createElementNS` for initial construction, then update via class manipulation for state changes.
+
+- **Forgetting `createElementNS`:** Using `createElement('rect')` instead of `createElementNS(SVG_NS, 'rect')` creates HTML elements, not SVG elements - they won't render.
+
+- **Animating `x`/`y` attributes:** For smooth animations, use CSS `transform` instead of repeatedly setting `x`/`y` attributes. `transform` is hardware-accelerated.
+
+- **Overcomplicated tooltips:** User wants simple hover tooltips - use native `<title>` element inside SVG groups, not custom JavaScript libraries.
+
+- **Wire value labels:** User explicitly excluded data path wire values - don't add "0x0400" labels between components.
 
 ## Don't Hand-Roll
 
 | Problem | Don't Build | Use Instead | Why |
 |---------|-------------|-------------|-----|
-| Layout system | Custom positioning logic | CSS Grid + Flexbox | Native, responsive, accessible, well-tested |
-| State management | Custom pub/sub | CustomEvent on window | Already implemented, browser-optimized |
-| Value formatting | String concatenation | toLocaleString(), Intl.NumberFormat | Handles edge cases, i18n-ready |
-| Accessibility | Manual focus management | Native HTML elements + ARIA | Screen reader compatibility out-of-box |
-| Responsive design | JS resize listeners | CSS media queries | Declarative, performant, maintainable |
-| Animation timing | setTimeout loops | CSS transitions + requestAnimationFrame | GPU-accelerated, respects prefers-reduced-motion |
+| SVG element creation | Custom XML string builder | `createElementNS` + helper function | Proper namespace handling, DOM integration, attribute safety |
+| Responsive scaling | Manual resize listeners + coordinate math | `viewBox` + `preserveAspectRatio` | Browser-native, tested across devices, handles edge cases |
+| Tooltips | Custom positioned `<div>` with JS | Native SVG `<title>` element | Accessible, works on touch devices, no positioning logic |
+| State transitions | Manual style manipulation | CSS classes + transitions | Hardware-accelerated, declarative, easier to maintain |
+| Component grouping | Flat SVG structure with manual tracking | `<g>` elements with `data-*` attributes | Semantic grouping, single event target, simplified selection |
 
-**Key insight:** Browser APIs have evolved to handle common UI patterns efficiently. Custom solutions add maintenance burden and often miss edge cases (accessibility, internationalization, reduced motion preferences).
+**Key insight:** SVG has mature native features for all required functionality. The browser handles scaling, tooltips, grouping, and styling better than custom JavaScript. Leverage the platform.
 
 ## Common Pitfalls
 
-### Pitfall 1: Excessive DOM Updates During Playback
-**What goes wrong:** Updating all 32 register cells + 5 pipeline stages on every frame (2-4 FPS) causes jank
-**Why it happens:** Naive implementation updates entire view even when only 1-2 registers changed
-**How to avoid:** Check cpuState.changedRegisters and only update elements that actually changed
-**Warning signs:** Animation feels sluggish, CPU profiler shows high "Recalculate Style" time
+### Pitfall 1: Namespace Confusion
 
-### Pitfall 2: Layout Thrashing (Read-Write-Read Pattern)
-**What goes wrong:** Reading offsetHeight/clientWidth after DOM writes forces synchronous reflow
-**Why it happens:** Measuring elements to position tooltips or calculate sizes
-**How to avoid:** Batch all reads before writes, or use ResizeObserver for async measurement
-**Warning signs:** Chrome DevTools shows "Forced reflow" warnings
+**What goes wrong:** SVG elements created with `createElement()` instead of `createElementNS()` render as empty boxes or not at all.
 
-### Pitfall 3: Inaccessible Dynamic Content
-**What goes wrong:** Screen readers don't announce register value changes or pipeline stage transitions
-**Why it happens:** Forgetting ARIA live regions for dynamic content
-**How to avoid:** Use aria-live="polite" on register/cycle counter containers
-**Warning signs:** Testing with VoiceOver/NVDA reveals no feedback during animation
+**Why it happens:** Browsers need explicit namespace declaration to distinguish SVG from HTML. Without SVG namespace (`http://www.w3.org/2000/svg`), elements are treated as unknown HTML elements.
 
-### Pitfall 4: Non-Monospace Font Alignment Issues
-**What goes wrong:** Hex values like 0x0000000A and 0xFFFFFFFF have different widths, causing layout shift
-**Why it happens:** Using proportional font for numeric data
-**How to avoid:** Set font-family: var(--font-mono) and font-variant-numeric: tabular-nums on value displays
-**Warning signs:** Register grid column widths jump during value updates
+**How to avoid:**
+- Always use `createElementNS(SVG_NS, tagName)` for SVG elements
+- Store namespace constant: `const SVG_NS = 'http://www.w3.org/2000/svg';`
+- Use `setAttribute()` for standard SVG attributes (NOT `setAttributeNS()`)
+- Only use `setAttributeNS()` for `xlink:href` and other namespaced attributes
 
-### Pitfall 5: Missing Responsive Breakpoints
-**What goes wrong:** Two-column layout becomes unusable on mobile/tablet
-**Why it happens:** Assuming desktop viewport
-**How to avoid:** Test at 320px, 768px, 1024px breakpoints; use CSS Grid auto-fit/minmax
-**Warning signs:** Horizontal scroll on mobile, text overflow, tiny touch targets
+**Warning signs:** Elements appear in DOM inspector but don't render visually; console shows no errors.
 
-### Pitfall 6: Performance Degradation with Template Cloning
-**What goes wrong:** Cloning &lt;template&gt; nodes 32 times per frame update is slower than expected
-**Why it happens:** MDN 2026 research shows DocumentFragment performance is "often overstated"
-**How to avoid:** Create DOM structure once, update textContent/classList only on subsequent frames
-**Warning signs:** Profiler shows significant time in cloneNode()
+### Pitfall 2: Text Positioning and Anchoring
+
+**What goes wrong:** SVG `<text>` elements position from baseline, not top-left like HTML - text appears cut off or misaligned.
+
+**Why it happens:** SVG text uses baseline alignment by default. Coordinate (`x`, `y`) is the baseline position, not the top-left corner.
+
+**How to avoid:**
+- Use `text-anchor="middle"` for centered text
+- Account for font size when positioning (y-coordinate is baseline, add ~70% of font size to get visual center)
+- Use `dominant-baseline="middle"` for vertical centering
+- Test with actual content - "gjpqy" renders lower than "ABCD" due to descenders
+
+**Warning signs:** Text appears too high/low, cut off by component boundaries, not centered despite `text-anchor: middle`.
+
+### Pitfall 3: ViewBox Coordinate Mismatches
+
+**What goes wrong:** Components positioned at pixel coordinates don't match where they render after setting `viewBox`.
+
+**Why it happens:** `viewBox` defines internal coordinate system independent of actual SVG size. `viewBox="0 0 800 400"` means the internal space is 800×400 units, regardless of CSS width.
+
+**How to avoid:**
+- Set `viewBox` first, then use those coordinates consistently
+- Example: `viewBox="0 0 800 400"` means x ranges 0-800, y ranges 0-400
+- Don't mix pixel-based positioning with viewBox coordinates
+- Use `preserveAspectRatio="xMidYMid meet"` to maintain aspect ratio
+
+**Warning signs:** Components overlap unexpectedly, diagram doesn't fill container, proportions are distorted.
+
+### Pitfall 4: Event Delegation with SVG
+
+**What goes wrong:** Click/hover events on `<g>` elements don't fire when clicking child shapes.
+
+**Why it happens:** SVG child elements receive events, not the parent `<g>`. Unlike HTML where events bubble predictably, SVG requires explicit pointer-events handling.
+
+**How to avoid:**
+- Set `pointer-events: bounding-box` on `<g>` elements for easier targeting
+- OR attach listeners to child shapes and use `event.currentTarget.closest('g')`
+- For tooltips, put `<title>` inside the `<g>` - it works for all children
+
+**Warning signs:** Must click exact shape boundary for interaction, hover areas feel inconsistent.
+
+### Pitfall 5: Text Wrapping and Line Breaks
+
+**What goes wrong:** SVG `<text>` doesn't support automatic line wrapping - `\n` in `textContent` doesn't create line breaks.
+
+**Why it happens:** SVG text is designed for precise positioning, not flow layout like HTML.
+
+**How to avoid:**
+- Use multiple `<text>` elements with adjusted `y` values for multi-line labels
+- OR use `<tspan>` elements with `dy` offsets:
+  ```javascript
+  const text = createSVGElement('text', { x: 100, y: 100 });
+  const line1 = createSVGElement('tspan', { x: 100, dy: 0 });
+  line1.textContent = 'Instruction';
+  const line2 = createSVGElement('tspan', { x: 100, dy: 16 });
+  line2.textContent = 'Memory';
+  text.appendChild(line1);
+  text.appendChild(line2);
+  ```
+- For single-line labels, keep text short
+
+**Warning signs:** Component labels show "\n" literally, text runs off component boundaries.
+
+### Pitfall 6: Z-Index and Layering
+
+**What goes wrong:** SVG doesn't respect CSS `z-index` - elements added later appear on top regardless of z-index value.
+
+**Why it happens:** SVG uses painter's algorithm - elements are drawn in DOM order, not CSS stacking order.
+
+**How to avoid:**
+- Order matters: add background shapes first, foreground elements last
+- For dynamic re-ordering, use `element.parentNode.appendChild(element)` to move to top
+- Structure SVG logically: backgrounds → components → labels → tooltips
+
+**Warning signs:** Labels hidden behind components, active highlighting covered by inactive elements.
 
 ## Code Examples
 
-Verified patterns from official sources and existing codebase:
+Verified patterns from research and best practices:
 
-### CSS Grid Dashboard Layout
-```css
-/* Source: Project design-system.css + CSS Grid 2026 patterns */
-.cpu-demo-container {
-  display: grid;
-  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
-  grid-template-rows: auto 1fr auto;
-  gap: var(--space-lg);
-  padding: var(--space-lg);
-  max-width: 1400px;
-  margin: 0 auto;
-}
+### Complete SVG Block Diagram Initialization
 
-.pipeline-visualization {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-md);
-}
+```javascript
+// Create root SVG element with responsive viewBox
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
-.register-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-sm);
-  padding: var(--space-md);
-}
+function createBlockDiagram(container) {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 800 400');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('class', 'cpu-block-diagram');
 
-@media (max-width: 768px) {
-  .cpu-demo-container {
-    grid-template-columns: 1fr;
-  }
+  // Add components in layer order (back to front)
+  svg.appendChild(createDataPaths());       // Background: wires/connections
+  svg.appendChild(createComponents());      // Middle: functional units
+  svg.appendChild(createPipelineRegisters()); // Foreground: F/D, D/X, etc.
+  svg.appendChild(createLabels());          // Top: text labels
 
-  .pipeline-visualization {
-    grid-template-columns: 1fr;
-  }
+  container.appendChild(svg);
+  return svg;
 }
 ```
 
-### Event-Driven Rendering
+### Reusable Component Builder
+
 ```javascript
-// Source: Existing AnimationEngine pattern
-class CPUVisualizer {
-  constructor(containerElement) {
-    this.container = containerElement;
-    this.pipelineView = null;
-    this.registerView = null;
+function createComponent(type, x, y, width, height, label) {
+  const g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('class', `component ${type}`);
+  g.setAttribute('data-component', type.toUpperCase());
 
-    this.setupViews();
-    this.setupEventListeners();
-  }
+  // Tooltip
+  const title = document.createElementNS(SVG_NS, 'title');
+  title.textContent = getComponentDescription(type);
+  g.appendChild(title);
 
-  setupEventListeners() {
-    // Listen to animation frame changes
-    window.addEventListener('cpu:framechange', (event) => {
-      this.render(event.detail.state);
-    });
-  }
+  // Background rect
+  const rect = document.createElementNS(SVG_NS, 'rect');
+  rect.setAttribute('x', x);
+  rect.setAttribute('y', y);
+  rect.setAttribute('width', width);
+  rect.setAttribute('height', height);
+  rect.setAttribute('rx', 4);
+  g.appendChild(rect);
 
-  render(cpuState) {
-    // Delegate to specialized views
-    this.pipelineView.update(cpuState.pipeline, cpuState.activeStages);
-    this.registerView.update(cpuState.registers, cpuState.changedRegisters);
-    this.executionView.update(cpuState.cycleCount, cpuState.instructionCount);
-  }
+  // Label
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('x', x + width / 2);
+  text.setAttribute('y', y + height / 2 + 5); // +5 for baseline adjustment
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('class', 'component-label');
+  text.textContent = label;
+  g.appendChild(text);
+
+  return g;
 }
+
+// Usage
+const alu = createComponent('alu', 400, 150, 80, 100, 'ALU');
+const regFile = createComponent('register-file', 250, 120, 100, 160, 'Register File');
 ```
 
-### Efficient Register Update (Only Changed)
+### State Update Handler
+
 ```javascript
-// Source: DOM manipulation best practices 2026
-class RegisterView {
-  constructor(containerElement) {
-    this.container = containerElement;
-    this.cells = new Map(); // Cache DOM references
-    this.buildGrid();
+// Integrate with existing cpu:framechange event system
+function handleFrameChange(event) {
+  const state = event.detail.state;
+
+  // Clear all active states
+  document.querySelectorAll('.component.active, .pipeline-register.active')
+    .forEach(el => el.classList.remove('active'));
+
+  // Highlight active components based on pipeline stage
+  if (state.pipeline.IF.active) {
+    document.querySelector('[data-component="IMEM"]')?.classList.add('active');
   }
 
-  buildGrid() {
-    // Create structure once
-    const fragment = document.createDocumentFragment();
-
-    for (let i = 0; i < 32; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'register-cell';
-      cell.dataset.register = i;
-      cell.innerHTML = `
-        <div class="register-name">$${i}</div>
-        <div class="register-value" data-value>0x00000000</div>
-      `;
-
-      this.cells.set(i, {
-        element: cell,
-        valueEl: cell.querySelector('[data-value]')
-      });
-
-      fragment.appendChild(cell);
-    }
-
-    this.container.appendChild(fragment);
+  if (state.pipeline.ID.active) {
+    document.querySelector('[data-component="REGISTER-FILE"]')?.classList.add('active');
   }
 
-  update(registers, changedRegisters) {
-    // Only update changed registers
-    changedRegisters.forEach(regNum => {
-      const { element, valueEl } = this.cells.get(regNum);
-
-      // Update value
-      valueEl.textContent = this.formatHex(registers[regNum]);
-
-      // Add highlight class (CSS handles animation)
-      element.classList.add('changed');
-
-      // Remove highlight after animation
-      setTimeout(() => {
-        element.classList.remove('changed');
-      }, 500);
-    });
+  if (state.pipeline.EX.active) {
+    document.querySelector('[data-component="ALU"]')?.classList.add('active');
   }
 
-  formatHex(value) {
-    return '0x' + value.toString(16).toUpperCase().padStart(8, '0');
-  }
-}
-```
-
-### Pipeline Stage Visualization
-```javascript
-// Source: Educational CPU visualization patterns
-class PipelineView {
-  constructor(containerElement) {
-    this.container = containerElement;
-    this.stages = ['IF', 'ID', 'EX', 'MEM', 'WB'];
-    this.stageElements = new Map();
-    this.buildPipeline();
-  }
-
-  buildPipeline() {
-    const fragment = document.createDocumentFragment();
-
-    this.stages.forEach(stageName => {
-      const stageCard = document.createElement('div');
-      stageCard.className = 'pipeline-stage';
-      stageCard.dataset.stage = stageName;
-      stageCard.innerHTML = `
-        <div class="stage-header">${stageName}</div>
-        <div class="stage-content" data-content>
-          <div class="stage-instruction">-</div>
-          <div class="stage-details"></div>
-        </div>
-      `;
-
-      this.stageElements.set(stageName, {
-        element: stageCard,
-        contentEl: stageCard.querySelector('[data-content]')
-      });
-
-      fragment.appendChild(stageCard);
-    });
-
-    this.container.appendChild(fragment);
-  }
-
-  update(pipeline, activeStages) {
-    this.stages.forEach(stageName => {
-      const { element, contentEl } = this.stageElements.get(stageName);
-      const stageData = pipeline[stageName];
-
-      // Toggle active class
-      if (activeStages.has(stageName)) {
-        element.classList.add('active');
-      } else {
-        element.classList.remove('active');
-      }
-
-      // Update instruction display
-      const instruction = stageData.instruction;
-      const instrEl = contentEl.querySelector('.stage-instruction');
-
-      if (instruction && stageData.active) {
-        instrEl.textContent = this.formatInstruction(instruction);
-      } else {
-        instrEl.textContent = '-';
-      }
-    });
-  }
-
-  formatInstruction(instruction) {
-    // Format: "ADD $10, $8, $9"
-    const { mnemonic, rs, rt, rd, immediate } = instruction;
-
-    if (mnemonic === 'ADDI' || mnemonic === 'LW' || mnemonic === 'SW') {
-      return `${mnemonic} $${rt}, $${rs}, ${immediate}`;
-    } else if (mnemonic === 'BEQ') {
-      return `${mnemonic} $${rs}, $${rt}, ${immediate}`;
-    } else if (mnemonic === 'J') {
-      return `${mnemonic} ${immediate}`;
-    } else {
-      return `${mnemonic} $${rd}, $${rs}, $${rt}`;
+  if (state.pipeline.MEM.active) {
+    if (state.pipeline.MEM.memRead || state.pipeline.MEM.memWrite) {
+      document.querySelector('[data-component="DMEM"]')?.classList.add('active');
     }
   }
+
+  // Update pipeline register instruction displays
+  updatePipelineRegisterDisplays(state);
+}
+
+function updatePipelineRegisterDisplays(state) {
+  const stages = ['FD', 'DX', 'XM', 'MW'];
+  const stageMap = {
+    'FD': 'IF',  // F/D shows what IF stage has
+    'DX': 'ID',  // D/X shows what ID stage has
+    'XM': 'EX',  // X/M shows what EX stage has
+    'MW': 'MEM'  // M/W shows what MEM stage has
+  };
+
+  stages.forEach(pipeReg => {
+    const stageName = stageMap[pipeReg];
+    const display = document.querySelector(`[data-instruction-display="${pipeReg}"]`);
+
+    if (display) {
+      const instruction = state.pipeline.IF.instruction; // All stages share instruction
+      const active = state.pipeline[stageName].active;
+
+      if (active && instruction) {
+        display.textContent = `${instruction.mnemonic} ${formatOperands(instruction)}`;
+      } else {
+        display.textContent = 'NOP';
+      }
+    }
+  });
 }
 ```
 
-### ARIA Live Region for Accessibility
-```html
-<!-- Source: WCAG 2.1 AA live regions best practices -->
-<div class="execution-state" aria-live="polite" aria-atomic="true">
-  <div class="stat">
-    <span class="label">Cycle:</span>
-    <span class="value" id="cycle-count">0</span>
-  </div>
-  <div class="stat">
-    <span class="label">Instructions:</span>
-    <span class="value" id="instruction-count">0</span>
-  </div>
-</div>
-```
+### CSS Active State Styling
 
-```javascript
-// Updates announced automatically by screen readers
-function updateExecutionState(cycleCount, instructionCount) {
-  document.getElementById('cycle-count').textContent = cycleCount;
-  document.getElementById('instruction-count').textContent = instructionCount;
-  // aria-live="polite" causes screen reader to announce after current speech
-}
-```
-
-### CSS Color-Coded Pipeline Stages
 ```css
-/* Source: Educational CPU pipeline visual design patterns */
-:root {
-  --stage-if: #4CAF50;    /* Green - Fetch */
-  --stage-id: #2196F3;    /* Blue - Decode */
-  --stage-ex: #FF9800;    /* Orange - Execute */
-  --stage-mem: #9C27B0;   /* Purple - Memory */
-  --stage-wb: #F44336;    /* Red - Write Back */
+/* Component base styles */
+.component rect {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-width: 2;
+  transition: all 0.3s ease;
 }
 
-.pipeline-stage {
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
-  padding: var(--space-md);
-  background: var(--color-surface);
-  transition: all var(--timing-standard) var(--easing-standard);
+/* Active highlighting */
+.component.active rect {
+  stroke-width: 3;
 }
 
-.pipeline-stage[data-stage="IF"].active {
-  border-color: var(--stage-if);
-  background: color-mix(in srgb, var(--stage-if) 10%, white);
+/* Component-specific active colors */
+.alu.active rect {
+  fill: #FFF3E0;
+  stroke: var(--stage-ex-color); /* Orange from existing palette */
 }
 
-.pipeline-stage[data-stage="ID"].active {
-  border-color: var(--stage-id);
-  background: color-mix(in srgb, var(--stage-id) 10%, white);
+.register-file.active rect {
+  fill: #E3F2FD;
+  stroke: var(--stage-id-color); /* Blue */
 }
 
-.pipeline-stage[data-stage="EX"].active {
-  border-color: var(--stage-ex);
-  background: color-mix(in srgb, var(--stage-ex) 10%, white);
+.data-memory.active rect,
+.instruction-memory.active rect {
+  fill: #F3E5F5;
+  stroke: var(--stage-mem-color); /* Purple */
 }
 
-.pipeline-stage[data-stage="MEM"].active {
-  border-color: var(--stage-mem);
-  background: color-mix(in srgb, var(--stage-mem) 10%, white);
+/* Pipeline registers (red vertical bars) */
+.pipeline-register rect {
+  fill: #EF5350;
+  stroke: #C62828;
+  stroke-width: 1;
 }
 
-.pipeline-stage[data-stage="WB"].active {
-  border-color: var(--stage-wb);
-  background: color-mix(in srgb, var(--stage-wb) 10%, white);
+/* Multiplexers (blue triangles) */
+.multiplexer polygon {
+  fill: #2196F3;
+  stroke: #1976D2;
+  stroke-width: 1;
+  opacity: 0.8;
 }
 
-.stage-header {
-  font-weight: bold;
-  font-size: var(--text-lg);
-  margin-bottom: var(--space-sm);
-  font-family: var(--font-mono);
-}
-
-.stage-instruction {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-text);
-  min-height: 1.5em; /* Prevent layout shift */
-}
-```
-
-### Responsive Monospace Formatting
-```css
-/* Source: Monospace font best practices 2026 */
-.register-value, .memory-address, .hex-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums; /* Fixed-width numerics */
-  letter-spacing: 0.05em;
-  color: var(--color-text);
-}
-
-/* Ensure consistent width for hex values */
-.register-value::before {
-  content: '0x';
-  opacity: 0.6;
+.multiplexer.active polygon {
+  opacity: 1.0;
+  stroke-width: 2;
 }
 ```
 
@@ -574,82 +689,82 @@ function updateExecutionState(cycleCount, instructionCount) {
 
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
-| jQuery DOM manipulation | Vanilla JS with cached refs | 2020-2024 | Smaller bundle, native performance, no deps |
-| Inline styles | CSS classes + transitions | 2023+ | GPU acceleration, respects prefers-reduced-motion |
-| Tables for layout | CSS Grid | 2017+ | Responsive without media query complexity |
-| setInterval for animation | requestAnimationFrame | 2015+ | 60fps sync with browser paint cycle |
-| Manual ARIA | Semantic HTML + native elements | 2021+ | Better screen reader support out-of-box |
-| Sass/LESS variables | CSS custom properties | 2020+ | Runtime theming, no build step |
+| Stage cards (text-based) | SVG block diagram | Phase 10 re-plan (2026-02) | More educational - shows hardware architecture visually |
+| Inline SVG in HTML | JavaScript-generated SVG | Modern practice | Dynamic updates easier, separation of concerns |
+| Custom tooltip libraries | Native `<title>` element | SVG 1.1+ (2003) | Accessible, lightweight, works on touch devices |
+| Manual coordinate math | `viewBox` + `preserveAspectRatio` | SVG 1.0 (2001) | Responsive by default, browser-optimized |
 
 **Deprecated/outdated:**
-- &lt;table&gt; for layout: Use CSS Grid for two-dimensional layouts
-- innerHTML for updates: Use textContent for text-only updates (XSS prevention)
-- DocumentFragment performance claims: MDN 2026 notes performance benefit "often overstated" - optimize for readability
-- offsetWidth/Height for measurements: Use ResizeObserver API for async, non-blocking measurement
+- **`innerHTML` for SVG manipulation:** Modern approach uses `createElementNS` with DocumentFragment for performance
+- **`xlink:href` for image links:** SVG 2.0 uses plain `href` attribute (though `xlink:href` still widely supported for compatibility)
+- **External SVG with `<object>` or `<embed>`:** Inline SVG preferred for JavaScript manipulation and styling
 
 ## Open Questions
 
-1. **Should register values display in hex, decimal, or both?**
-   - What we know: Academic CPU visualizers typically show hex (0x format)
-   - What's unclear: User preference for decimal vs hex vs binary
-   - Recommendation: Default to hex, add toggle in Phase 11 (controls enhancement)
+1. **Exact component layout from Duke ECE 350 slides**
+   - What we know: Slide 09 shows standard 5-stage pipeline layout (Insn Mem → Reg File → ALU → Data Mem), pipeline registers in red, muxes as blue triangles
+   - What's unclear: Exact positioning, spacing, wire routing details
+   - Recommendation: Reference the general layout, adapt spacing/proportions for web display (likely more horizontal space needed for labels)
 
-2. **How much pipeline stage detail to show?**
-   - What we know: CPUState tracks instruction, opcode, rs/rt/rd, aluResult, etc.
-   - What's unclear: Is full detail overwhelming or educational?
-   - Recommendation: Phase 10 shows instruction + active indicator; Phase 11+ adds detail panel
+2. **Pipeline register instruction display positioning**
+   - What we know: Need to show which instruction is in each pipeline register (F/D, D/X, X/M, M/W)
+   - What's unclear: Best placement - below register bar, inside bar, or floating above?
+   - Recommendation: Place below pipeline register bars (similar to labels) using small monospace text - keeps diagram clean, follows reference style
 
-3. **Performance threshold for 32 register updates?**
-   - What we know: Only changed registers need updates (typically 1-3 per cycle)
-   - What's unclear: Actual performance on low-end devices
-   - Recommendation: Implement selective updates; measure with Chrome DevTools on throttled CPU
+3. **Register file read/write visualization detail**
+   - What we know: User wants to display "register values being read/written"
+   - What's unclear: Show this via tooltip on Register File component? Or separate indicator?
+   - Recommendation: Tooltip on hover of Register File showing "Reading: $t0, $t1" and "Writing: $t2" - keeps main diagram uncluttered, user rejected wire value labels
 
-4. **Color-coding strategy for register changes vs pipeline stages?**
-   - What we know: Educational pipeline diagrams use color per stage (IF=green, ID=blue, etc.)
-   - What's unclear: Does this conflict with register highlight colors?
-   - Recommendation: Use stage border colors + neutral yellow/gold for register highlights
+4. **Active component highlighting persistence**
+   - What we know: Components light up when active (ALU during EX, Memory during MEM)
+   - What's unclear: Should highlighting persist through subsequent stages or clear immediately?
+   - Recommendation: Clear on next frame - matches animation flow, prevents visual clutter, aligns with cycle-accurate behavior
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [MDN: CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout) - Layout structure patterns
-- [MDN: DocumentFragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment) - Performance characteristics
-- [MDN: ARIA Live Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions) - Accessibility implementation
-- [MDN: Using CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties) - Theming patterns
-- Existing codebase: /Users/orases/Aaron/website/cpu-simulator/src/core/cpu-state.js (CPUState structure)
-- Existing codebase: /Users/orases/Aaron/website/cpu-simulator/src/animation/animation-engine.js (Event patterns)
-- Existing codebase: /Users/orases/Aaron/website/docs/assets/css/design-system.css (Design tokens)
+
+**SVG Standards and Documentation:**
+- [MDN - Namespaces crash course](https://developer.mozilla.org/en-US/docs/Web/SVG/Namespaces_Crash_Course) - Namespace handling, createElementNS
+- [MDN - Basic Shapes](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes) - SVG primitives (rect, polygon, circle)
+- [MDN - Paths](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorials/SVG_from_scratch/Paths) - Path syntax for connections
+- [MDN - preserveAspectRatio](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/preserveAspectRatio) - Responsive scaling
+
+**RISC Architecture:**
+- [Organization of Computer Systems: Processor & Datapath](https://www.cise.ufl.edu/~mssz/CompOrg/CDA-proc.html) - MIPS datapath components
+- [Classic RISC pipeline - Wikipedia](https://en.wikipedia.org/wiki/Classic_RISC_pipeline) - 5-stage pipeline architecture
+- [CSC236 Data Structures - MIPS Datapath](https://cs.middlesexcc.edu/~schatz/csc264/handouts/mips.datapath.html) - Component descriptions
 
 ### Secondary (MEDIUM confidence)
-- [CSS Grid vs Flexbox in 2026 - TheLinuxCode](https://thelinuxcode.com/css-grid-vs-flexbox-in-2026-practical-differences-mental-patterns-and-real-layout-patterns/) - Layout decision matrix
-- [Patterns for Memory Efficient DOM Manipulation - Frontend Masters](https://frontendmasters.com/blog/patterns-for-memory-efficient-dom-manipulation/) - DOM update strategies
-- [ARIA Live Regions for Dynamic Content - UXPin](https://www.uxpin.com/studio/blog/aria-live-regions-for-dynamic-content/) - Accessibility patterns
-- [CSS Custom Properties Theming - NamasteDev](https://namastedev.com/blog/how-to-use-custom-properties-and-themes-in-modern-css/) - Design system integration
-- [Best Monospaced Google Fonts 2026 - Lexington Themes](https://lexingtonthemes.com/blog/best-new-monospaced-google-fonts-2026) - Typography recommendations
 
-### Tertiary (LOW confidence - research findings)
-- [Interactive CPU Architecture Simulator - YoMotherboard](https://yomotherboard.com/interactive-cpu-architecture-simulator/) - Educational patterns (content not accessible)
-- [GeeksforGeeks: Pipelined Architecture](https://www.geeksforgeeks.org/computer-organization-architecture/pipelined-architecture-with-its-diagram/) - Visual design patterns with color coding
-- [Hex Editor Neo Documentation](https://hhdsoftwaredocs.online/hex/customization/binary-editor/editor.html) - Monospace font requirements for hex display
+**Best Practices and Tutorials:**
+- [Tooltip Best Practices | CSS-Tricks](https://css-tricks.com/tooltip-best-practices/) - Tooltip implementation guidance
+- [Mastering SVG Hover Effects](https://www.svgator.com/blog/mastering-svg-hover-effects-tips-examples-and-best-practices/) - CSS hover animations
+- [Using Javascript with SVG](https://www.petercollingridge.co.uk/tutorials/svg/interactive/javascript/) - DOM manipulation patterns
+- [How to Scale SVG | CSS-Tricks](https://css-tricks.com/scale-svg/) - Responsive SVG techniques
+
+**Performance:**
+- [Updates in hardware-accelerated animation capabilities | Chrome for Developers](https://developer.chrome.com/blog/hardware-accelerated-animations) - Transform vs position animation
+- [innerHTML vs createElement/appendChild | Medium](https://medium.com/@kevinchi118/innerhtml-vs-createelement-appendchild-3da39275a694) - DOM manipulation performance
+
+### Tertiary (LOW confidence - informational only)
+
+- [Flourish Interactive SVG](https://flourish.studio/blog/interactive-svg-template/) - Commercial tool reference (not using, but validates approach)
+- [6502 svg schematic](https://davidmjc.github.io/6502/) - Example of interactive processor diagram
 
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH - All native APIs, already in use in codebase
-- Architecture: HIGH - Event-driven pattern established, CSS Grid well-documented
-- Pitfalls: MEDIUM - Based on general DOM performance best practices, not CPU-specific testing
-- Code examples: HIGH - Derived from existing codebase patterns + verified MDN sources
+- Standard stack: HIGH - SVG and vanilla JS are proven technologies, no uncertainty
+- Architecture: HIGH - Patterns verified through MDN docs and existing codebase integration
+- Component layout: MEDIUM - Reference slides guide structure, but exact positioning is Claude's discretion
+- Pitfalls: HIGH - Namespace issues, text positioning, viewBox coordination are well-documented gotchas
 
 **Research date:** 2026-02-11
-**Valid until:** 2026-03-11 (30 days - stable technologies, mostly native APIs)
+**Valid until:** ~30 days (SVG/DOM standards stable, processor architecture reference stable)
 
 **Key dependencies:**
-- CPUState metadata (changedRegisters, activeStages) - already implemented
-- AnimationEngine events (cpu:framechange) - already implemented
-- Design system tokens (colors, spacing, fonts) - already defined
-
-**Technical debt to avoid:**
-- Don't create custom grid system (use CSS Grid)
-- Don't build custom event bus (use CustomEvent)
-- Don't hand-roll number formatting (use native toString(16) + padStart)
-- Don't skip ARIA attributes (phase 10 compliance required)
+- Existing Phase 9 code: AnimationEngine, CPUState, cpu:framechange events
+- Existing Phase 10 code: RegisterView (keep), ExecutionView (remove/integrate)
+- Design system: visualization.css (update), forest green theme (existing)
