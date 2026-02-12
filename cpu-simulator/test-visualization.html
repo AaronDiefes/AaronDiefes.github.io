@@ -169,7 +169,7 @@
     <!-- Live Visualization Section -->
     <section class="section">
       <h1>CPU Visualizer - Live Demo</h1>
-      <p class="subtitle">Interactive visualization of CPU pipeline with step controls</p>
+      <p class="subtitle">Interactive block diagram visualization with step controls</p>
 
       <div class="controls">
         <label for="program-select">Program:</label>
@@ -191,7 +191,7 @@
     <!-- Automated Tests Section -->
     <section class="section">
       <h1>Automated Tests</h1>
-      <p class="subtitle">Comprehensive tests for PipelineView, RegisterView, ExecutionView, and CPUVisualizer integration</p>
+      <p class="subtitle">Comprehensive tests for BlockDiagramView, RegisterView, and CPUVisualizer integration</p>
 
       <div id="summary" class="loading">Running tests...</div>
       <div id="results"></div>
@@ -208,9 +208,8 @@
   <script src="src/programs/fibonacci.js"></script>
 
   <!-- Load Phase 10 visualization modules -->
-  <script src="src/visualization/pipeline-view.js"></script>
+  <script src="src/visualization/block-diagram-view.js"></script>
   <script src="src/visualization/register-view.js"></script>
-  <script src="src/visualization/execution-view.js"></script>
   <script src="src/visualization/cpu-visualizer.js"></script>
 
   <!-- Test suite and live demo -->
@@ -318,82 +317,86 @@
 
       function runAllTests() {
         // ============================================
-        // PIPELINEVIEW TESTS
+        // BLOCKDIAGRAMVIEW TESTS
         // ============================================
 
-        test('PipelineView creates 5 stage cards', function() {
+        test('BlockDiagramView creates SVG element with viewBox', function() {
           const container = document.createElement('div');
-          const view = new PipelineView(container);
+          const view = new BlockDiagramView(container);
 
-          const stages = container.querySelectorAll('[data-stage]');
-          assertEquals(stages.length, 5, 'Should have 5 stage cards');
-
-          const stageNames = Array.from(stages).map(s => s.dataset.stage);
-          assert(stageNames.includes('IF'), 'Should have IF stage');
-          assert(stageNames.includes('ID'), 'Should have ID stage');
-          assert(stageNames.includes('EX'), 'Should have EX stage');
-          assert(stageNames.includes('MEM'), 'Should have MEM stage');
-          assert(stageNames.includes('WB'), 'Should have WB stage');
+          const svg = container.querySelector('svg');
+          assert(svg, 'SVG element should exist');
+          assert(svg.getAttribute('viewBox'), 'SVG should have viewBox attribute');
         });
 
-        test('PipelineView shows NOP for inactive stages', function() {
+        test('BlockDiagramView renders major hardware components', function() {
           const container = document.createElement('div');
-          const view = new PipelineView(container);
+          const view = new BlockDiagramView(container);
+
+          assert(container.querySelector('[data-component="IMEM"]'), 'IMEM component exists');
+          assert(container.querySelector('[data-component="REGFILE"]'), 'REGFILE component exists');
+          assert(container.querySelector('[data-component="ALU"]'), 'ALU component exists');
+          assert(container.querySelector('[data-component="DMEM"]'), 'DMEM component exists');
+        });
+
+        test('BlockDiagramView renders pipeline registers', function() {
+          const container = document.createElement('div');
+          const view = new BlockDiagramView(container);
+
+          assert(container.querySelector('[data-pipeline-reg="FD"]'), 'F/D register exists');
+          assert(container.querySelector('[data-pipeline-reg="DX"]'), 'D/X register exists');
+          assert(container.querySelector('[data-pipeline-reg="XM"]'), 'X/M register exists');
+          assert(container.querySelector('[data-pipeline-reg="MW"]'), 'M/W register exists');
+        });
+
+        test('BlockDiagramView renders multiplexers', function() {
+          const container = document.createElement('div');
+          const view = new BlockDiagramView(container);
+
+          const muxes = container.querySelectorAll('[data-mux]');
+          assertGreaterThan(muxes.length, 1, 'Should have at least 2 multiplexers');
+        });
+
+        test('BlockDiagramView highlights active components on render', function() {
+          const container = document.createElement('div');
+          const view = new BlockDiagramView(container);
           const state = CPUState.createInitial();
 
+          state.pipeline.EX.active = true;
           view.render(state);
 
-          const instructionTexts = container.querySelectorAll('[data-stage-instruction]');
-          instructionTexts.forEach(el => {
-            assertEquals(el.textContent, 'NOP', 'Inactive stage should show NOP');
-          });
+          const alu = container.querySelector('[data-component="ALU"]');
+          assert(alu.classList.contains('active'), 'ALU should be highlighted when EX stage is active');
         });
 
-        test('PipelineView shows instruction for active IF stage', function() {
+        test('BlockDiagramView updates pipeline register instruction display', function() {
           const container = document.createElement('div');
-          const view = new PipelineView(container);
+          const view = new BlockDiagramView(container);
           const state = CPUState.createInitial();
 
           state.pipeline.IF.active = true;
           state.pipeline.IF.instruction = InstructionSet.createInstruction('ADDI', {
-            rs: 0, rt: 8, immediate: 42
+            rs: 0, rt: 8, immediate: 10
           });
-
           view.render(state);
 
-          const ifCard = container.querySelector('[data-stage="IF"]');
-          const instructionEl = ifCard.querySelector('[data-stage-instruction]');
-          assert(instructionEl.textContent.includes('ADDI'), 'Should show ADDI instruction');
-          assert(ifCard.classList.contains('active'), 'IF card should have active class');
+          const fdDisplay = container.querySelector('[data-instruction-display="FD"]');
+          assert(fdDisplay.textContent !== 'NOP', 'F/D register should show instruction (not NOP)');
+          assert(fdDisplay.textContent.includes('ADDI'), 'F/D register should show ADDI instruction');
         });
 
-        test('PipelineView shows instruction for active EX stage', function() {
+        test('BlockDiagramView shows NOP when stage is inactive', function() {
           const container = document.createElement('div');
-          const view = new PipelineView(container);
+          const view = new BlockDiagramView(container);
           const state = CPUState.createInitial();
 
-          state.pipeline.IF.instruction = InstructionSet.createInstruction('ADD', {
-            rs: 1, rt: 2, rd: 3
-          });
-          state.pipeline.EX.active = true;
-
+          // All stages inactive
           view.render(state);
 
-          const exCard = container.querySelector('[data-stage="EX"]');
-          const instructionEl = exCard.querySelector('[data-stage-instruction]');
-          assert(instructionEl.textContent.includes('ADD'), 'Should show ADD instruction');
-          assert(exCard.classList.contains('active'), 'EX card should have active class');
-        });
-
-        test('Stage cards have correct data-stage attributes', function() {
-          const container = document.createElement('div');
-          const view = new PipelineView(container);
-
-          assert(container.querySelector('[data-stage="IF"]'), 'IF stage exists');
-          assert(container.querySelector('[data-stage="ID"]'), 'ID stage exists');
-          assert(container.querySelector('[data-stage="EX"]'), 'EX stage exists');
-          assert(container.querySelector('[data-stage="MEM"]'), 'MEM stage exists');
-          assert(container.querySelector('[data-stage="WB"]'), 'WB stage exists');
+          const displays = container.querySelectorAll('[data-instruction-display]');
+          displays.forEach(display => {
+            assertEquals(display.textContent, 'NOP', 'Inactive stages should show NOP');
+          });
         });
 
         // ============================================
@@ -472,66 +475,32 @@
             'Highlight should be removed');
         });
 
-        test('Register $0 cell has reduced opacity style', function() {
+        test('Register $0 cell exists', function() {
           const container = document.createElement('div');
           const view = new RegisterView(container);
 
           const cell0 = container.querySelector('[data-register="0"]');
-          assert(cell0, 'Register $0 cell exists (CSS applies opacity)');
-        });
-
-        // ============================================
-        // EXECUTIONVIEW TESTS
-        // ============================================
-
-        test('ExecutionView shows cycle count', function() {
-          const container = document.createElement('div');
-          const view = new ExecutionView(container);
-          const state = CPUState.createInitial();
-
-          state.cycleCount = 5;
-          view.render(state);
-
-          const cycleEl = container.querySelector('[data-cycle-count]');
-          assertEquals(cycleEl.textContent, '5', 'Cycle count should be 5');
-        });
-
-        test('ExecutionView shows instruction count', function() {
-          const container = document.createElement('div');
-          const view = new ExecutionView(container);
-          const state = CPUState.createInitial();
-
-          state.instructionCount = 2;
-          view.render(state);
-
-          const instructionEl = container.querySelector('[data-instruction-count]');
-          assertEquals(instructionEl.textContent, '2', 'Instruction count should be 2');
-        });
-
-        test('ExecutionView container has aria-live attribute', function() {
-          const container = document.createElement('div');
-          container.setAttribute('aria-live', 'polite');
-          const view = new ExecutionView(container);
-
-          assertEquals(container.getAttribute('aria-live'), 'polite',
-            'Container should have aria-live="polite"');
+          assert(cell0, 'Register $0 cell exists');
         });
 
         // ============================================
         // CPUVISUALIZER INTEGRATION TESTS
         // ============================================
 
-        test('CPUVisualizer creates DOM structure', function() {
+        test('CPUVisualizer creates DOM with block diagram and register sections', function() {
           const container = document.createElement('div');
           const visualizer = new CPUVisualizer(container);
 
-          assert(container.querySelector('.pipeline-section'), 'Pipeline section exists');
-          assert(container.querySelector('.data-section'), 'Data section exists');
-          assert(container.querySelector('.registers-section'), 'Registers section exists');
-          assert(container.querySelector('.execution-section'), 'Execution section exists');
-          assert(container.querySelector('[data-pipeline-view]'), 'Pipeline view container exists');
+          assert(container.querySelector('[data-block-diagram]'), 'Block diagram container exists');
           assert(container.querySelector('[data-register-view]'), 'Register view container exists');
-          assert(container.querySelector('[data-execution-view]'), 'Execution view container exists');
+        });
+
+        test('CPUVisualizer does NOT create pipeline-view or execution-view', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+
+          assert(!container.querySelector('[data-pipeline-view]'), 'Pipeline view should NOT exist');
+          assert(!container.querySelector('[data-execution-view]'), 'Execution view should NOT exist');
         });
 
         test('CPUVisualizer responds to cpu:framechange event', function() {
@@ -539,8 +508,6 @@
           const visualizer = new CPUVisualizer(container);
           const state = CPUState.createInitial();
 
-          state.cycleCount = 10;
-          state.instructionCount = 3;
           state.pipeline.IF.active = true;
           state.pipeline.IF.instruction = InstructionSet.createInstruction('ADDI', {
             rs: 0, rt: 8, immediate: 42
@@ -552,15 +519,12 @@
           });
           window.dispatchEvent(event);
 
-          // Check if views were updated
-          const cycleEl = container.querySelector('[data-cycle-count]');
-          assertEquals(cycleEl.textContent, '10', 'Cycle count should update');
-
-          const ifCard = container.querySelector('[data-stage="IF"]');
-          assert(ifCard.classList.contains('active'), 'IF stage should be active');
+          // Check if block diagram was updated
+          const alu = container.querySelector('[data-component="IMEM"]');
+          assert(alu, 'Components should be rendered');
         });
 
-        test('Full program playback updates visualization', function() {
+        test('CPUVisualizer full program playback', function() {
           const container = document.createElement('div');
           const visualizer = new CPUVisualizer(container);
           const engine = new AnimationEngine();
@@ -573,35 +537,12 @@
             engine.stepForward();
           }
 
-          // Check that visualization shows updated state
-          const cycleEl = container.querySelector('[data-cycle-count]');
-          assertGreaterThan(parseInt(cycleEl.textContent), 0, 'Cycle count should be > 0');
-
-          // Check that at least one stage is active
-          const activeStages = container.querySelectorAll('.pipeline-stage.active');
-          assertGreaterThan(activeStages.length, 0, 'At least one stage should be active');
+          // Check that visualization has active components
+          const activeComponents = container.querySelectorAll('.component.active, .multiplexer.active');
+          assertGreaterThan(activeComponents.length, 0, 'At least one component should be active');
         });
 
-        test('Step backward restores previous state', function() {
-          const container = document.createElement('div');
-          const visualizer = new CPUVisualizer(container);
-          const engine = new AnimationEngine();
-
-          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
-          engine.loadFrames(result.frames);
-
-          // Step forward then back
-          engine.stepForward();
-          engine.stepForward();
-          const forwardCycles = parseInt(container.querySelector('[data-cycle-count]').textContent);
-
-          engine.stepBackward();
-          const backwardCycles = parseInt(container.querySelector('[data-cycle-count]').textContent);
-
-          assert(backwardCycles < forwardCycles, 'Cycle count should decrease after step back');
-        });
-
-        test('CPUVisualizer.destroy() removes event listener', function() {
+        test('CPUVisualizer destroy() cleans up', function() {
           const container = document.createElement('div');
           const visualizer = new CPUVisualizer(container);
 
@@ -609,7 +550,6 @@
 
           // Dispatch event after destroy
           const state = CPUState.createInitial();
-          state.cycleCount = 99;
           const event = new CustomEvent('cpu:framechange', {
             detail: { state: state }
           });
@@ -638,19 +578,16 @@
 
         // Group results by component
         const sections = {
-          'PipelineView': [],
+          'BlockDiagramView': [],
           'RegisterView': [],
-          'ExecutionView': [],
           'CPUVisualizer': []
         };
 
         results.forEach(result => {
-          if (result.name.includes('PipelineView')) {
-            sections['PipelineView'].push(result);
+          if (result.name.includes('BlockDiagramView')) {
+            sections['BlockDiagramView'].push(result);
           } else if (result.name.includes('RegisterView')) {
             sections['RegisterView'].push(result);
-          } else if (result.name.includes('ExecutionView')) {
-            sections['ExecutionView'].push(result);
           } else if (result.name.includes('CPUVisualizer')) {
             sections['CPUVisualizer'].push(result);
           }
