@@ -132,6 +132,22 @@
     }
 
     /**
+     * Get current frame index
+     * @returns {number} - Current frame index (0-based)
+     */
+    getCurrentFrameIndex() {
+      return this.currentFrame;
+    }
+
+    /**
+     * Get total number of frames
+     * @returns {number} - Total frames in loaded sequence
+     */
+    getTotalFrames() {
+      return this.frames.length;
+    }
+
+    /**
      * Get playback progress information
      * @returns {Object} - { current, total, percent }
      */
@@ -279,6 +295,7 @@
     _dispatchFrameChange() {
       const detail = {
         frame: this.currentFrame,
+        index: this.currentFrame,  // Alias for 'frame' for test compatibility
         state: this.frames[this.currentFrame],
         totalFrames: this.frames.length,
         isPlaying: this.isPlaying

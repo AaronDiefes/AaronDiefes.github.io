@@ -99,6 +99,14 @@
     }
 
     /**
+     * Get current speed multiplier
+     * @returns {number} - Current speed value
+     */
+    getSpeed() {
+      return this.speed;
+    }
+
+    /**
      * Get human-readable speed label
      * @returns {string} - Speed label like "1x", "0.5x", "2x", "4x"
      */

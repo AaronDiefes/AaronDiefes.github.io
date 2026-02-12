@@ -1,0 +1,10 @@
+[
+  {
+    "session_id": "c05c687e-ec9a-4f70-b0db-34b73b851226",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/c05c687e-ec9a-4f70-b0db-34b73b851226.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  }
+]

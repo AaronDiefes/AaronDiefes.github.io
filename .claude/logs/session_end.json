@@ -1,0 +1,23 @@
+[
+  {
+    "session_id": "4c24517d-c905-4de3-94fe-b8b3e135c256",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/4c24517d-c905-4de3-94fe-b8b3e135c256.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "other"
+  },
+  {
+    "session_id": "34b31f07-3e49-4f7a-82d3-9acb3f59ace1",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/34b31f07-3e49-4f7a-82d3-9acb3f59ace1.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
+  },
+  {
+    "session_id": "e135fc8f-cd3b-43da-a18a-0d1f0209c4dc",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e135fc8f-cd3b-43da-a18a-0d1f0209c4dc.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
+  }
+]

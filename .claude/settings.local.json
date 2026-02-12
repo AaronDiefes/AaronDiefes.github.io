@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof:*)",
+      "Bash(xargs:*)",
+      "Bash(npx serve:*)",
+      "Bash(open:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(node:*)",
+      "Bash(git tag:*)",
+      "WebSearch",
+      "WebFetch(domain:risc-v-cpu-visualizer.vercel.app)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:edumips.org)"
+    ]
+  }
+}

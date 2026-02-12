@@ -30,18 +30,34 @@
       // Frame 0: Initial state
       frames.push(state.clone());
 
-      // Process each instruction through 5 pipeline stages
-      for (let i = 0; i < instructions.length; i++) {
-        const instruction = instructions[i];
+      // Process instructions following control flow (not just array order)
+      // Instructions are assumed to be at PC = index * 4 (word-aligned)
+      let currentState = state.clone();
+      let executedCount = 0;
+      const maxInstructions = instructions.length * 3;  // Safety limit to prevent infinite loops
+
+      while (executedCount < maxInstructions) {
+        // Determine which instruction to execute based on current PC
+        const instructionIndex = currentState.pc / 4;
+
+        // Check if PC is out of bounds (beyond instruction array)
+        if (instructionIndex < 0 || instructionIndex >= instructions.length || instructionIndex !== Math.floor(instructionIndex)) {
+          // PC is out of bounds or misaligned - stop execution
+          break;
+        }
+
+        const instruction = instructions[instructionIndex];
         const instructionDef = InstructionSet.get(instruction.mnemonic);
 
         if (!instructionDef) {
           console.error(`Unknown instruction: ${instruction.mnemonic}`);
-          continue;
+          break;
         }
 
+        executedCount++;
+
         // --- IF Stage (Instruction Fetch) ---
-        const ifFrame = frames[frames.length - 1].clone();
+        const ifFrame = currentState.clone();
         ifFrame.changedRegisters.clear();
         ifFrame.changedMemory.clear();
         ifFrame.activeStages.clear();
@@ -191,6 +207,9 @@
         wbFrame.instructionCount++;
 
         frames.push(wbFrame);
+
+        // Update currentState for next iteration (reflects PC changes from branches/jumps)
+        currentState = wbFrame.clone();
       }
 
       // Return complete frame sequence with metadata

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TimingController Test</title>
+</head>
+<body>
+  <h1>TimingController Test</h1>
+  <pre id="results"></pre>
+
+  <script src="timing-controller.js"></script>
+  <script>
+    const results = [];
+
+    function test(description, assertion) {
+      const passed = assertion();
+      results.push(`${passed ? '✓' : '✗'} ${description}`);
+      return passed;
+    }
+
+    // Run tests
+    const tc = new TimingController();
+
+    test('1. Default speed is 1.0', () => tc.speed === 1.0);
+    test('2. Frame interval at 1x is 500ms', () => tc.getFrameInterval() === 500);
+
+    tc.setSpeed(2.0);
+    test('3. Frame interval at 2x is 250ms', () => tc.getFrameInterval() === 250);
+
+    tc.setSpeed(0.1);
+    test('4. Speed clamped to min 0.25', () => tc.speed === 0.25);
+
+    tc.setSpeed(10);
+    test('5. Speed clamped to max 4.0', () => tc.speed === 4.0);
+
+    test('6. Speed label is "4x"', () => tc.getSpeedLabel() === '4x');
+
+    // Test delta-time calculation
+    tc.reset();
+    const startTime = performance.now();
+    test('7. shouldAdvanceFrame returns false on first call after reset', () => {
+      return tc.shouldAdvanceFrame(startTime) === false;
+    });
+
+    // Simulate time passing
+    const laterTime = startTime + 300; // 300ms later (at 4x speed, interval is 125ms)
+    test('8. shouldAdvanceFrame returns true after sufficient time', () => {
+      return tc.shouldAdvanceFrame(laterTime) === true;
+    });
+
+    // Test speed presets
+    test('9. Apply "normal" preset sets speed to 1.0', () => {
+      tc.applyPreset('normal');
+      return tc.speed === 1.0;
+    });
+
+    test('10. Apply invalid preset returns false', () => {
+      return tc.applyPreset('invalid') === false;
+    });
+
+    // Display results
+    document.getElementById('results').textContent = results.join('\n');
+
+    // Also log to console
+    console.log('TimingController Tests:');
+    results.forEach(r => console.log(r));
+
+    const allPassed = results.every(r => r.startsWith('✓'));
+    console.log(`\nAll tests passed: ${allPassed}`);
+  </script>
+</body>
+</html>
