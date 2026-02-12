@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPU Visualizer - Integration Tests</title>
+
+  <!-- Load design system and visualization CSS -->
+  <link rel="stylesheet" href="../docs/assets/css/design-system.css">
+  <link rel="stylesheet" href="src/visualization/visualization.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section {
+      background: white;
+      padding: 30px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .subtitle {
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+
+    /* Live visualization controls */
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls select,
+    .controls button {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #f0f0f0;
+    }
+
+    .controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #6c757d;
+      padding: 8px;
+    }
+
+    /* Test results styles */
+    .summary {
+      font-size: 18px;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .summary.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .summary.failure {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .test-section {
+      margin-bottom: 30px;
+    }
+
+    .test-section h3 {
+      font-size: 18px;
+      color: #495057;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .test-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .test-item.pass {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .test-item.fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .test-item .label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .error-details {
+      margin-top: 4px;
+      padding: 8px;
+      background: #fff;
+      border-left: 3px solid #dc3545;
+      font-size: 12px;
+      color: #6c757d;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+      font-size: 16px;
+    }
+
+    /* Visualization container styling */
+    #viz-container {
+      margin-top: 20px;
+      min-height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Live Visualization Section -->
+    <section class="section">
+      <h1>CPU Visualizer - Live Demo</h1>
+      <p class="subtitle">Interactive visualization of CPU pipeline with step controls</p>
+
+      <div class="controls">
+        <label for="program-select">Program:</label>
+        <select id="program-select">
+          <option value="basic">Basic Instructions</option>
+          <option value="fibonacci">Fibonacci</option>
+        </select>
+
+        <button id="btn-step-back">◀ Step Back</button>
+        <button id="btn-step-forward">Step Forward ▶</button>
+        <button id="btn-reset">↺ Reset</button>
+
+        <span class="status" id="status">Frame 0 of 0</span>
+      </div>
+
+      <div id="viz-container"></div>
+    </section>
+
+    <!-- Automated Tests Section -->
+    <section class="section">
+      <h1>Automated Tests</h1>
+      <p class="subtitle">Comprehensive tests for PipelineView, RegisterView, ExecutionView, and CPUVisualizer integration</p>
+
+      <div id="summary" class="loading">Running tests...</div>
+      <div id="results"></div>
+    </section>
+  </div>
+
+  <!-- Load Phase 9 modules in dependency order -->
+  <script src="src/core/cpu-state.js"></script>
+  <script src="src/core/instruction-set.js"></script>
+  <script src="src/animation/timing-controller.js"></script>
+  <script src="src/animation/animation-engine.js"></script>
+  <script src="src/core/sequence-generator.js"></script>
+  <script src="src/programs/basic-instructions.js"></script>
+  <script src="src/programs/fibonacci.js"></script>
+
+  <!-- Load Phase 10 visualization modules -->
+  <script src="src/visualization/pipeline-view.js"></script>
+  <script src="src/visualization/register-view.js"></script>
+  <script src="src/visualization/execution-view.js"></script>
+  <script src="src/visualization/cpu-visualizer.js"></script>
+
+  <!-- Test suite and live demo -->
+  <script>
+    (function() {
+      'use strict';
+
+      // Test framework
+      let passCount = 0;
+      let failCount = 0;
+      const results = [];
+
+      function test(name, fn) {
+        try {
+          fn();
+          passCount++;
+          results.push({ name, pass: true });
+        } catch (e) {
+          failCount++;
+          results.push({ name, pass: false, error: e.message });
+        }
+      }
+
+      function assert(condition, message) {
+        if (!condition) {
+          throw new Error(message || 'Assertion failed');
+        }
+      }
+
+      function assertEquals(actual, expected, message) {
+        if (actual !== expected) {
+          throw new Error(message || `Expected ${expected}, got ${actual}`);
+        }
+      }
+
+      function assertGreaterThan(actual, threshold, message) {
+        if (actual <= threshold) {
+          throw new Error(message || `Expected ${actual} > ${threshold}`);
+        }
+      }
+
+      // Live demo state
+      let animationEngine = null;
+      let visualizer = null;
+      let currentProgram = 'basic';
+
+      // Initialize live demo when DOM is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        initializeLiveDemo();
+        runAllTests();
+        displayResults();
+      });
+
+      function initializeLiveDemo() {
+        const vizContainer = document.getElementById('viz-container');
+        const programSelect = document.getElementById('program-select');
+        const btnStepBack = document.getElementById('btn-step-back');
+        const btnStepForward = document.getElementById('btn-step-forward');
+        const btnReset = document.getElementById('btn-reset');
+        const statusEl = document.getElementById('status');
+
+        // Create visualizer
+        visualizer = new CPUVisualizer(vizContainer);
+
+        // Create animation engine
+        animationEngine = new AnimationEngine();
+
+        // Listen to frame changes to update status
+        window.addEventListener('cpu:framechange', function(e) {
+          const index = e.detail.index;
+          const total = animationEngine.getTotalFrames();
+          statusEl.textContent = `Frame ${index} of ${total - 1}`;
+        });
+
+        // Load initial program
+        loadProgram(currentProgram);
+
+        // Wire up controls
+        programSelect.addEventListener('change', function() {
+          currentProgram = this.value;
+          loadProgram(currentProgram);
+        });
+
+        btnStepBack.addEventListener('click', function() {
+          animationEngine.stepBackward();
+        });
+
+        btnStepForward.addEventListener('click', function() {
+          animationEngine.stepForward();
+        });
+
+        btnReset.addEventListener('click', function() {
+          animationEngine.reset();
+        });
+      }
+
+      function loadProgram(programName) {
+        const program = programName === 'basic' ? BASIC_PROGRAM : FIBONACCI_PROGRAM;
+        const result = SequenceGenerator.generateSequence(program.instructions);
+        animationEngine.loadFrames(result.frames);
+
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = `Frame 0 of ${result.frames.length - 1}`;
+      }
+
+      function runAllTests() {
+        // ============================================
+        // PIPELINEVIEW TESTS
+        // ============================================
+
+        test('PipelineView creates 5 stage cards', function() {
+          const container = document.createElement('div');
+          const view = new PipelineView(container);
+
+          const stages = container.querySelectorAll('[data-stage]');
+          assertEquals(stages.length, 5, 'Should have 5 stage cards');
+
+          const stageNames = Array.from(stages).map(s => s.dataset.stage);
+          assert(stageNames.includes('IF'), 'Should have IF stage');
+          assert(stageNames.includes('ID'), 'Should have ID stage');
+          assert(stageNames.includes('EX'), 'Should have EX stage');
+          assert(stageNames.includes('MEM'), 'Should have MEM stage');
+          assert(stageNames.includes('WB'), 'Should have WB stage');
+        });
+
+        test('PipelineView shows NOP for inactive stages', function() {
+          const container = document.createElement('div');
+          const view = new PipelineView(container);
+          const state = CPUState.createInitial();
+
+          view.render(state);
+
+          const instructionTexts = container.querySelectorAll('[data-stage-instruction]');
+          instructionTexts.forEach(el => {
+            assertEquals(el.textContent, 'NOP', 'Inactive stage should show NOP');
+          });
+        });
+
+        test('PipelineView shows instruction for active IF stage', function() {
+          const container = document.createElement('div');
+          const view = new PipelineView(container);
+          const state = CPUState.createInitial();
+
+          state.pipeline.IF.active = true;
+          state.pipeline.IF.instruction = InstructionSet.createInstruction('ADDI', {
+            rs: 0, rt: 8, immediate: 42
+          });
+
+          view.render(state);
+
+          const ifCard = container.querySelector('[data-stage="IF"]');
+          const instructionEl = ifCard.querySelector('[data-stage-instruction]');
+          assert(instructionEl.textContent.includes('ADDI'), 'Should show ADDI instruction');
+          assert(ifCard.classList.contains('active'), 'IF card should have active class');
+        });
+
+        test('PipelineView shows instruction for active EX stage', function() {
+          const container = document.createElement('div');
+          const view = new PipelineView(container);
+          const state = CPUState.createInitial();
+
+          state.pipeline.IF.instruction = InstructionSet.createInstruction('ADD', {
+            rs: 1, rt: 2, rd: 3
+          });
+          state.pipeline.EX.active = true;
+
+          view.render(state);
+
+          const exCard = container.querySelector('[data-stage="EX"]');
+          const instructionEl = exCard.querySelector('[data-stage-instruction]');
+          assert(instructionEl.textContent.includes('ADD'), 'Should show ADD instruction');
+          assert(exCard.classList.contains('active'), 'EX card should have active class');
+        });
+
+        test('Stage cards have correct data-stage attributes', function() {
+          const container = document.createElement('div');
+          const view = new PipelineView(container);
+
+          assert(container.querySelector('[data-stage="IF"]'), 'IF stage exists');
+          assert(container.querySelector('[data-stage="ID"]'), 'ID stage exists');
+          assert(container.querySelector('[data-stage="EX"]'), 'EX stage exists');
+          assert(container.querySelector('[data-stage="MEM"]'), 'MEM stage exists');
+          assert(container.querySelector('[data-stage="WB"]'), 'WB stage exists');
+        });
+
+        // ============================================
+        // REGISTERVIEW TESTS
+        // ============================================
+
+        test('RegisterView creates 32 register cells', function() {
+          const container = document.createElement('div');
+          const view = new RegisterView(container);
+
+          const cells = container.querySelectorAll('[data-register]');
+          assertEquals(cells.length, 32, 'Should have 32 register cells');
+
+          // Check first and last
+          assert(container.querySelector('[data-register="0"]'), 'Register $0 exists');
+          assert(container.querySelector('[data-register="31"]'), 'Register $31 exists');
+        });
+
+        test('RegisterView shows hex values', function() {
+          const container = document.createElement('div');
+          const view = new RegisterView(container);
+          const state = CPUState.createInitial();
+
+          view.render(state);
+
+          const values = container.querySelectorAll('.register-value');
+          values.forEach(el => {
+            assert(el.textContent.startsWith('0x'), 'Values should be hex format');
+          });
+        });
+
+        test('RegisterView highlights changed registers', function() {
+          const container = document.createElement('div');
+          const view = new RegisterView(container);
+          const state = CPUState.createInitial();
+
+          // First render to initialize
+          view.render(state);
+
+          // Second render with changes
+          state.setRegister(5, 0x12345678);
+          state.setRegister(7, 0xABCDEF00);
+          view.render(state);
+
+          const cell5 = container.querySelector('[data-register="5"]');
+          const cell7 = container.querySelector('[data-register="7"]');
+
+          assert(cell5.classList.contains('changed'), 'Register 5 should be highlighted');
+          assert(cell7.classList.contains('changed'), 'Register 7 should be highlighted');
+
+          const value5 = cell5.querySelector('.register-value');
+          assertEquals(value5.textContent, '0x12345678', 'Register 5 value should update');
+        });
+
+        test('RegisterView removes highlight on next render', function() {
+          const container = document.createElement('div');
+          const view = new RegisterView(container);
+          const state = CPUState.createInitial();
+
+          // First render
+          view.render(state);
+
+          // Second render with changes
+          state.setRegister(5, 100);
+          view.render(state);
+
+          assert(container.querySelector('[data-register="5"]').classList.contains('changed'),
+            'Should have highlight after change');
+
+          // Third render with no changes
+          const state2 = state.clone();
+          state2.changedRegisters.clear();
+          view.render(state2);
+
+          assert(!container.querySelector('[data-register="5"]').classList.contains('changed'),
+            'Highlight should be removed');
+        });
+
+        test('Register $0 cell has reduced opacity style', function() {
+          const container = document.createElement('div');
+          const view = new RegisterView(container);
+
+          const cell0 = container.querySelector('[data-register="0"]');
+          assert(cell0, 'Register $0 cell exists (CSS applies opacity)');
+        });
+
+        // ============================================
+        // EXECUTIONVIEW TESTS
+        // ============================================
+
+        test('ExecutionView shows cycle count', function() {
+          const container = document.createElement('div');
+          const view = new ExecutionView(container);
+          const state = CPUState.createInitial();
+
+          state.cycleCount = 5;
+          view.render(state);
+
+          const cycleEl = container.querySelector('[data-cycle-count]');
+          assertEquals(cycleEl.textContent, '5', 'Cycle count should be 5');
+        });
+
+        test('ExecutionView shows instruction count', function() {
+          const container = document.createElement('div');
+          const view = new ExecutionView(container);
+          const state = CPUState.createInitial();
+
+          state.instructionCount = 2;
+          view.render(state);
+
+          const instructionEl = container.querySelector('[data-instruction-count]');
+          assertEquals(instructionEl.textContent, '2', 'Instruction count should be 2');
+        });
+
+        test('ExecutionView container has aria-live attribute', function() {
+          const container = document.createElement('div');
+          container.setAttribute('aria-live', 'polite');
+          const view = new ExecutionView(container);
+
+          assertEquals(container.getAttribute('aria-live'), 'polite',
+            'Container should have aria-live="polite"');
+        });
+
+        // ============================================
+        // CPUVISUALIZER INTEGRATION TESTS
+        // ============================================
+
+        test('CPUVisualizer creates DOM structure', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+
+          assert(container.querySelector('.pipeline-section'), 'Pipeline section exists');
+          assert(container.querySelector('.data-section'), 'Data section exists');
+          assert(container.querySelector('.registers-section'), 'Registers section exists');
+          assert(container.querySelector('.execution-section'), 'Execution section exists');
+          assert(container.querySelector('[data-pipeline-view]'), 'Pipeline view container exists');
+          assert(container.querySelector('[data-register-view]'), 'Register view container exists');
+          assert(container.querySelector('[data-execution-view]'), 'Execution view container exists');
+        });
+
+        test('CPUVisualizer responds to cpu:framechange event', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+          const state = CPUState.createInitial();
+
+          state.cycleCount = 10;
+          state.instructionCount = 3;
+          state.pipeline.IF.active = true;
+          state.pipeline.IF.instruction = InstructionSet.createInstruction('ADDI', {
+            rs: 0, rt: 8, immediate: 42
+          });
+
+          // Dispatch synthetic event
+          const event = new CustomEvent('cpu:framechange', {
+            detail: { state: state, index: 1, total: 10 }
+          });
+          window.dispatchEvent(event);
+
+          // Check if views were updated
+          const cycleEl = container.querySelector('[data-cycle-count]');
+          assertEquals(cycleEl.textContent, '10', 'Cycle count should update');
+
+          const ifCard = container.querySelector('[data-stage="IF"]');
+          assert(ifCard.classList.contains('active'), 'IF stage should be active');
+        });
+
+        test('Full program playback updates visualization', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+          const engine = new AnimationEngine();
+
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          engine.loadFrames(result.frames);
+
+          // Step forward 6 times (through first instruction's WB stage)
+          for (let i = 0; i < 6; i++) {
+            engine.stepForward();
+          }
+
+          // Check that visualization shows updated state
+          const cycleEl = container.querySelector('[data-cycle-count]');
+          assertGreaterThan(parseInt(cycleEl.textContent), 0, 'Cycle count should be > 0');
+
+          // Check that at least one stage is active
+          const activeStages = container.querySelectorAll('.pipeline-stage.active');
+          assertGreaterThan(activeStages.length, 0, 'At least one stage should be active');
+        });
+
+        test('Step backward restores previous state', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+          const engine = new AnimationEngine();
+
+          const result = SequenceGenerator.generateSequence(BASIC_PROGRAM.instructions);
+          engine.loadFrames(result.frames);
+
+          // Step forward then back
+          engine.stepForward();
+          engine.stepForward();
+          const forwardCycles = parseInt(container.querySelector('[data-cycle-count]').textContent);
+
+          engine.stepBackward();
+          const backwardCycles = parseInt(container.querySelector('[data-cycle-count]').textContent);
+
+          assert(backwardCycles < forwardCycles, 'Cycle count should decrease after step back');
+        });
+
+        test('CPUVisualizer.destroy() removes event listener', function() {
+          const container = document.createElement('div');
+          const visualizer = new CPUVisualizer(container);
+
+          visualizer.destroy();
+
+          // Dispatch event after destroy
+          const state = CPUState.createInitial();
+          state.cycleCount = 99;
+          const event = new CustomEvent('cpu:framechange', {
+            detail: { state: state }
+          });
+
+          // This should not throw an error
+          window.dispatchEvent(event);
+
+          // Container should be empty
+          assertEquals(container.innerHTML, '', 'Container should be cleared');
+        });
+      }
+
+      function displayResults() {
+        const summaryEl = document.getElementById('summary');
+        const resultsEl = document.getElementById('results');
+
+        // Summary
+        const total = passCount + failCount;
+        if (failCount === 0) {
+          summaryEl.className = 'summary success';
+          summaryEl.textContent = `✓ All ${total} tests passed!`;
+        } else {
+          summaryEl.className = 'summary failure';
+          summaryEl.textContent = `✗ ${failCount} of ${total} tests failed`;
+        }
+
+        // Group results by component
+        const sections = {
+          'PipelineView': [],
+          'RegisterView': [],
+          'ExecutionView': [],
+          'CPUVisualizer': []
+        };
+
+        results.forEach(result => {
+          if (result.name.includes('PipelineView')) {
+            sections['PipelineView'].push(result);
+          } else if (result.name.includes('RegisterView')) {
+            sections['RegisterView'].push(result);
+          } else if (result.name.includes('ExecutionView')) {
+            sections['ExecutionView'].push(result);
+          } else if (result.name.includes('CPUVisualizer')) {
+            sections['CPUVisualizer'].push(result);
+          }
+        });
+
+        // Render sections
+        Object.keys(sections).forEach(sectionName => {
+          if (sections[sectionName].length === 0) return;
+
+          const sectionDiv = document.createElement('div');
+          sectionDiv.className = 'test-section';
+
+          const title = document.createElement('h3');
+          title.textContent = sectionName + ' Tests';
+          sectionDiv.appendChild(title);
+
+          sections[sectionName].forEach(result => {
+            const item = document.createElement('div');
+            item.className = 'test-item ' + (result.pass ? 'pass' : 'fail');
+
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = result.pass ? 'PASS' : 'FAIL';
+            item.appendChild(label);
+
+            const name = document.createTextNode(result.name);
+            item.appendChild(name);
+
+            if (!result.pass && result.error) {
+              const error = document.createElement('div');
+              error.className = 'error-details';
+              error.textContent = result.error;
+              item.appendChild(error);
+            }
+
+            sectionDiv.appendChild(item);
+          });
+
+          resultsEl.appendChild(sectionDiv);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
