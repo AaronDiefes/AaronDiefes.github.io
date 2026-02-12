@@ -3,7 +3,7 @@
  *
  * Single entry point that:
  * - Creates the complete visualization DOM structure
- * - Initializes child view components (PipelineView, RegisterView, ExecutionView)
+ * - Initializes child view components (BlockDiagramView, RegisterView)
  * - Listens to 'cpu:framechange' events from AnimationEngine
  * - Delegates rendering to child components
  *
@@ -32,14 +32,11 @@
       this._createDOM();
 
       // Initialize child view components
-      this.pipelineView = new PipelineView(
-        this.container.querySelector('[data-pipeline-view]')
+      this.blockDiagramView = new BlockDiagramView(
+        this.container.querySelector('[data-block-diagram]')
       );
       this.registerView = new RegisterView(
         this.container.querySelector('[data-register-view]')
-      );
-      this.executionView = new ExecutionView(
-        this.container.querySelector('[data-execution-view]')
       );
 
       // Bind and register event listener for AnimationEngine events
@@ -53,23 +50,13 @@
      */
     _createDOM() {
       this.container.innerHTML = `
-        <section class="pipeline-section">
-          <h2>Pipeline Stages</h2>
-          <div class="pipeline-stages" data-pipeline-view></div>
+        <section class="diagram-section">
+          <div data-block-diagram></div>
         </section>
-        <aside class="data-section">
-          <section class="registers-section">
-            <h2>Registers</h2>
-            <div class="register-grid" data-register-view></div>
-          </section>
-          <section class="execution-section">
-            <h2>Execution State</h2>
-            <div data-execution-view aria-live="polite">
-              <p>Cycle: <span data-cycle-count>0</span></p>
-              <p>Instructions: <span data-instruction-count>0</span></p>
-            </div>
-          </section>
-        </aside>
+        <section class="registers-section">
+          <h2>Registers</h2>
+          <div class="register-grid" data-register-view></div>
+        </section>
       `;
     }
 
@@ -90,9 +77,8 @@
      * @param {CPUState} state - Current CPU state to render
      */
     render(state) {
-      this.pipelineView.render(state);
+      this.blockDiagramView.render(state);
       this.registerView.render(state);
-      this.executionView.render(state);
     }
 
     /**
@@ -102,9 +88,8 @@
     destroy() {
       window.removeEventListener('cpu:framechange', this._handleFrameChange);
       this.container.innerHTML = '';
-      this.pipelineView = null;
+      this.blockDiagramView = null;
       this.registerView = null;
-      this.executionView = null;
     }
   }
 
