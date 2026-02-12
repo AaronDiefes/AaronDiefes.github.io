@@ -74,10 +74,11 @@ Plans:
   2. Register visualization displays all 32 registers with current values at each animation step
   3. Changed registers are highlighted when state transitions occur in animation
   4. Cycle count and instruction count display updates correctly as animation progresses
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 10-01-PLAN.md — CSS layout + view components (PipelineView, RegisterView, ExecutionView)
+- [ ] 10-02-PLAN.md — CPUVisualizer coordinator + integration test page
 
 #### Phase 11: Interactive Demo Page
 **Goal**: Complete demo page with step-through controls for navigating pre-scripted animation sequences
