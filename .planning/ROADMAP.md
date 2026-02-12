@@ -66,7 +66,7 @@ Plans:
 - [ ] 09-03-PLAN.md — Sequence Generator, pre-scripted programs & integration tests (ANIM-02, ANIM-04)
 
 #### Phase 10: Basic Visualization
-**Goal**: Visual representation of pipeline stages, registers, and execution state during animation playback
+**Goal**: SVG block diagram visualization of 5-stage pipelined processor with hardware components, pipeline registers, and active state highlighting during animation playback
 **Depends on**: Phase 9
 **Requirements**: VIZ-01, VIZ-02, VIZ-03, VIZ-06
 **Success Criteria** (what must be TRUE):
@@ -74,13 +74,14 @@ Plans:
   2. Register visualization displays all 32 registers with current values at each animation step
   3. Changed registers are highlighted when state transitions occur in animation
   4. Cycle count and instruction count display updates correctly as animation progresses
-**Plans:** 2/2 complete
-**Status:** Complete
-**Completed:** 2026-02-11
+**Plans:** 4 plans (2 complete initial + 2 re-implementation)
+**Status:** Re-implementing with SVG block diagram (replacing text-based stage cards)
 
 Plans:
 - [x] 10-01-PLAN.md — CSS layout + view components (PipelineView, RegisterView, ExecutionView)
 - [x] 10-02-PLAN.md — CPUVisualizer coordinator + integration test page
+- [ ] 10-03-PLAN.md — SVG BlockDiagramView component + updated CSS styles
+- [ ] 10-04-PLAN.md — CPUVisualizer integration update + test page + visual verification
 
 #### Phase 11: Interactive Demo Page
 **Goal**: Complete demo page with step-through controls for navigating pre-scripted animation sequences
@@ -179,7 +180,7 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 7. Testing & Optimization | v1.0 | Complete | Complete | 2026-02-11 |
 | 8. Visual Polish | v1.0 | 7/7 | Complete | 2026-02-11 |
 | 9. Animation Framework & Data Structures | v1.1 | 3/3 | Complete | 2026-02-11 |
-| 10. Basic Visualization | v1.1 | 2/2 | Complete | 2026-02-11 |
+| 10. Basic Visualization | v1.1 | 2/4 | Re-implementing | - |
 | 11. Interactive Demo Page | v1.1 | 0/TBD | Not started | - |
 | 12. Hazard Visualization | v1.1 | 0/TBD | Not started | - |
 | 13. Documentation Foundation | v1.1 | 0/TBD | Not started | - |
@@ -188,4 +189,4 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-11 (Phase 9 revised to reflect animation framework)*
+*Last updated: 2026-02-11 (Phase 10 re-planned with SVG block diagram approach)*
