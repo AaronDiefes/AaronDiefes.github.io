@@ -26,17 +26,10 @@
  * ============================================ */
 
 .cpu-visualizer {
-  display: grid;
-  grid-template-columns: 1fr 400px;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
   padding: 24px;
-}
-
-/* Responsive: single column on mobile */
-@media (max-width: 768px) {
-  .cpu-visualizer {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ============================================
@@ -51,73 +44,126 @@
 }
 
 /* ============================================
- * PIPELINE STAGES
+ * BLOCK DIAGRAM (SVG)
  * ============================================ */
 
-.pipeline-stages {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pipeline-stage {
+.cpu-block-diagram {
+  width: 100%;
+  height: auto;
+  max-width: 900px;
   border: 1px solid var(--color-border);
-  border-left: 4px solid var(--color-border);
   border-radius: 4px;
-  padding: 12px;
   background: var(--color-surface);
-  transition: box-shadow 0.2s ease, border-left-width 0.2s ease;
 }
 
-.pipeline-stage.active {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-left-width: 6px;
+/* Component base styles */
+.component rect {
+  fill: var(--color-surface-alt);
+  stroke: var(--color-border);
+  stroke-width: 2;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
 }
 
-/* Stage-specific border colors */
-.pipeline-stage[data-stage="IF"] {
-  border-left-color: var(--stage-if-color);
-}
-
-.pipeline-stage[data-stage="ID"] {
-  border-left-color: var(--stage-id-color);
-}
-
-.pipeline-stage[data-stage="EX"] {
-  border-left-color: var(--stage-ex-color);
-}
-
-.pipeline-stage[data-stage="MEM"] {
-  border-left-color: var(--stage-mem-color);
-}
-
-.pipeline-stage[data-stage="WB"] {
-  border-left-color: var(--stage-wb-color);
-}
-
-/* Stage header layout */
-.stage-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.stage-label {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.stage-name {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-/* Instruction text */
-.instruction-text {
-  font-family: var(--font-mono);
+.component text,
+.component tspan {
+  font-family: var(--font-body);
   font-size: 13px;
-  color: var(--color-text);
+  fill: var(--color-text);
+  pointer-events: none;
+}
+
+.component-label {
+  font-weight: 500;
+}
+
+/* Active state highlighting */
+.component.active rect {
+  stroke-width: 3;
+}
+
+/* Component-specific active colors (match pipeline stage colors) */
+.instruction-memory.active rect {
+  fill: #E8F5E9;  /* Light green - IF stage */
+  stroke: var(--stage-if-color);
+}
+
+.register-file.active rect,
+.sign-extend.active rect {
+  fill: #E3F2FD;  /* Light blue - ID stage */
+  stroke: var(--stage-id-color);
+}
+
+.alu.active rect {
+  fill: #FFF3E0;  /* Light orange - EX stage */
+  stroke: var(--stage-ex-color);
+}
+
+.data-memory.active rect {
+  fill: #F3E5F5;  /* Light purple - MEM stage */
+  stroke: var(--stage-mem-color);
+}
+
+.pc.active rect,
+.adder.active rect {
+  fill: #E8F5E9;  /* Light green - IF stage */
+  stroke: var(--stage-if-color);
+}
+
+/* Pipeline register styles (red vertical bars) */
+.pipeline-register rect {
+  fill: #EF5350;
+  stroke: #C62828;
+  stroke-width: 1;
+}
+
+.pipeline-label {
+  font-size: 12px;
+  font-weight: bold;
+  fill: #C62828;
+}
+
+.pipeline-instruction {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--color-text);
+}
+
+/* Multiplexer styles (blue triangles) */
+.multiplexer polygon {
+  fill: #2196F3;
+  stroke: #1976D2;
+  stroke-width: 1;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.multiplexer.active polygon {
+  opacity: 1.0;
+  stroke-width: 2;
+}
+
+/* Data path wires */
+.data-path {
+  stroke: var(--color-border);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* Stage labels above diagram */
+.stage-label-text {
+  font-size: 11px;
+  fill: var(--color-text-muted);
+  text-anchor: middle;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Accessibility: reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .component rect,
+  .multiplexer polygon {
+    transition: none;
+  }
 }
 
 /* ============================================
