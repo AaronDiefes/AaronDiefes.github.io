@@ -37,16 +37,15 @@
     cCode: `#include <stdio.h>
 
 int main() {
-    int fib[8];        // Store 8 Fibonacci numbers
-    int current = 1;   // First Fibonacci number
-    int next = 1;      // Second Fibonacci number
+    int fib[8];
 
-    // Compute Fibonacci sequence
-    for (int i = 0; i < 8; i++) {
-        fib[i] = current;
-        int temp = current + next;
-        current = next;
-        next = temp;
+    // Initialize first two Fibonacci numbers
+    fib[0] = 1;
+    fib[1] = 1;
+
+    // Compute remaining numbers
+    for (int i = 2; i < 8; i++) {
+        fib[i] = fib[i-1] + fib[i-2];
     }
 
     // Results: fib = {1, 1, 2, 3, 5, 8, 13, 21}
