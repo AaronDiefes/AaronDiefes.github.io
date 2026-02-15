@@ -1,0 +1,26 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Claude files
+.claude
+
+# Planning files
+.planning
+
+# Documentation
+PROJECT.md
+CLAUDE.md
+FILE_IO_EXPLAINED.md
+README.md
+
+# Development files
+*.log
+*.tmp
+
+# macOS files
+.DS_Store
+
+# Image examples (if not needed)
+image examples

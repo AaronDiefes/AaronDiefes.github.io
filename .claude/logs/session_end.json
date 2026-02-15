@@ -19,5 +19,26 @@
     "cwd": "/Users/orases/Aaron/website",
     "hook_event_name": "SessionEnd",
     "reason": "clear"
+  },
+  {
+    "session_id": "9f8f3bb9-271e-4a46-9bc1-95aa63192edb",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/9f8f3bb9-271e-4a46-9bc1-95aa63192edb.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
+  },
+  {
+    "session_id": "9dba74b3-8666-4707-a5db-eb57929f5318",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/9dba74b3-8666-4707-a5db-eb57929f5318.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
+  },
+  {
+    "session_id": "662b1458-37b0-464a-83c8-88ea2d220906",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/662b1458-37b0-464a-83c8-88ea2d220906.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
   }
 ]
