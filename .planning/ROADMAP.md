@@ -121,10 +121,11 @@ Plans:
   4. Instruction Set documentation lists all implemented instructions shown in animations
   5. All doc pages include code snippets from actual Verilog implementation
   6. All doc pages link to GitHub repo for full source code
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — CPU docs landing page, routing, and Pipeline Basics documentation (DOC-01, DOC-02)
+- [ ] 13-02-PLAN.md — ALU Design and Instruction Set documentation pages (DOC-03, DOC-04)
 
 #### Phase 14: Advanced Documentation
 **Goal**: Complete documentation with advanced topics explaining hardware implementation behind animations
@@ -177,12 +178,12 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 8. Visual Polish | v1.0 | 7/7 | Complete | 2026-02-11 |
 | 9. Animation Framework & Data Structures | v1.1 | 3/3 | Complete | 2026-02-11 |
 | 10. Basic Visualization | v1.1 | 4/4 | Complete | 2026-02-15 |
-| 11. Interactive Demo Page | v1.1 | 0/3 | Planned | - |
-| 12. Hazard Visualization | v1.1 | 0/TBD | Not started | - |
-| 13. Documentation Foundation | v1.1 | 0/TBD | Not started | - |
+| 11. Interactive Demo Page | v1.1 | 3/3 | Complete | 2026-02-15 |
+| 12. Hazard Visualization | v1.1 | - | Skipped | - |
+| 13. Documentation Foundation | v1.1 | 0/2 | Planned | - |
 | 14. Advanced Documentation | v1.1 | 0/TBD | Not started | - |
 | 15. Portfolio Integration & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-11 (Phase 10 re-planned with SVG block diagram approach)*
+*Last updated: 2026-02-15 (Phase 13 planned with 2 plans)*
