@@ -3,7 +3,7 @@
  *
  * Single entry point that:
  * - Creates the complete visualization DOM structure
- * - Initializes child view components (BlockDiagramView, RegisterView)
+ * - Initializes child view components (BlockDiagramView, RegisterView, MemoryView, InstructionView)
  * - Listens to 'cpu:framechange' events from AnimationEngine
  * - Delegates rendering to child components
  *
@@ -38,6 +38,12 @@
       this.registerView = new RegisterView(
         this.container.querySelector('[data-register-view]')
       );
+      this.memoryView = new MemoryView(
+        this.container.querySelector('[data-memory-view]')
+      );
+      this.instructionView = new InstructionView(
+        this.container.querySelector('[data-instruction-view]')
+      );
 
       // Bind and register event listener for AnimationEngine events
       this._handleFrameChange = this._handleFrameChange.bind(this);
@@ -53,9 +59,19 @@
         <section class="diagram-section">
           <div data-block-diagram></div>
         </section>
-        <section class="registers-section">
-          <h2>Registers</h2>
-          <div class="register-grid" data-register-view></div>
+        <section class="info-section">
+          <div class="info-panels">
+            <section class="registers-section">
+              <h2>Registers</h2>
+              <div class="register-grid" data-register-view></div>
+            </section>
+            <section class="memory-section">
+              <div data-memory-view></div>
+            </section>
+            <section class="instruction-detail-section">
+              <div data-instruction-view></div>
+            </section>
+          </div>
         </section>
       `;
     }
@@ -79,6 +95,8 @@
     render(state) {
       this.blockDiagramView.render(state);
       this.registerView.render(state);
+      this.memoryView.render(state);
+      this.instructionView.render(state);
     }
 
     /**
@@ -90,6 +108,8 @@
       this.container.innerHTML = '';
       this.blockDiagramView = null;
       this.registerView = null;
+      this.memoryView = null;
+      this.instructionView = null;
     }
   }
 
