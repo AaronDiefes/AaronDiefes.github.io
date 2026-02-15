@@ -35,18 +35,23 @@
 int main() {
     int memory[256] = {0};
 
+    // Arithmetic operations
     int a = 10;
     int b = 20;
     int sum = a + b;           // 30
     int difference = b - a;     // 10
 
-    memory[a] = sum;            // Store 30 at address 10
-    int loaded = memory[a];     // Load from address 10
+    // Memory operations
+    memory[10] = sum;           // Store 30 at memory[10]
+    int loaded = memory[10];    // Load from memory[10]
 
-    if (a == a) {               // Always true
-        printf("Branch taken\\n");
-        // Skip the next instruction
+    // Conditional branching
+    if (a == a) {
+        printf("Condition true, branch taken\\n");
     }
+
+    printf("Results: sum=%d, diff=%d, loaded=%d\\n",
+           sum, difference, loaded);
 
     return 0;
 }`,

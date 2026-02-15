@@ -37,24 +37,25 @@
     cCode: `#include <stdio.h>
 
 int main() {
-    int memory[256] = {0};
+    int fib[8];        // Store 8 Fibonacci numbers
+    int current = 1;   // First Fibonacci number
+    int next = 1;      // Second Fibonacci number
 
-    int current = 1;      // First Fibonacci number
-    int next = 1;         // Second Fibonacci number
-    int counter = 8;      // Compute 8 numbers
-    int address = 0;      // Memory address pointer
-
-    while (counter > 0) {
-        memory[address] = current;        // Store current Fibonacci
-        int temp = current + next;        // Compute next Fibonacci
-        current = next;                   // Shift: current = next
-        next = temp;                      // Shift: next = computed
-        address += 4;                     // Advance address (word = 4 bytes)
-        counter--;                        // Decrement counter
+    // Compute Fibonacci sequence
+    for (int i = 0; i < 8; i++) {
+        fib[i] = current;
+        int temp = current + next;
+        current = next;
+        next = temp;
     }
 
-    // memory[0]=1, memory[4]=1, memory[8]=2, memory[12]=3,
-    // memory[16]=5, memory[20]=8, memory[24]=13, memory[28]=21
+    // Results: fib = {1, 1, 2, 3, 5, 8, 13, 21}
+
+    printf("First 8 Fibonacci numbers: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%d ", fib[i]);
+    }
+    printf("\\n");
 
     return 0;
 }`,
