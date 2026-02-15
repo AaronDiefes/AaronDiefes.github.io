@@ -34,6 +34,30 @@
   const FIBONACCI_PROGRAM = {
     name: "Fibonacci Sequence",
     description: "Computes the first 8 Fibonacci numbers (1, 1, 2, 3, 5, 8, 13, 21) using a loop with registers and stores results in memory.",
+    cCode: `#include <stdio.h>
+
+int main() {
+    int memory[256] = {0};
+
+    int current = 1;      // First Fibonacci number
+    int next = 1;         // Second Fibonacci number
+    int counter = 8;      // Compute 8 numbers
+    int address = 0;      // Memory address pointer
+
+    while (counter > 0) {
+        memory[address] = current;        // Store current Fibonacci
+        int temp = current + next;        // Compute next Fibonacci
+        current = next;                   // Shift: current = next
+        next = temp;                      // Shift: next = computed
+        address += 4;                     // Advance address (word = 4 bytes)
+        counter--;                        // Decrement counter
+    }
+
+    // memory[0]=1, memory[4]=1, memory[8]=2, memory[12]=3,
+    // memory[16]=5, memory[20]=8, memory[24]=13, memory[28]=21
+
+    return 0;
+}`,
     instructions: [
       // Initialization: fib(0)=1, fib(1)=1, counter=8, address=0
       Object.assign(

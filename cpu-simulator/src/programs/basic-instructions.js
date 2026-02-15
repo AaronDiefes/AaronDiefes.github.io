@@ -30,6 +30,26 @@
   const BASIC_PROGRAM = {
     name: "Basic Instructions Walkthrough",
     description: "Demonstrates all 8 core RISC instruction types: register arithmetic, immediates, memory load/store, branch, and jump.",
+    cCode: `#include <stdio.h>
+
+int main() {
+    int memory[256] = {0};
+
+    int a = 10;
+    int b = 20;
+    int sum = a + b;           // 30
+    int difference = b - a;     // 10
+
+    memory[a] = sum;            // Store 30 at address 10
+    int loaded = memory[a];     // Load from address 10
+
+    if (a == a) {               // Always true
+        printf("Branch taken\\n");
+        // Skip the next instruction
+    }
+
+    return 0;
+}`,
     instructions: [
       // Step 1: Load immediate values into registers
       Object.assign(

@@ -304,26 +304,7 @@
 
                 <div class="c-code-equivalent">
                     <h3>C Code Equivalent</h3>
-                    <pre><code>#include &lt;stdio.h&gt;
-
-int main() {
-    int memory[256] = {0};
-
-    int a = 10;
-    int b = 20;
-    int sum = a + b;           // 30
-    int difference = b - a;     // 10
-
-    memory[a] = sum;            // Store 30 at address 10
-    int loaded = memory[a];     // Load from address 10
-
-    if (a == a) {               // Always true
-        printf("Branch taken\n");
-        // Skip the next instruction
-    }
-
-    return 0;
-}</code></pre>
+                    <pre><code id="c-code-display"></code></pre>
                 </div>
 
                 <div class="keyboard-shortcuts">

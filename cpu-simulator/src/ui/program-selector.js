@@ -118,6 +118,12 @@
         // Update description
         this.descriptionElement.textContent = program.description || '';
 
+        // Update C code display if element exists
+        const cCodeDisplay = document.getElementById('c-code-display');
+        if (cCodeDisplay && program.cCode) {
+          cCodeDisplay.textContent = program.cCode;
+        }
+
         // Update select to reflect current program
         this.selectElement.value = programKey;
         this.currentProgramKey = programKey;
