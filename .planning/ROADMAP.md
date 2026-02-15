@@ -96,10 +96,12 @@ Plans:
   5. User can switch between 2+ pre-scripted programs (basic instructions walkthrough + Fibonacci walkthrough)
   6. Memory visualization shows data memory addresses and values as animation progresses
   7. Current instruction displays with field breakdown (opcode, rs, rt, rd, immediate) during walkthrough
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 11-01: TBD
+- [ ] 11-01-PLAN.md — New view components: MemoryView, InstructionView, InstructionList + CSS (VIZ-04, VIZ-05, DEMO-05)
+- [ ] 11-02-PLAN.md — ControlPanel and ProgramSelector UI components (DEMO-01-04, DEMO-06, DEMO-07)
+- [ ] 11-03-PLAN.md — Demo page assembly, CPUVisualizer integration, keyboard shortcuts + visual verification
 
 #### Phase 12: Hazard Visualization
 **Goal**: Pre-scripted hazard sequences demonstrate data dependencies and stalls through animated walkthroughs
@@ -182,7 +184,7 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 8. Visual Polish | v1.0 | 7/7 | Complete | 2026-02-11 |
 | 9. Animation Framework & Data Structures | v1.1 | 3/3 | Complete | 2026-02-11 |
 | 10. Basic Visualization | v1.1 | 4/4 | Complete | 2026-02-15 |
-| 11. Interactive Demo Page | v1.1 | 0/TBD | Not started | - |
+| 11. Interactive Demo Page | v1.1 | 0/3 | Planned | - |
 | 12. Hazard Visualization | v1.1 | 0/TBD | Not started | - |
 | 13. Documentation Foundation | v1.1 | 0/TBD | Not started | - |
 | 14. Advanced Documentation | v1.1 | 0/TBD | Not started | - |
