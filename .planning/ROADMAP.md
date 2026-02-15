@@ -107,17 +107,8 @@ Plans:
 
 #### Phase 12: Hazard Visualization
 **Goal**: Pre-scripted hazard sequences demonstrate data dependencies and stalls through animated walkthroughs
-**Depends on**: Phase 11
-**Requirements**: ANIM-05, VIZ-07, VIZ-08
-**Success Criteria** (what must be TRUE):
-  1. Hazard sequences include pre-scripted examples showing data dependencies (RAW hazards)
-  2. Animation walkthrough shows pipeline stalls occurring when hazards are encountered
-  3. Data hazards are highlighted with color-coding during animation playback
-  4. Stall bubbles appear in affected pipeline stages during hazard walkthrough frames
-**Plans**: TBD
-
-Plans:
-- [ ] 12-01: TBD
+**Status**: SKIPPED - Advanced topic beyond portfolio scope
+**Reason**: Current CPU simulator effectively demonstrates core pipeline concepts without needing hazard/stall complexity
 
 #### Phase 13: Documentation Foundation
 **Goal**: CPU project landing page and foundational documentation pages explaining the visualization
