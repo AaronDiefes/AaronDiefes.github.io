@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 Phase: 11 of 15 (Interactive Demo Page)
 Plan: 2 of 3
 Status: In Progress
-Last activity: 2026-02-15 — Completed 11-02-PLAN.md (UI control components)
+Last activity: 2026-02-15 — Completed 11-01-PLAN.md (MemoryView, InstructionView, InstructionList)
 
 Progress: [██████████░░░░░░░░░░] 67% (10/15 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7 (Phases 9-11 in progress)
-- Average duration: 2 min 20 sec
-- Total execution time: 16 min 3 sec
+- Total plans completed: 8 (Phases 9-11 in progress)
+- Average duration: 2 min 23 sec
+- Total execution time: 18 min 41 sec
 
 **By Phase:**
 
@@ -30,15 +30,15 @@ Progress: [██████████░░░░░░░░░░] 67% (10
 | v1.0 (Phases 1-8) | Complete | N/A | N/A |
 | Phase 9 | 3 | 7m 40s | 2m 33s |
 | Phase 10 | 3 | 6m 53s | 2m 18s |
-| Phase 11 | 1 | 1m 30s | 1m 30s |
+| Phase 11 | 2 | 4m 8s | 2m 4s |
 
 **Recent Trend:**
-- 09-01: 2m 28s (core data structures)
 - 09-02: 2m 3s (animation framework)
 - 09-03: 3m 19s (sequence generator and programs)
 - 10-01: 2m 5s (visualization components)
 - 10-02: 2m 16s (CPUVisualizer coordinator and tests)
 - 10-03: 2m 32s (SVG block diagram view)
+- 11-01: 2m 38s (MemoryView, InstructionView, InstructionList)
 - 11-02: 1m 30s (UI control components)
 
 *Consistent execution velocity established*
@@ -77,6 +77,10 @@ Recent decisions affecting current work:
 - [Phase 10-03]: No wire value labels on data paths - keeps diagram clean and educational
 - [Phase 10-03]: Native SVG tooltips via <title> elements instead of custom JS library
 - [Phase 10-03]: Vertical stacked layout (block diagram full-width, registers below) replaces 2-column grid
+- [Phase 11-01]: MemoryView shows only non-zero addresses (not all 256 words) for cleaner educational display
+- [Phase 11-01]: InstructionView always reads from state.pipeline.IF.instruction (follows Phase 10 non-pipelined decision)
+- [Phase 11-01]: InstructionList auto-scrolls to active instruction only when paused (prevents scroll jank during playback)
+- [Phase 11-01]: Keyboard accessibility with tabindex=0 and Enter/Space handlers for clickable instructions
 - [Phase 11-02]: CSS class selectors instead of IDs for UI components to prevent ID collisions
 - [Phase 11-02]: Callback pattern for ProgramSelector coordination (decouples from other UI components)
 - [Phase 11-02]: aria-live="polite" for frame counter accessibility (non-interrupting screen reader announcements)
@@ -92,9 +96,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 11-02-PLAN.md (UI control components)
+Stopped at: Completed 11-01-PLAN.md (MemoryView, InstructionView, InstructionList)
 Resume file: None
 
 ---
 *State initialized: 2026-02-11*
-*Last updated: 2026-02-15T17:07:29Z*
+*Last updated: 2026-02-15T17:12:47Z*
