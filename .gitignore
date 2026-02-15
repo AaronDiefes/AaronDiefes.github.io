@@ -4,9 +4,6 @@ node_modules/
 # Build output
 dist/
 
-# Vite dev files (keep locally, don't commit)
-index.html
-
 # Logs
 *.log
 npm-debug.log*
