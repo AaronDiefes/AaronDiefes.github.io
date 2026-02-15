@@ -3,8 +3,8 @@ version: '3.8'
 services:
   portfolio:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: aarondiefes-portfolio
     ports:
       - "8080:80"

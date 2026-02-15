@@ -1,0 +1,462 @@
+/*
+ * Visualization CSS - CPU Simulator View Components
+ *
+ * Defines layout and visual tokens for PipelineView, RegisterView, and ExecutionView.
+ * Extends design-system.css with visualization-specific tokens.
+ */
+
+/* ============================================
+ * VISUALIZATION COLOR TOKENS
+ * ============================================ */
+
+:root {
+  /* Pipeline stage colors (5-stage RISC pipeline) */
+  --stage-if-color: #4CAF50;   /* Instruction Fetch - Green */
+  --stage-id-color: #2196F3;   /* Instruction Decode - Blue */
+  --stage-ex-color: #FF9800;   /* Execute - Orange */
+  --stage-mem-color: #9C27B0;  /* Memory Access - Purple */
+  --stage-wb-color: #F44336;   /* Write Back - Red */
+
+  /* Register change highlighting */
+  --color-highlight-yellow: #FFF9C4;
+}
+
+/* ============================================
+ * CPU VISUALIZER LAYOUT
+ * ============================================ */
+
+.cpu-visualizer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* ============================================
+ * SECTION HEADINGS
+ * ============================================ */
+
+.pipeline-section h2,
+.data-section h2 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-heading);
+}
+
+/* ============================================
+ * BLOCK DIAGRAM (SVG)
+ * ============================================ */
+
+.cpu-block-diagram {
+  width: 100%;
+  height: auto;
+  max-width: 900px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+}
+
+/* Component base styles */
+.component rect {
+  fill: var(--color-surface-alt);
+  stroke: var(--color-border);
+  stroke-width: 2;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
+}
+
+.component text,
+.component tspan {
+  font-family: var(--font-body);
+  font-size: 13px;
+  fill: var(--color-text);
+  pointer-events: none;
+}
+
+.component-label {
+  font-weight: 500;
+}
+
+/* Active state highlighting */
+.component.active rect {
+  stroke-width: 3;
+}
+
+/* Component-specific active colors (match pipeline stage colors) */
+.instruction-memory.active rect {
+  fill: #E8F5E9;  /* Light green - IF stage */
+  stroke: var(--stage-if-color);
+}
+
+.register-file.active rect,
+.sign-extend.active rect {
+  fill: #E3F2FD;  /* Light blue - ID stage */
+  stroke: var(--stage-id-color);
+}
+
+.alu.active rect {
+  fill: #FFF3E0;  /* Light orange - EX stage */
+  stroke: var(--stage-ex-color);
+}
+
+.data-memory.active rect {
+  fill: #F3E5F5;  /* Light purple - MEM stage */
+  stroke: var(--stage-mem-color);
+}
+
+.pc.active rect,
+.adder.active rect {
+  fill: #E8F5E9;  /* Light green - IF stage */
+  stroke: var(--stage-if-color);
+}
+
+/* Pipeline register styles (red vertical bars) */
+.pipeline-register rect {
+  fill: #EF5350;
+  stroke: #C62828;
+  stroke-width: 1;
+}
+
+.pipeline-label {
+  font-size: 12px;
+  font-weight: bold;
+  fill: #C62828;
+}
+
+.pipeline-instruction {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--color-text);
+}
+
+/* Multiplexer styles (blue triangles) */
+.multiplexer polygon {
+  fill: #2196F3;
+  stroke: #1976D2;
+  stroke-width: 1;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.multiplexer.active polygon {
+  opacity: 1.0;
+  stroke-width: 2;
+}
+
+/* Data path wires */
+.data-path {
+  stroke: var(--color-border);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* Stage labels above diagram */
+.stage-label-text {
+  font-size: 11px;
+  fill: var(--color-text-muted);
+  text-anchor: middle;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Accessibility: reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .component rect,
+  .multiplexer polygon {
+    transition: none;
+  }
+}
+
+/* ============================================
+ * REGISTER GRID
+ * ============================================ */
+
+.register-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.register-cell {
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 8px;
+  background: var(--color-surface);
+  transition: background-color 0.3s ease-out;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register-cell.changed {
+  background-color: var(--color-highlight-yellow);
+}
+
+/* Register $0 is hardwired to zero */
+.register-cell[data-register="0"] {
+  opacity: 0.6;
+}
+
+.register-label {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.register-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+ * EXECUTION STATE
+ * ============================================ */
+
+[data-execution-view] {
+  margin-top: 24px;
+}
+
+[data-execution-view] p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+[data-execution-view] span {
+  font-weight: bold;
+  font-family: var(--font-mono);
+}
+
+/* ============================================
+ * MEMORY VIEW
+ * ============================================ */
+
+.memory-view {
+  padding: 16px;
+}
+
+.memory-view h3 {
+  font-size: var(--text-md);
+  margin-bottom: 12px;
+  color: var(--color-text-heading);
+}
+
+.memory-table-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.memory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.memory-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface-alt);
+  z-index: 1;
+}
+
+.memory-table thead th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.memory-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.memory-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.memory-table td {
+  padding: 6px 12px;
+}
+
+.memory-row {
+  transition: background-color 0.3s ease-out;
+}
+
+.memory-row.changed {
+  background-color: var(--color-highlight-yellow);
+}
+
+.memory-address,
+.memory-value {
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ============================================
+ * INSTRUCTION VIEW
+ * ============================================ */
+
+.instruction-view {
+  padding: 16px;
+}
+
+.instruction-view h3 {
+  font-size: var(--text-md);
+  margin-bottom: 12px;
+  color: var(--color-text-heading);
+}
+
+.instruction-display {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.instruction-placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+}
+
+.instruction-mnemonic {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.instruction-mnemonic .value {
+  font-weight: bold;
+  font-family: var(--font-mono);
+  margin-left: 8px;
+}
+
+.instruction-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-surface-alt);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.field-name {
+  font-weight: bold;
+  color: var(--color-text-muted);
+}
+
+.field-value {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+.instruction-comment {
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.instruction-comment .value {
+  margin-left: 8px;
+}
+
+/* ============================================
+ * INSTRUCTION LIST
+ * ============================================ */
+
+.instruction-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.instruction-list-container h3 {
+  font-size: var(--text-md);
+  margin-bottom: 12px;
+  color: var(--color-text-heading);
+}
+
+.instruction-list {
+  list-style-position: inside;
+  margin: 0;
+  padding: 0;
+}
+
+.instruction-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.instruction-item:last-child {
+  border-bottom: none;
+}
+
+.instruction-item.clickable {
+  cursor: pointer;
+}
+
+.instruction-item.clickable:hover {
+  background: var(--color-surface-alt);
+}
+
+.instruction-item.active {
+  background: #E8F5E9;  /* Light green - matches IF stage color */
+  border-left: 4px solid var(--stage-if-color);
+  padding-left: 8px;
+}
+
+.instruction-item:focus-visible {
+  outline: 2px solid var(--stage-if-color);
+  outline-offset: -2px;
+}
+
+.inst-mnemonic {
+  font-weight: bold;
+  font-family: var(--font-mono);
+  min-width: 60px;
+}
+
+.inst-operands {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+.inst-comment {
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-left: auto;
+}
+
+/* ============================================
+ * ACCESSIBILITY - REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-row,
+  .instruction-item {
+    transition: none;
+  }
+}

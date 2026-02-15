@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformations & Textures  - Graphics Engine Documentation</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/breadcrumbs.css">
+
+    <!-- Prism.js Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
+
+    <!-- Prism.js Plugins - CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-highlight/prism-line-highlight.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+
+    <!-- Local Documentation Styles -->
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="stylesheet" href="assets/css/code.css">
+</head>
+<body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#about">About</a></li>
+            <li><a href="https://github.com/AaronDiefes" target="_blank">GitHub</a></li>
+        </ul>
+    </nav>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="../index.html">Home</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="../wasm-graphics-demo.html">Graphics Engine</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="index.html">Documentation</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><span aria-current="page">Transformations & Textures</span></li>
+        </ol>
+    </nav>
+    <!-- Header -->
+    <header class="doc-header">
+        <div class="doc-container">
+            <h1>Transformations & Textures</h1>
+            <p>Matrix Transformations, CTM Stack, and Bitmap Shaders</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="doc-container">
+        <div class="content-wrapper">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="separator">/</span>
+                <a href="index.html">Documentation</a>
+                <span class="separator">/</span>
+                <span>Transformations & Textures</span>
+            </nav>
+
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>Introduction</h2>
+                <p>
+                    This section introduces two fundamental concepts in computer graphics:
+                    <strong>matrix transformations</strong> and <strong>texture mapping</strong>. These capabilities
+                    allow shapes to be positioned, rotated, and scaled anywhere on the canvas, and enable textures
+                    (bitmap images) to be applied to shapes with various tiling behaviors.
+                </p>
+                <p>
+                    The <code>GMatrix</code> class represents 2D affine transformations using a 3×3 matrix with
+                    homogeneous coordinates. The Current Transform Matrix (CTM) stack allows transformations to
+                    be saved and restored, enabling hierarchical scene construction. The bitmap shader samples
+                    texels from an image and supports three tile modes for handling coordinates outside the
+                    texture bounds: Clamp, Repeat, and Mirror.
+                </p>
+            </section>
+
+            <!-- Tabs Section -->
+            <div class="tabs">
+                <div role="tablist" aria-label="Transformations and Textures Topics">
+                    <button role="tab"
+                            aria-selected="true"
+                            aria-controls="tab-panel-1"
+                            id="tab-1"
+                            tabindex="0">
+                        Matrix Fundamentals
+                    </button>
+                    <button role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-panel-2"
+                            id="tab-2"
+                            tabindex="-1">
+                        CTM Stack
+                    </button>
+                    <button role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-panel-3"
+                            id="tab-3"
+                            tabindex="-1">
+                        Bitmap Shader
+                    </button>
+                </div>
+
+                <!-- Tab 1: Matrix Fundamentals -->
+                <div role="tabpanel"
+                     id="tab-panel-1"
+                     aria-labelledby="tab-1">
+                    <h3>Matrix Fundamentals</h3>
+
+                    <h4>2D Affine Transformation Matrices</h4>
+                    <p>
+                        A 2D affine transformation can represent translation, rotation, scaling, and shearing
+                        operations using a 3×3 matrix with homogeneous coordinates. The bottom row is always
+                        [0, 0, 1] and is implied but not stored:
+                    </p>
+                    <pre>[ a  c  e ]     [ 0 2 4 ]  &lt;-- indices
+[ b  d  f ]     [ 1 3 5 ]
+[ 0  0  1 ]  &lt;-- implied</pre>
+
+                    <p>
+                        When transforming a point (x, y) by this matrix, the resulting point (x', y') is computed as:
+                    </p>
+                    <ul>
+                        <li><strong>x' = ax + cy + e</strong></li>
+                        <li><strong>y' = bx + dy + f</strong></li>
+                    </ul>
+
+                    <p>
+                        The matrix elements control different aspects of the transformation:
+                        <code>a</code> and <code>d</code> control scaling; <code>b</code> and <code>c</code>
+                        control rotation and shearing; <code>e</code> and <code>f</code> control translation.
+                    </p>
+
+                    <h4>Matrix Construction</h4>
+                    <p>
+                        The <code>GMatrix</code> class provides static factory methods to create common transformations.
+                        These matrices can be composed by multiplication to build complex transformations.
+                    </p>
+
+<pre class="line-numbers" data-line="18-31"><code class="language-cpp">GMatrix GMatrix::Translate(float tx, float ty){
+    GMatrix translate_matrix = GMatrix((float)1, (float)0, tx, (float)0, (float)1, ty);
+    return translate_matrix;
+}
+
+GMatrix GMatrix::Scale(float sx, float sy){
+    GMatrix scale_matrix = GMatrix(sx, (float)0, (float)0, (float)0, sy, (float)0);
+    return scale_matrix;
+}
+
+GMatrix GMatrix::Rotate(float radians){
+    GMatrix rotate_matrix = GMatrix(cos(radians), -sin(radians), 0, sin(radians), cos(radians), 0);
+    return rotate_matrix;
+}</code></pre>
+
+                    <h4>Matrix Composition</h4>
+                    <p>
+                        Transformations can be combined by multiplying matrices. The <code>Concat</code> method
+                        computes the product of two matrices, creating a single matrix that applies both transformations
+                        in sequence. Matrix multiplication is <strong>not commutative</strong>: A × B ≠ B × A.
+                    </p>
+
+<pre class="line-numbers" data-line="34-42"><code class="language-cpp">GMatrix GMatrix::Concat(const GMatrix& a, const GMatrix& b){
+    return GMatrix(
+            (a[0] * b[0]) + (a[2] * b[1]),
+            (a[0] * b[2]) + (a[2] * b[3]),
+            (a[0] * b[4]) + (a[2] * b[5]) + a[4],
+            (a[1] * b[0]) + (a[3] * b[1]),
+            (a[1] * b[2]) + (a[3] * b[3]),
+            (a[1] * b[4]) + (a[3] * b[5]) + a[5]
+    );
+}</code></pre>
+
+                    <h4>Point Transformation</h4>
+                    <p>
+                        The <code>mapPoints</code> method transforms an array of points by applying the matrix.
+                        Each point (x, y) is transformed using the affine transformation formula shown above.
+                    </p>
+
+<pre class="line-numbers" data-line="67-76"><code class="language-cpp">void GMatrix::mapPoints(GPoint dst[], const GPoint src[], int count) const {
+    GMatrix curr = (*this);
+    for(int i = 0; i < count; ++i) {
+        float mapped_x = (curr[0] * src[i].x) + (curr[2] * src[i].y) + curr[4];
+        float mapped_y = (curr[1] * src[i].x) + (curr[3] * src[i].y) + curr[5];
+
+        dst[i].x = mapped_x;
+        dst[i].y = mapped_y;
+    }
+}</code></pre>
+                </div>
+
+                <!-- Tab 2: CTM Stack -->
+                <div role="tabpanel"
+                     id="tab-panel-2"
+                     aria-labelledby="tab-2"
+                     hidden>
+                    <h3>Current Transform Matrix (CTM) Stack</h3>
+
+                    <h4>The Transformation Stack Concept</h4>
+                    <p>
+                        The CTM stack enables hierarchical transformations by allowing the current transformation
+                        state to be saved and restored. This is essential for drawing complex scenes where different
+                        parts of the scene have different coordinate systems.
+                    </p>
+                    <p>
+                        The canvas maintains a stack of transformation matrices. Operations like <code>save()</code>
+                        push the current matrix onto the stack, and <code>restore()</code> pops it off, returning
+                        to the previous transformation state. The <code>concat()</code> method modifies the top
+                        matrix by multiplying it with a new transformation.
+                    </p>
+
+                    <h4>Save Operation</h4>
+                    <p>
+                        The <code>save()</code> method creates a snapshot of the current transformation state by
+                        pushing a copy of the top matrix onto the stack. This allows nested transformations where
+                        inner transformations can be undone without affecting outer ones.
+                    </p>
+
+<pre class="line-numbers" data-line="130-133"><code class="language-cpp">void MyCanvas::save() {
+    GMatrix top = ctm[ctm.size() - 1];
+    ctm.push_back(top);
+}</code></pre>
+
+                    <h4>Restore Operation</h4>
+                    <p>
+                        The <code>restore()</code> method pops the top matrix off the stack, discarding any
+                        transformations applied since the last <code>save()</code>. This efficiently reverts
+                        to the previous coordinate system.
+                    </p>
+
+<pre class="line-numbers" data-line="135-137"><code class="language-cpp">void MyCanvas::restore() {
+    ctm.erase(ctm.end() -1);
+}</code></pre>
+
+                    <h4>Concat Operation</h4>
+                    <p>
+                        The <code>concat()</code> method multiplies the current transformation matrix by a new
+                        matrix, effectively adding a new transformation to the existing ones. This is how transformations
+                        accumulate: each <code>concat()</code> builds upon the previous transformation state.
+                    </p>
+
+<pre class="line-numbers" data-line="139-142"><code class="language-cpp">void MyCanvas::concat(const GMatrix& matrix) {
+    GMatrix& top = ctm.back();
+    top = GMatrix::Concat(top, matrix);
+}</code></pre>
+
+                    <h4>Why the CTM Stack Matters</h4>
+                    <p>
+                        The CTM stack is fundamental to scene graph architectures. It allows you to:
+                    </p>
+                    <ul>
+                        <li><strong>Build hierarchies:</strong> Parent transformations automatically affect children</li>
+                        <li><strong>Isolate effects:</strong> Use save/restore to prevent transformations from leaking</li>
+                        <li><strong>Compose scenes:</strong> Combine local and global coordinate systems effortlessly</li>
+                    </ul>
+                    <p>
+                        For example, to draw a rotated shape at a specific position, you save the current state,
+                        translate to the position, rotate, draw the shape, then restore to return to the original
+                        coordinate system.
+                    </p>
+                </div>
+
+                <!-- Tab 3: Bitmap Shader -->
+                <div role="tabpanel"
+                     id="tab-panel-3"
+                     aria-labelledby="tab-3"
+                     hidden>
+                    <h3>Bitmap Shader & Tile Modes</h3>
+
+                    <h4>Texture Mapping Concept</h4>
+                    <p>
+                        A bitmap shader enables texture mapping by sampling colors from a source image (bitmap) and
+                        applying them to shapes. The shader transforms canvas coordinates into texture coordinates,
+                        then samples the appropriate pixel (texel) from the bitmap.
+                    </p>
+                    <p>
+                        The shader uses the inverse of the combined CTM and local transformation matrix to map from
+                        canvas space to texture space. For each pixel being rendered, the shader computes where in
+                        the texture that pixel should sample from.
+                    </p>
+
+                    <h4>Coordinate Transformation</h4>
+                    <p>
+                        The <code>setContext</code> method prepares the shader for rendering by computing the inverse
+                        of the transformation matrix. This inverse matrix converts screen coordinates back to texture
+                        coordinates.
+                    </p>
+
+<pre class="line-numbers" data-line="29-38"><code class="language-cpp">bool setContext(const GMatrix& ctm) override{
+    GMatrix temp = ctm * fMat;
+
+    if(auto inverted = temp.invert()){
+      inv = *inverted;
+      return true;
+    }
+    inv = fMat;
+    return false;
+}</code></pre>
+
+                    <h4>Tile Modes</h4>
+                    <p>
+                        When texture coordinates fall outside the [0, width) × [0, height) bounds of the bitmap,
+                        the tile mode determines how the shader handles these coordinates:
+                    </p>
+                    <ul>
+                        <li><strong>Clamp:</strong> Extends the edge color indefinitely (coordinates clamped to [0, size-1])</li>
+                        <li><strong>Repeat:</strong> Wraps the texture by repeating it (modulo arithmetic)</li>
+                        <li><strong>Mirror:</strong> Reflects the texture back and forth (ping-pong pattern)</li>
+                    </ul>
+
+                    <h4>Clamp Tile Mode</h4>
+                    <p>
+                        Clamp mode restricts coordinates to valid texture bounds. Coordinates less than 0 become 0;
+                        coordinates greater than or equal to the texture dimension become dimension-1.
+                    </p>
+
+<pre class="line-numbers" data-line="96-114"><code class="language-cpp">int clamp_x(int x){
+  if(x <= 0){
+    return 0;
+  }
+  if(x >= fDevice.width()){
+    return fDevice.width() - 1;
+  }
+  return x;
+}
+
+int clamp_y(int y){
+  if(y <= 0){
+    return 0;
+  }
+  if(y >= fDevice.height()){
+    return fDevice.height() - 1;
+  }
+  return y;
+}</code></pre>
+
+                    <h4>Repeat Tile Mode</h4>
+                    <p>
+                        Repeat mode wraps coordinates using modulo arithmetic. Negative coordinates are handled by
+                        wrapping from the opposite edge. This creates a seamless tiling pattern.
+                    </p>
+
+<pre class="line-numbers" data-line="132-142"><code class="language-cpp">int repeatX(const GBitmap& bm, float x) {
+
+  int res;
+  if (x < 0.0f) {
+    res = bm.width() - (GRoundToInt(abs(x)) % bm.width());
+  } else {
+    res = GRoundToInt(x) % bm.width();
+  }
+  if (res == bm.width()) return bm.width() - 1;
+  return res;
+}</code></pre>
+
+                    <h4>Mirror Tile Mode</h4>
+                    <p>
+                        Mirror mode reflects the texture back and forth. The coordinate is taken modulo twice the
+                        texture dimension. If the result exceeds the dimension, it's reflected back from the far edge.
+                    </p>
+
+<pre class="line-numbers" data-line="116-121"><code class="language-cpp">int mirrorX(const GBitmap& bm, float x) {
+  x = x < 0.0f ? -x : x;
+  int map = GRoundToInt(x) % (bm.width() * 2);
+  if (map >= bm.width()) return (bm.width() * 2) - map - 1;
+  return map;
+}</code></pre>
+
+                    <h4>Shader Row Processing</h4>
+                    <p>
+                        The <code>shadeRow</code> method is called for each horizontal span of pixels to be filled.
+                        It transforms the starting canvas coordinates to texture space, then iterates across the row,
+                        sampling texels and applying the appropriate tile mode.
+                    </p>
+
+<pre class="line-numbers" data-line="40-58"><code class="language-cpp">void shadeRow(int x, int y, int count, GPixel row[]) override{
+  float x_prime = inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]; //x' = ax + cy + e
+  float y_prime = inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]; //y' = bx + dy + f
+
+  if(tile_mode == GTileMode::kRepeat){
+    for(int i = 0; i < count; i++){
+      int xCurr = GFloorToInt(x_prime);
+      int yCurr = GFloorToInt(y_prime);
+
+
+      xCurr = repeatX(fDevice, xCurr);
+      yCurr = repeatY(fDevice, yCurr);
+
+
+      row[i] = *(fDevice.getAddr(xCurr, yCurr));
+      x_prime += inv[0];
+      y_prime += inv[1];
+    }
+  }</code></pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Prism.js Core -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-cpp.min.js" defer></script>
+
+    <!-- Prism.js Plugins - JS (order matters: toolbar before copy-to-clipboard) -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-highlight/prism-line-highlight.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
+
+    <!-- Local Tab Script -->
+    <script src="assets/js/tabs.js"></script>
+    <script src="assets/js/nav.js"></script>
+</body>
+</html>

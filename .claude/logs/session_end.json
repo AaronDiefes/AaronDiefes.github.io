@@ -40,5 +40,12 @@
     "cwd": "/Users/orases/Aaron/website",
     "hook_event_name": "SessionEnd",
     "reason": "clear"
+  },
+  {
+    "session_id": "122c4864-17a4-499d-acf3-8422b92965cb",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/122c4864-17a4-499d-acf3-8422b92965cb.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
   }
 ]

@@ -15,7 +15,9 @@
       "WebSearch",
       "WebFetch(domain:risc-v-cpu-visualizer.vercel.app)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:edumips.org)"
+      "WebFetch(domain:edumips.org)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

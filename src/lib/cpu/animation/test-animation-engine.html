@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AnimationEngine Test</title>
+</head>
+<body>
+  <h1>AnimationEngine Test</h1>
+  <pre id="results"></pre>
+
+  <script src="timing-controller.js"></script>
+  <script src="animation-engine.js"></script>
+  <script>
+    const results = [];
+
+    function test(description, assertion) {
+      const passed = assertion();
+      results.push(`${passed ? '✓' : '✗'} ${description}`);
+      return passed;
+    }
+
+    // Set up event listener to verify events are dispatched
+    let lastEvent = null;
+    window.addEventListener('cpu:framechange', (e) => {
+      lastEvent = e.detail;
+      console.log('Frame change event:', e.detail);
+    });
+
+    // Run tests
+    const engine = new AnimationEngine();
+
+    // Load test frames
+    const testFrames = [{a: 1}, {a: 2}, {a: 3}];
+    engine.loadFrames(testFrames);
+
+    test('1. loadFrames sets frames', () => engine.frames.length === 3);
+    test('2. Initial currentFrame is 0', () => engine.currentFrame === 0);
+
+    // Test navigation
+    engine.stepForward();
+    test('3. stepForward advances to frame 1', () => engine.currentFrame === 1);
+
+    engine.stepBackward();
+    test('4. stepBackward returns to frame 0', () => engine.currentFrame === 0);
+
+    engine.jumpToFrame(2);
+    test('5. jumpToFrame(2) sets currentFrame to 2', () => engine.currentFrame === 2);
+
+    test('6. isAtEnd() returns true at last frame', () => engine.isAtEnd() === true);
+
+    const movedAtEnd = engine.stepForward();
+    test('7. stepForward at end returns false', () => movedAtEnd === false);
+
+    engine.reset();
+    test('8. reset() returns to frame 0', () => engine.currentFrame === 0);
+
+    // Test progress
+    const progress = engine.getProgress();
+    test('9. getProgress().total === 3', () => progress.total === 3);
+    test('10. getProgress().current === 0', () => progress.current === 0);
+
+    // Test event dispatch
+    engine.stepForward();
+    test('11. Frame change event was dispatched', () => lastEvent !== null);
+    test('12. Event detail includes frame index', () => lastEvent.frame === 1);
+    test('13. Event detail includes state', () => lastEvent.state.a === 2);
+    test('14. Event detail includes totalFrames', () => lastEvent.totalFrames === 3);
+
+    // Test speed control
+    engine.setSpeed(2);
+    test('15. setSpeed(2) changes speed', () => engine.getSpeed() === 2);
+    test('16. getSpeedLabel() returns "2x"', () => engine.getSpeedLabel() === '2x');
+
+    // Test edge cases
+    engine.loadFrames([]);
+    test('17. loadFrames([]) sets empty array', () => engine.frames.length === 0);
+
+    engine.loadFrames(null);
+    test('18. loadFrames(null) sets empty array', () => engine.frames.length === 0);
+
+    // Reload frames for playback test
+    engine.loadFrames(testFrames);
+
+    // Test playback (can't fully test rAF loop in synchronous test, but check state changes)
+    test('19. Initial isPlaying is false', () => engine.isPlaying === false);
+
+    engine.play();
+    test('20. play() sets isPlaying to true', () => engine.isPlaying === true);
+
+    engine.pause();
+    test('21. pause() sets isPlaying to false', () => engine.isPlaying === false);
+
+    // Test play at end resets to start
+    engine.jumpToFrame(2); // Go to end
+    engine.play();
+    test('22. play() at end resets to start', () => engine.currentFrame === 0);
+    engine.pause(); // Stop for next test
+
+    // Test toggle
+    const wasPlaying = engine.isPlaying;
+    engine.togglePlayPause();
+    test('23. togglePlayPause() changes playback state', () => engine.isPlaying !== wasPlaying);
+    engine.pause(); // Ensure stopped
+
+    // Test boundary checks
+    test('24. isAtStart() at frame 0', () => {
+      engine.reset();
+      return engine.isAtStart() === true;
+    });
+
+    test('25. getCurrentState() returns current frame object', () => {
+      const state = engine.getCurrentState();
+      return state && state.a === 1;
+    });
+
+    // Display results
+    document.getElementById('results').textContent = results.join('\n');
+
+    // Also log to console
+    console.log('AnimationEngine Tests:');
+    results.forEach(r => console.log(r));
+
+    const allPassed = results.every(r => r.startsWith('✓'));
+    console.log(`\nAll tests passed: ${allPassed}`);
+
+    // Additional manual verification note
+    console.log('\nManual verification:');
+    console.log('- Check that frame change events were logged above');
+    console.log('- Visibility handling requires manual tab switching test');
+  </script>
+</body>
+</html>

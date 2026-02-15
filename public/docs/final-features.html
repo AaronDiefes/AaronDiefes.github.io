@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Features - Graphics Engine Documentation</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/breadcrumbs.css">
+
+    <!-- Prism.js Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css">
+
+    <!-- Prism.js Plugins - CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-highlight/prism-line-highlight.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+
+    <!-- Local Documentation Styles -->
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="stylesheet" href="assets/css/code.css">
+</head>
+<body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html" class="nav-brand">Graphics Engine</a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle menu</span>
+            <span class="hamburger-icon"></span>
+        </button>
+        <ul id="nav-menu" class="nav-links" hidden>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#about">About</a></li>
+            <li><a href="https://github.com/AaronDiefes" target="_blank">GitHub</a></li>
+        </ul>
+    </nav>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="../index.html">Home</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="../wasm-graphics-demo.html">Graphics Engine</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><a href="index.html">Documentation</a></li>
+            <li><span class="separator" aria-hidden="true">›</span></li>
+            <li><span aria-current="page">Final Features</span></li>
+        </ol>
+    </nav>
+    <!-- Header -->
+    <header class="doc-header">
+        <div class="doc-container">
+            <h1>Advanced Features</h1>
+            <p>Sweep Gradients, Position-Controlled Gradients, and Coons Patches</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="doc-container">
+        <div class="content-wrapper">
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>Introduction</h2>
+                <p>
+                    This section covers three advanced shader and rendering techniques that extend the engine's
+                    capabilities beyond standard gradients and shape rendering: sweep gradients, position-controlled
+                    gradients, and Coons patches.
+                </p>
+                <p>
+                    <strong>Sweep gradients</strong> (also called conical or angular gradients) distribute colors
+                    radially based on angle around a center point, creating color wheel effects. <strong>Position-controlled
+                    gradients</strong> vary colors based on radial distance from a center point, enabling custom
+                    falloff patterns. <strong>Coons patches</strong> interpolate between four boundary curves to
+                    create smooth parametric surfaces, useful for rendering curved shapes with natural color transitions.
+                </p>
+                <p>
+                    Each feature represents a sophisticated shader algorithm that leverages coordinate transformations,
+                    interpolation techniques, and mathematical functions to achieve advanced visual effects.
+                </p>
+            </section>
+
+            <!-- Tabs Section -->
+            <div class="tabs">
+                <div role="tablist" aria-label="Final Feature Examples">
+                    <button role="tab"
+                            aria-selected="true"
+                            aria-controls="tab-panel-1"
+                            id="tab-1"
+                            tabindex="0">
+                        Sweep Gradient
+                    </button>
+                    <button role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-panel-2"
+                            id="tab-2"
+                            tabindex="-1">
+                        Position-Based Gradient
+                    </button>
+                    <button role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-panel-3"
+                            id="tab-3"
+                            tabindex="-1">
+                        Coons Patches
+                    </button>
+                </div>
+
+                <!-- Tab 1: Sweep Gradient -->
+                <div role="tabpanel"
+                     id="tab-panel-1"
+                     aria-labelledby="tab-1">
+                    <h3>Sweep Gradient (Angle-Based)</h3>
+
+                    <h4>What is a Sweep Gradient?</h4>
+                    <p>
+                        A <strong>sweep gradient</strong> (also called a conical or angular gradient) distributes
+                        colors radially around a center point based on angle. Unlike linear gradients that vary
+                        along a line, or radial gradients that vary by distance from center, sweep gradients
+                        rotate colors around the center like a color wheel.
+                    </p>
+                    <p>
+                        The key insight is using <code>atan2(dy, dx)</code> to convert a pixel's position
+                        relative to the center into an angle. This angle (normalized to [0, 1]) then determines
+                        which color to sample from the gradient.
+                    </p>
+
+                    <h4>Algorithm Breakdown</h4>
+                    <p>The sweep gradient shader performs these steps for each pixel:</p>
+                    <ol>
+                        <li>Transform the pixel coordinates using the inverse matrix</li>
+                        <li>Calculate the angle to the pixel using <code>atan2(y_prime - center.y, x_prime - center.x)</code></li>
+                        <li>Normalize the angle from [−π, π] to [0, 2π]</li>
+                        <li>Account for the starting angle offset</li>
+                        <li>Map the angle to a t-value in [0, 1] for color interpolation</li>
+                        <li>Interpolate between adjacent colors based on t</li>
+                    </ol>
+
+                    <h4>Implementation</h4>
+                    <p>
+                        From <code>shader_ops.h</code>, the <code>AngleGradientShader</code> demonstrates
+                        sweep gradient rendering. The critical angle calculation happens in the shadeRow loop.
+                    </p>
+
+<pre class="line-numbers" data-line="7-12,18-22"><code class="language-cpp">void shadeRow(int x, int y, int c, GPixel row[]) override {
+    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
+    float y_prime = (inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]) * (count - 1);
+
+    float dx = P1.x - P0.x;
+    float dy = P1.y - P0.y;
+    // Calculate the angle of the line segment (starting angle)
+    float line_angle = std::atan2(dy, dx);
+
+    for (int i = 0; i < c; i++) {
+        // Calculate angle from center to current pixel
+        float angle_to_pixel = std::atan2(y_prime - P0.y, x_prime - P0.x);
+
+        // Normalize angle to [0, 2*pi]
+        if (angle_to_pixel < 0) {
+            angle_to_pixel += 2 * M_PI;
+        }
+
+        // Calculate relative angle (offset by starting angle)
+        float angle = angle_to_pixel - line_angle;
+        if (angle < 0) {
+            angle += 2 * M_PI;
+        }
+
+        // Normalize angle to [0, 1] for color interpolation
+        float t = angle / (2 * M_PI);
+
+        // Interpolate between colors based on t
+        int k = floor(t * (count - 1));
+        float u = t * (count - 1) - k;
+        GColor gradient_color = (1 - u) * gradient_colors[k] + u * gradient_colors[k + 1];
+
+        row[i] = unpremult(gradient_color);
+
+        // Update position for next pixel in row
+        x_prime += inv[0];
+        y_prime += inv[1];
+    }
+}</code></pre>
+
+                    <h4>Key Implementation Details</h4>
+                    <ul>
+                        <li><strong>atan2 Function:</strong> Returns angle in radians [−π, π], handles all quadrants correctly</li>
+                        <li><strong>Angle Normalization:</strong> Converts negative angles to positive [0, 2π] range</li>
+                        <li><strong>Starting Angle Offset:</strong> The line_angle parameter rotates where color[0] appears</li>
+                        <li><strong>Color Interpolation:</strong> Linear interpolation between adjacent color stops</li>
+                        <li><strong>Incremental Updates:</strong> x_prime and y_prime increment for efficiency along the row</li>
+                    </ul>
+
+                    <h4>Visual Result</h4>
+                    <p>
+                        The sweep gradient creates a rainbow effect radiating from the center. As you move
+                        counterclockwise around the center point, you transition through all gradient colors.
+                        This is perfect for creating color pickers, circular progress indicators, and artistic effects.
+                    </p>
+                </div>
+
+                <!-- Tab 2: Position-Based Gradient -->
+                <div role="tabpanel"
+                     id="tab-panel-2"
+                     aria-labelledby="tab-2"
+                     hidden>
+                    <h3>Position-Controlled Linear Gradient</h3>
+
+                    <h4>What is Position-Based Control?</h4>
+                    <p>
+                        Standard linear gradients distribute colors evenly between two points. A
+                        <strong>position-based gradient</strong> allows explicit control over where each
+                        color stop appears along the gradient line using a positions array. This enables
+                        non-uniform color distribution.
+                    </p>
+                    <p>
+                        For example, with three colors at positions [0, 0.25, 1], the first color occupies
+                        25% of the gradient space, while the transition from second to third color occupies
+                        the remaining 75%.
+                    </p>
+
+                    <h4>Algorithm Breakdown</h4>
+                    <p>The shader evaluates each pixel's gradient position (t-value) and determines:</p>
+                    <ol>
+                        <li>Transform pixel coordinates to gradient space using inverse matrix</li>
+                        <li>Calculate the proportional distance along the gradient line (prop)</li>
+                        <li>Find which color stops bracket this position (positions[k-1] ≤ prop ≤ positions[k])</li>
+                        <li>Calculate local interpolation within that segment</li>
+                        <li>Blend between the two bracketing colors</li>
+                    </ol>
+
+                    <h4>Implementation</h4>
+                    <p>
+                        From <code>my_final.cpp</code>, the <code>LinearPosGradientShader</code> demonstrates
+                        how to handle non-uniform color stop positioning. The key logic finds the correct
+                        color segment and interpolates within it.
+                    </p>
+
+<pre class="line-numbers" data-line="9-14,19-21"><code class="language-cpp">void shadeRow(int x, int y, int c, GPixel row[]) override {
+    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
+    float currX = x_prime;
+    float prop;
+    int k;
+    GColor mix;
+
+    for (int i = 0; i < c; i++) {
+        currX = x_prime;
+        // Clamp to valid gradient range
+        if (currX < 0) currX = 0;
+        if (currX > count - 1) currX = count - 1;
+
+        // Calculate proportional position along gradient
+        prop = currX / (count - 1);
+        k = 0;
+
+        // Find which color stops bracket this position
+        while (true) {
+            if (prop > positions[k]) {
+                k++;
+            } else {
+                break;
+            }
+        }
+        assert(prop <= positions[k]);
+
+        float fullDiff;
+        float propDiff;
+
+        if (k == 0) {
+            // Before first position, use first color
+            mix = gradient_colors[k];
+        } else if (k < count) {
+            // Between two positions, interpolate
+            fullDiff = positions[k] - positions[k - 1];
+            propDiff = prop - positions[k - 1];
+
+            float propC1 = propDiff / fullDiff;
+            assert(propC1 >= 0.0f && propC1 <= 1.0f);
+
+            mix = gradient_colors[k] * propC1 + gradient_colors[k - 1] * (1.0f - propC1);
+        } else {
+            // Past last position, use last color
+            mix = gradient_colors[k - 1];
+        }
+
+        row[i] = unpremult(mix);
+        x_prime += inv[0] * (count - 1);
+    }
+}</code></pre>
+
+                    <h4>Key Implementation Details</h4>
+                    <ul>
+                        <li><strong>Position Array:</strong> Positions must be monotonically increasing from 0.0 to 1.0</li>
+                        <li><strong>Binary Search Opportunity:</strong> The while loop could be optimized with binary search</li>
+                        <li><strong>Local Interpolation:</strong> propC1 is the interpolation factor within the current segment</li>
+                        <li><strong>Edge Handling:</strong> Special cases for before first and after last position</li>
+                        <li><strong>Clamping:</strong> currX is clamped to [0, count-1] for clamp tile mode</li>
+                    </ul>
+
+                    <h4>Use Cases</h4>
+                    <p>
+                        Position-based gradients are essential for:
+                    </p>
+                    <ul>
+                        <li>Creating color bands of specific widths</li>
+                        <li>Emphasizing certain color transitions</li>
+                        <li>Matching design specifications with precise color placement</li>
+                        <li>Creating non-linear color progressions</li>
+                    </ul>
+
+                    <p class="demo-instruction">
+                        💡 <strong>Design Note:</strong> This feature bridges the gap between simple gradients
+                        and complex shader logic, giving designers fine-grained control over color distribution
+                        without writing custom shader code.
+                    </p>
+                </div>
+
+                <!-- Tab 3: Coons Patches -->
+                <div role="tabpanel"
+                     id="tab-panel-3"
+                     aria-labelledby="tab-3"
+                     hidden>
+                    <h3>Quadratic Coons Patches</h3>
+
+                    <h4>What is a Coons Patch?</h4>
+                    <p>
+                        A <strong>Coons patch</strong> is a method for creating a smooth surface defined by
+                        boundary curves. Given four curves that form the edges of a patch, the Coons formulation
+                        interpolates the interior points to create a continuous surface.
+                    </p>
+                    <p>
+                        The quadratic variant uses quadratic Bezier curves for each of the four boundaries,
+                        allowing for curved edges rather than straight lines. This creates more organic,
+                        visually interesting surfaces compared to simple rectangular meshes.
+                    </p>
+
+                    <h4>Mathematical Foundation</h4>
+                    <p>The Coons patch formula is:</p>
+                    <p style="text-align: center; font-family: monospace; font-size: 1.1em;">
+                        <strong>P(u,v) = TB(u,v) + LR(u,v) − Corners(u,v)</strong>
+                    </p>
+                    <p>Where:</p>
+                    <ul>
+                        <li><strong>TB(u,v):</strong> Top-bottom interpolation. Evaluate top and bottom curves at u, then lerp by v</li>
+                        <li><strong>LR(u,v):</strong> Left-right interpolation. Evaluate left and right curves at v, then lerp by u</li>
+                        <li><strong>Corners(u,v):</strong> Bilinear interpolation of the four corner points. Subtract to avoid double-counting corners</li>
+                    </ul>
+
+                    <h4>Implementation Strategy</h4>
+                    <p>
+                        The implementation in <code>my_final.cpp</code> generates a triangle mesh by:
+                    </p>
+                    <ol>
+                        <li>Subdividing the [0,1]×[0,1] parameter space into a grid (controlled by level parameter)</li>
+                        <li>Evaluating the Coons patch formula at each grid point</li>
+                        <li>Creating quad faces (split into two triangles) connecting adjacent grid points</li>
+                        <li>Passing the mesh to the existing drawMesh function for rendering</li>
+                    </ol>
+
+                    <h4>Core Functions</h4>
+                    <p>
+                        Two helper functions implement the mathematical operations:
+                    </p>
+
+<pre class="line-numbers" data-line="3-4"><code class="language-cpp">// Evaluate quadratic Bezier curve at parameter t
+GPoint get_quad_bezier(const GPoint* curr_points, float t) {
+    GPoint tangent;
+    tangent.x = curr_points[0].x * pow(1-t, 2) +
+                2 * curr_points[1].x * t * (1-t) +
+                curr_points[2].x * t * t;
+    tangent.y = curr_points[0].y * pow(1-t, 2) +
+                2 * curr_points[1].y * t * (1-t) +
+                curr_points[2].y * t * t;
+    return tangent;
+}
+
+// Bilinear interpolation of four corner points
+GPoint pt_weighted_avg(float u, float v, GPoint p1, GPoint p2, GPoint p3, GPoint p4) {
+    GPoint p = (1-u)*(1-v)* p1 + u * (1-v) * p2 + u * v * p3 + (1-u) * v * p4;
+    return p;
+}</code></pre>
+
+                    <h4>Coons Patch Evaluation</h4>
+                    <p>
+                        The main evaluation function implements the Coons formula:
+                    </p>
+
+<pre class="line-numbers" data-line="9-11,14-15,17-18"><code class="language-cpp">GPoint pt_coons_avg(float u, float v, const GPoint pts[8]) {
+    // Handle corners directly (optimization)
+    if (u == 0.0f && v == 0.0f) return pts[0];
+    if (u == 1.0f && v == 0.0f) return pts[2];
+    if (u == 1.0f && v == 1.0f) return pts[4];
+    if (u == 0.0f && v == 1.0f) return pts[6];
+
+    // Define the four boundary curves
+    GPoint top[3] = {pts[0], pts[1], pts[2]};
+    GPoint right[3] = {pts[2], pts[3], pts[4]};
+    GPoint bottom[3] = {pts[6], pts[5], pts[4]};
+    GPoint left[3] = {pts[0], pts[7], pts[6]};
+
+    // Handle edge cases (on boundary curves)
+    if (u == 0.0f) return get_quad_bezier(left, v);
+    if (u == 1.0f) return get_quad_bezier(right, v);
+    if (v == 0.0f) return get_quad_bezier(top, u);
+    if (v == 1.0f) return get_quad_bezier(bottom, u);
+
+    // TB: Top-bottom interpolation
+    GPoint a = get_quad_bezier(top, u);
+    GPoint b = get_quad_bezier(bottom, u);
+    GPoint ab = {a.x + ((b.x - a.x) * v), a.y + ((b.y - a.y) * v)};
+
+    // LR: Left-right interpolation
+    GPoint c = get_quad_bezier(left, v);
+    GPoint d = get_quad_bezier(right, v);
+    GPoint cd = {c.x + ((d.x - c.x) * u), c.y + ((d.y - c.y) * u)};
+
+    // Corners: Bilinear interpolation of corners
+    GPoint mid = pt_weighted_avg(u, v, pts[0], pts[2], pts[4], pts[6]);
+
+    // Coons formula: TB + LR - Corners
+    return (ab + cd) - mid;
+}</code></pre>
+
+                    <h4>Key Implementation Details</h4>
+                    <ul>
+                        <li><strong>8-Point Control:</strong> pts[0,1,2] define top, pts[2,3,4] define right, etc.</li>
+                        <li><strong>Texture Mapping:</strong> The function also handles texture coordinates for shader application</li>
+                        <li><strong>Level Parameter:</strong> Higher levels create finer tessellation, smoother appearance</li>
+                        <li><strong>Triangle Indices:</strong> Each quad is split into two triangles for rendering</li>
+                        <li><strong>Edge Optimization:</strong> Boundary cases handled separately for accuracy</li>
+                    </ul>
+
+                    <h4>Visual Result</h4>
+                    <p>
+                        Coons patches create smooth, curved surfaces perfect for:
+                    </p>
+                    <ul>
+                        <li>Organic shape rendering (fabric, terrain, rounded UI elements)</li>
+                        <li>Texture mapping onto curved surfaces</li>
+                        <li>Morphing between shapes with curved boundaries</li>
+                        <li>Creating visually interesting backgrounds and effects</li>
+                    </ul>
+
+                    <p class="demo-instruction">
+                        🎨 <strong>Technical Note:</strong> The Coons patch formulation elegantly solves the
+                        problem of interpolating a surface from boundary conditions. The subtraction of the
+                        bilinear corner term prevents double-counting at the corners, a common pitfall in
+                        surface interpolation algorithms.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Prism.js Core -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-cpp.min.js" defer></script>
+
+    <!-- Prism.js Plugins - JS (order matters: toolbar before copy-to-clipboard) -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-highlight/prism-line-highlight.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
+
+    <!-- Local Tab Script -->
+    <script src="assets/js/tabs.js"></script>
+    <script src="assets/js/nav.js"></script>
+</body>
+</html>

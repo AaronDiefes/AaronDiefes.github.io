@@ -1,0 +1,167 @@
+/**
+ * Site Navigation Styles
+ * Responsive navigation bar with accessible hamburger menu
+ */
+
+/* Desktop Navigation Bar */
+.site-nav {
+  width: 100%;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  padding: var(--space-sm) var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-nav .nav-brand {
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.125rem;
+}
+
+.site-nav .nav-brand:hover {
+  opacity: 0.9;
+}
+
+.site-nav .nav-links {
+  display: flex;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav .nav-links a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 4px;
+  transition: background var(--timing-instant) var(--easing-standard);
+}
+
+.site-nav .nav-links a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.site-nav .nav-links a:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.site-nav .nav-links a.active {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  position: relative;
+}
+
+.site-nav .nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  height: 2px;
+  background: white;
+}
+
+/* Hamburger Menu Button (hidden on desktop) */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  padding: var(--space-xs);
+  position: relative;
+  width: 32px;
+  height: 32px;
+  z-index: 101;
+}
+
+.menu-toggle:hover {
+  opacity: 0.9;
+}
+
+.menu-toggle:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* CSS Hamburger Icon (3 bars) */
+.hamburger-icon,
+.hamburger-icon::before,
+.hamburger-icon::after {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: white;
+  position: absolute;
+  left: 4px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger-icon {
+  top: 15px;
+}
+
+.hamburger-icon::before {
+  content: '';
+  top: -8px;
+}
+
+.hamburger-icon::after {
+  content: '';
+  top: 8px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .site-nav {
+    position: relative;
+  }
+
+  .site-nav .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: var(--space-sm);
+    z-index: 100;
+    gap: 0;
+  }
+
+  .site-nav .nav-links[hidden] {
+    display: none;
+  }
+
+  .site-nav .nav-links a {
+    padding: var(--space-sm) var(--space-md);
+    display: block;
+    width: 100%;
+    border-radius: 4px;
+  }
+
+  .site-nav .nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

@@ -1,0 +1,758 @@
+/* Documentation Pages - Main Styles */
+
+/* ========================================
+   LAYOUT & CONTAINER
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    background-color: #f8f9fa;
+}
+
+.doc-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.doc-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 3rem 0 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.doc-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.doc-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ========================================
+   NAVIGATION & BREADCRUMB
+   ======================================== */
+
+.breadcrumb {
+    margin-bottom: 2rem;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.breadcrumb a {
+    color: #2E7D32;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #1B5E20;
+    text-decoration: underline;
+}
+
+.breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: #999;
+}
+
+/* ========================================
+   CONTENT AREA
+   ======================================== */
+
+.content-wrapper {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.content-section {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.content-section h2 {
+    font-size: 1.75rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #2E7D32;
+}
+
+.content-section p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+/* ========================================
+   TABS
+   ======================================== */
+
+.tabs {
+    margin: 2rem 0;
+}
+
+[role="tablist"] {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 0;
+    flex-wrap: wrap;
+}
+
+[role="tab"] {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    margin-bottom: -2px;
+}
+
+[role="tab"]:hover {
+    color: #2E7D32;
+    background-color: #f8f9fa;
+}
+
+[role="tab"]:focus {
+    outline: 2px solid #2E7D32;
+    outline-offset: -2px;
+    z-index: 1;
+}
+
+[role="tab"][aria-selected="true"] {
+    color: #2E7D32;
+    border-bottom-color: #2E7D32;
+    background-color: white;
+    font-weight: 600;
+}
+
+[role="tabpanel"] {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 0 0 8px 8px;
+    animation: fadeIn var(--timing-standard, 250ms) var(--easing-enter, ease-out);
+}
+
+[role="tabpanel"][hidden] {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   DEMO SECTION
+   ======================================== */
+
+.demo-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: box-shadow var(--timing-standard, 250ms);
+}
+
+.demo-section:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.demo-section h3 {
+    font-size: 1.25rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.iframe-container,
+.demo-container {
+    position: relative;
+    width: 100%;
+    background-color: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.iframe-container iframe,
+.demo-container iframe,
+.demo-frame {
+    display: block;
+    width: 100%;
+    height: 600px;
+    border: none;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.docs-footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 4rem;
+    border-radius: 8px;
+}
+
+.docs-footer p {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-nav a {
+    color: #2E7D32;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.footer-nav a:hover {
+    color: #1B5E20;
+    text-decoration: underline;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+@media (max-width: 768px) {
+    .doc-header h1 {
+        font-size: 2rem;
+    }
+
+    .doc-header p {
+        font-size: 1rem;
+    }
+
+    .content-wrapper {
+        padding: 1.5rem;
+    }
+
+    [role="tab"] {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    [role="tabpanel"] {
+        padding: 1rem;
+    }
+
+    .iframe-container iframe,
+    .demo-container iframe,
+    .demo-frame {
+        height: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .doc-container {
+        padding: 0 15px;
+    }
+
+    .doc-header {
+        padding: 2rem 0 1.5rem;
+    }
+
+    .doc-header h1 {
+        font-size: 1.5rem;
+    }
+
+    [role="tablist"] {
+        flex-direction: column;
+        border-bottom: none;
+    }
+
+    [role="tab"] {
+        border-bottom: 1px solid #e0e0e0;
+        border-left: 3px solid transparent;
+        text-align: left;
+        margin-bottom: 0;
+    }
+
+    [role="tab"][aria-selected="true"] {
+        border-left-color: #2E7D32;
+        border-bottom-color: #e0e0e0;
+    }
+}
+
+/* ========================================
+   API REFERENCE STYLES
+   ======================================== */
+
+/* API Navigation for jump links */
+.api-nav {
+    background: #f5f5f5;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #2E7D32;
+}
+
+.api-nav h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.api-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.api-nav li {
+    margin: 0;
+}
+
+.api-nav a {
+    color: #2E7D32;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: block;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.api-nav a:hover {
+    color: #1B5E20;
+    background: rgba(46, 125, 50, 0.1);
+}
+
+/* API Sections */
+.api-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.api-section:last-child {
+    border-bottom: none;
+}
+
+.api-section h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #2E7D32;
+}
+
+.api-section > p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+/* API Table Wrapper with horizontal scroll */
+.api-table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* API Table */
+.api-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.95rem;
+}
+
+.api-table thead {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.api-table thead th {
+    text-align: left;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.api-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+}
+
+.api-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.api-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.api-table td {
+    padding: 1rem;
+    vertical-align: top;
+}
+
+/* First column (function name) */
+.api-table td:first-child {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-weight: 600;
+    color: #2E7D32;
+    white-space: nowrap;
+    min-width: 150px;
+}
+
+/* Second column (signature) */
+.api-table td:nth-child(2) {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #555;
+    word-break: break-word;
+}
+
+/* Third column (description) */
+.api-table td:nth-child(3) {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Factory function highlight */
+.api-table tr.factory-function {
+    background-color: rgba(46, 125, 50, 0.05);
+}
+
+.api-table tr.factory-function:hover {
+    background-color: rgba(46, 125, 50, 0.1);
+}
+
+/* Code inline in tables */
+.api-table code {
+    background: #f5f5f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #e74c3c;
+}
+
+/* Usage examples in API sections */
+.api-section .code-snippet {
+    margin: 2rem 0;
+}
+
+.api-section h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive API Tables */
+@media (max-width: 768px) {
+    .api-nav ul {
+        grid-template-columns: 1fr;
+    }
+
+    .api-table {
+        font-size: 0.85rem;
+    }
+
+    .api-table thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .api-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .api-table td:first-child {
+        min-width: 120px;
+    }
+
+    .api-table td:nth-child(2) {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .api-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .api-table {
+        font-size: 0.8rem;
+    }
+
+    .api-table thead th {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .api-table td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    .api-table td:first-child {
+        min-width: 100px;
+        font-size: 0.85rem;
+    }
+
+    .api-table td:nth-child(2) {
+        font-size: 0.7rem;
+    }
+
+    .api-table td:nth-child(3) {
+        font-size: 0.8rem;
+    }
+}
+
+/* ========================================
+   CAPABILITY MATRIX STYLES
+   ======================================== */
+
+/* Capability category sections */
+.capability-category {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.capability-category:last-child {
+    border-bottom: none;
+}
+
+.capability-category h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #2E7D32;
+}
+
+.capability-category > p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+/* Capability Matrix Table */
+.capability-matrix-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.capability-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.95rem;
+}
+
+.capability-matrix thead {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.capability-matrix thead th {
+    text-align: left;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.capability-matrix tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+}
+
+.capability-matrix tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.capability-matrix tbody tr:last-child {
+    border-bottom: none;
+}
+
+.capability-matrix td {
+    padding: 1rem;
+    vertical-align: top;
+}
+
+/* Feature name column */
+.capability-matrix td:first-child {
+    font-weight: 600;
+    color: #2E7D32;
+    min-width: 150px;
+}
+
+/* Description column */
+.capability-matrix td:nth-child(2) {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Source column */
+.capability-matrix td:nth-child(3) {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* Links column */
+.capability-matrix td:nth-child(4) {
+    white-space: nowrap;
+}
+
+.capability-matrix td a {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.capability-matrix td a.doc-link {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #2E7D32;
+}
+
+.capability-matrix td a.doc-link:hover {
+    background: #2E7D32;
+    color: white;
+}
+
+.capability-matrix td a.demo-link {
+    background: var(--color-primary);
+    color: white;
+    border: 1px solid var(--color-primary);
+}
+
+.capability-matrix td a.demo-link:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+/* Responsive Capability Matrix */
+@media (max-width: 768px) {
+    .capability-category h2 {
+        font-size: 1.5rem;
+    }
+
+    .capability-matrix {
+        font-size: 0.85rem;
+    }
+
+    .capability-matrix thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .capability-matrix td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .capability-matrix td:first-child {
+        min-width: 120px;
+    }
+
+    .capability-matrix td:nth-child(3) {
+        font-size: 0.75rem;
+    }
+
+    .capability-matrix td a {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+        margin-right: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .capability-matrix {
+        font-size: 0.8rem;
+    }
+
+    .capability-matrix thead th {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .capability-matrix td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    .capability-matrix td:first-child {
+        min-width: 100px;
+        font-size: 0.85rem;
+    }
+
+    .capability-matrix td:nth-child(3) {
+        font-size: 0.7rem;
+    }
+
+    .capability-matrix td a {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
