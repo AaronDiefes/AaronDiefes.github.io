@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Showcase technical depth through interactive project demonstrations with comprehensive documentation
-**Current focus:** Phase 10 - Basic Visualization (v1.1 CPU Simulator)
+**Current focus:** Phase 11 - Interactive Demo Page (v1.1 CPU Simulator)
 
 ## Current Position
 
-Phase: 10 of 15 (Basic Visualization)
-Plan: 4 of 4
-Status: Complete — Verified
-Last activity: 2026-02-15 — Phase 10 verified and complete
+Phase: 11 of 15 (Interactive Demo Page)
+Plan: 2 of 3
+Status: In Progress
+Last activity: 2026-02-15 — Completed 11-02-PLAN.md (UI control components)
 
 Progress: [██████████░░░░░░░░░░] 67% (10/15 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (Phases 9-10 in progress)
-- Average duration: 2 min 26 sec
-- Total execution time: 14 min 33 sec
+- Total plans completed: 7 (Phases 9-11 in progress)
+- Average duration: 2 min 20 sec
+- Total execution time: 16 min 3 sec
 
 **By Phase:**
 
@@ -30,6 +30,7 @@ Progress: [██████████░░░░░░░░░░] 67% (10
 | v1.0 (Phases 1-8) | Complete | N/A | N/A |
 | Phase 9 | 3 | 7m 40s | 2m 33s |
 | Phase 10 | 3 | 6m 53s | 2m 18s |
+| Phase 11 | 1 | 1m 30s | 1m 30s |
 
 **Recent Trend:**
 - 09-01: 2m 28s (core data structures)
@@ -38,6 +39,7 @@ Progress: [██████████░░░░░░░░░░] 67% (10
 - 10-01: 2m 5s (visualization components)
 - 10-02: 2m 16s (CPUVisualizer coordinator and tests)
 - 10-03: 2m 32s (SVG block diagram view)
+- 11-02: 1m 30s (UI control components)
 
 *Consistent execution velocity established*
 
@@ -75,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 10-03]: No wire value labels on data paths - keeps diagram clean and educational
 - [Phase 10-03]: Native SVG tooltips via <title> elements instead of custom JS library
 - [Phase 10-03]: Vertical stacked layout (block diagram full-width, registers below) replaces 2-column grid
+- [Phase 11-02]: CSS class selectors instead of IDs for UI components to prevent ID collisions
+- [Phase 11-02]: Callback pattern for ProgramSelector coordination (decouples from other UI components)
+- [Phase 11-02]: aria-live="polite" for frame counter accessibility (non-interrupting screen reader announcements)
 
 ### Pending Todos
 
@@ -86,10 +91,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-12
-Stopped at: Completed 10-03-PLAN.md (SVG block diagram view)
+Last session: 2026-02-15
+Stopped at: Completed 11-02-PLAN.md (UI control components)
 Resume file: None
 
 ---
 *State initialized: 2026-02-11*
-*Last updated: 2026-02-12T03:40:52Z*
+*Last updated: 2026-02-15T17:07:29Z*
