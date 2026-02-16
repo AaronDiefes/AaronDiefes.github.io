@@ -8,14 +8,14 @@ import AdminPage from './pages/AdminPage'
 import DocsPage from './pages/DocsPage'
 import CpuDocsLanding from './pages/cpu/CpuDocsLanding'
 
-// Phase 13 CPU docs - uncomment as pages are created
+// Phase 13 CPU docs - all pages active
 import CpuAluPage from './pages/cpu/CpuAluPage'
 import CpuRegfilePage from './pages/cpu/CpuRegfilePage'
 import CpuMultdivPage from './pages/cpu/CpuMultdivPage'
 import CpuPipelinePage from './pages/cpu/CpuPipelinePage'
 import CpuHazardsPage from './pages/cpu/CpuHazardsPage'
-// import CpuInstructionsPage from './pages/cpu/CpuInstructionsPage'
-// import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
+import CpuInstructionsPage from './pages/cpu/CpuInstructionsPage'
+import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 
 function AppContent() {
   const location = useLocation()
@@ -64,8 +64,8 @@ function AppContent() {
       <Route path="/cpu-docs/multdiv" element={<CpuMultdivPage />} />
       <Route path="/cpu-docs/pipeline" element={<CpuPipelinePage />} />
       <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} />
-      {/* <Route path="/cpu-docs/instructions" element={<CpuInstructionsPage />} /> */}
-      {/* <Route path="/cpu-docs/memory" element={<CpuMemoryPage />} /> */}
+      <Route path="/cpu-docs/instructions" element={<CpuInstructionsPage />} />
+      <Route path="/cpu-docs/memory" element={<CpuMemoryPage />} />
     </Routes>
   )
 }
