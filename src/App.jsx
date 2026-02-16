@@ -6,6 +6,16 @@ import GraphicsDemoPage from './pages/GraphicsDemoPage'
 import GraphicsWasmPage from './pages/GraphicsWasmPage'
 import AdminPage from './pages/AdminPage'
 import DocsPage from './pages/DocsPage'
+import CpuDocsLanding from './pages/cpu/CpuDocsLanding'
+
+// Phase 13 CPU docs - uncomment as pages are created
+// import CpuAluPage from './pages/cpu/CpuAluPage'
+// import CpuRegfilePage from './pages/cpu/CpuRegfilePage'
+// import CpuMultdivPage from './pages/cpu/CpuMultdivPage'
+// import CpuPipelinePage from './pages/cpu/CpuPipelinePage'
+// import CpuHazardsPage from './pages/cpu/CpuHazardsPage'
+// import CpuInstructionsPage from './pages/cpu/CpuInstructionsPage'
+// import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 
 function AppContent() {
   const location = useLocation()
@@ -18,7 +28,8 @@ function AppContent() {
       'graphics-demo-page',
       'wasm-demo-page',
       'docs-page',
-      'admin-page'
+      'admin-page',
+      'cpu-docs-page'
     )
 
     // Add class based on current route
@@ -34,6 +45,8 @@ function AppContent() {
       document.body.classList.add('docs-page')
     } else if (location.pathname === '/admin') {
       document.body.classList.add('admin-page')
+    } else if (location.pathname.startsWith('/cpu-docs')) {
+      document.body.classList.add('cpu-docs-page')
     }
   }, [location])
 
@@ -45,6 +58,14 @@ function AppContent() {
       <Route path="/projects/graphics-engine/wasm" element={<GraphicsWasmPage />} />
       <Route path="/docs" element={<DocsPage />} />
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/cpu-docs" element={<CpuDocsLanding />} />
+      {/* <Route path="/cpu-docs/alu" element={<CpuAluPage />} /> */}
+      {/* <Route path="/cpu-docs/regfile" element={<CpuRegfilePage />} /> */}
+      {/* <Route path="/cpu-docs/multdiv" element={<CpuMultdivPage />} /> */}
+      {/* <Route path="/cpu-docs/pipeline" element={<CpuPipelinePage />} /> */}
+      {/* <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} /> */}
+      {/* <Route path="/cpu-docs/instructions" element={<CpuInstructionsPage />} /> */}
+      {/* <Route path="/cpu-docs/memory" element={<CpuMemoryPage />} /> */}
     </Routes>
   )
 }
