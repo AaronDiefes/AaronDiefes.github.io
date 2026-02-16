@@ -323,14 +323,6 @@ function CpuDocsLanding() {
             <li><strong>Multiplication & Division:</strong> Booth's algorithm for fast multiplication, 2-layer implementation</li>
           </ul>
 
-          <h3>Implementation Checkpoints</h3>
-          <ul style={{ lineHeight: 1.8, color: '#555' }}>
-            <li><strong>Checkpoint 1 - ALU:</strong> Arithmetic Logic Unit with carry-lookahead adder</li>
-            <li><strong>Checkpoint 2 - Register File:</strong> 32 registers with dual read ports</li>
-            <li><strong>Checkpoint 3 - Multiplication & Division:</strong> Booth's algorithm implementation</li>
-            <li><strong>Checkpoint 4 - Complete Processor:</strong> 5-stage pipeline with hazards and forwarding</li>
-          </ul>
-
           <h3>The Pipeline Architecture</h3>
           <p>
             The processor uses a classic 5-stage RISC pipeline. Each instruction flows through these stages, with data forwarding paths connecting stages to minimize stalls:
