@@ -10,7 +10,7 @@ import CpuDocsLanding from './pages/cpu/CpuDocsLanding'
 
 // Phase 13 CPU docs - uncomment as pages are created
 import CpuAluPage from './pages/cpu/CpuAluPage'
-// import CpuRegfilePage from './pages/cpu/CpuRegfilePage'
+import CpuRegfilePage from './pages/cpu/CpuRegfilePage'
 // import CpuMultdivPage from './pages/cpu/CpuMultdivPage'
 // import CpuPipelinePage from './pages/cpu/CpuPipelinePage'
 // import CpuHazardsPage from './pages/cpu/CpuHazardsPage'
@@ -60,7 +60,7 @@ function AppContent() {
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/cpu-docs" element={<CpuDocsLanding />} />
       <Route path="/cpu-docs/alu" element={<CpuAluPage />} />
-      {/* <Route path="/cpu-docs/regfile" element={<CpuRegfilePage />} /> */}
+      <Route path="/cpu-docs/regfile" element={<CpuRegfilePage />} />
       {/* <Route path="/cpu-docs/multdiv" element={<CpuMultdivPage />} /> */}
       {/* <Route path="/cpu-docs/pipeline" element={<CpuPipelinePage />} /> */}
       {/* <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} /> */}
