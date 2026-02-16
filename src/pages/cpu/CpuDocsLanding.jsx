@@ -365,27 +365,27 @@ function CpuDocsLanding() {
 
           <div className="doc-cards">
             <Link to="/cpu-docs/alu" className="doc-card">
-              <h3>ALU Design (CP1)</h3>
+              <h3>ALU Design</h3>
               <p>Carry-Lookahead adder, arithmetic and logic operations</p>
             </Link>
 
             <Link to="/cpu-docs/regfile" className="doc-card">
-              <h3>Register File (CP2)</h3>
+              <h3>Register File</h3>
               <p>32 registers, dual read ports, $0 hardwired to zero</p>
             </Link>
 
             <Link to="/cpu-docs/multdiv" className="doc-card">
-              <h3>Multiplication & Division (CP3)</h3>
+              <h3>Multiplication & Division</h3>
               <p>Booth's algorithm, 2-layer implementation</p>
             </Link>
 
             <Link to="/cpu-docs/pipeline" className="doc-card">
-              <h3>Pipeline Architecture (CP4)</h3>
+              <h3>Pipeline Architecture</h3>
               <p>5-stage pipeline, datapath design</p>
             </Link>
 
             <Link to="/cpu-docs/hazards" className="doc-card">
-              <h3>Hazards & Forwarding (CP4)</h3>
+              <h3>Hazards & Forwarding</h3>
               <p>Data hazards, forwarding paths, stall logic</p>
             </Link>
 
