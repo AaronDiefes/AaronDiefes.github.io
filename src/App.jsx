@@ -63,7 +63,7 @@ function AppContent() {
       <Route path="/cpu-docs/regfile" element={<CpuRegfilePage />} />
       <Route path="/cpu-docs/multdiv" element={<CpuMultdivPage />} />
       <Route path="/cpu-docs/pipeline" element={<CpuPipelinePage />} />
-      {/* <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} /> */}
+      <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} />
       {/* <Route path="/cpu-docs/instructions" element={<CpuInstructionsPage />} /> */}
       {/* <Route path="/cpu-docs/memory" element={<CpuMemoryPage />} /> */}
     </Routes>
