@@ -316,7 +316,7 @@ export default function HomePage() {
         </section>
 
         <section id="projects" className="section">
-          <h2>Featured Project</h2>
+          <h2>Projects</h2>
           <div className="project-grid">
             <div className="project-card">
               <h3>2D Graphics Engine 🚀</h3>
@@ -343,6 +343,32 @@ export default function HomePage() {
               <Link to="/projects/graphics-engine/wasm" className="btn">Try Real C++ Engine →</Link>
               <Link to="/docs" className="btn">View Documentation</Link>
             </div>
+
+            <div className="project-card">
+              <h3>CPU Simulator 💻</h3>
+              <p>A 32-bit RISC processor built from scratch in Verilog HDL with an interactive JavaScript visualization. Features a complete 5-stage pipeline with hazard detection, data forwarding, and step-by-step animations showing instruction execution through the pipeline stages.</p>
+
+              <div className="tech-tags">
+                <span className="tech-tag">Verilog</span>
+                <span className="tech-tag">JavaScript</span>
+                <span className="tech-tag">Computer Architecture</span>
+                <span className="tech-tag">Pipeline</span>
+                <span className="tech-tag">RISC</span>
+              </div>
+
+              <strong style={{display: 'block', marginBottom: '0.5rem'}}>Key Features:</strong>
+              <ul style={{marginLeft: '1.5rem', marginBottom: '1.5rem'}}>
+                <li>5-stage pipeline (IF, ID, EX, MEM, WB)</li>
+                <li>32 general-purpose registers with $0 hardwired to zero</li>
+                <li>Carry-Lookahead ALU with 6 operations</li>
+                <li>Booth's algorithm for multiplication/division</li>
+                <li>Data forwarding paths to minimize stalls</li>
+                <li>Interactive step-through visualization</li>
+              </ul>
+
+              <Link to="/projects/cpu-simulator" className="btn">Try Interactive Demo →</Link>
+              <Link to="/cpu-docs" className="btn">View Documentation</Link>
+            </div>
           </div>
         </section>
 
@@ -350,13 +376,6 @@ export default function HomePage() {
           <div className="github-repos">
             <h2>Other Projects</h2>
             <div className="repo-list">
-              <div className="repo-item">
-                <h4>CPU Simulator</h4>
-                <p>Interactive visualization of CPU architecture and instruction execution with step-by-step animations.</p>
-                <Link to="/projects/cpu-simulator">View Live Demo →</Link>
-                {' • '}
-                <Link to="/cpu-docs">View Documentation →</Link>
-              </div>
               <div className="repo-item">
                 <h4>CS330 Case Study</h4>
                 <p>Academic project demonstrating software engineering principles.</p>
