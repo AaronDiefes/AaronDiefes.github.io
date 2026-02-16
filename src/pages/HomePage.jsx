@@ -345,7 +345,7 @@ export default function HomePage() {
             </div>
 
             <div className="project-card">
-              <h3>CPU Simulator 💻</h3>
+              <h3>32-bit CPU 💻</h3>
               <p>A 32-bit RISC processor built from scratch in Verilog HDL with an interactive JavaScript visualization. Features a complete 5-stage pipeline with hazard detection, data forwarding, and step-by-step animations showing instruction execution through the pipeline stages.</p>
 
               <div className="tech-tags">
@@ -366,7 +366,7 @@ export default function HomePage() {
                 <li>Interactive step-through visualization</li>
               </ul>
 
-              <Link to="/projects/cpu-simulator" className="btn">Try Interactive Demo →</Link>
+              <Link to="/projects/cpu-simulator" className="btn">CPU Simulator →</Link>
               <Link to="/cpu-docs" className="btn">View Documentation</Link>
             </div>
           </div>
