@@ -354,6 +354,8 @@ export default function HomePage() {
                 <h4>CPU Simulator</h4>
                 <p>Interactive visualization of CPU architecture and instruction execution with step-by-step animations.</p>
                 <Link to="/projects/cpu-simulator">View Live Demo →</Link>
+                {' • '}
+                <Link to="/cpu-docs">View Documentation →</Link>
               </div>
               <div className="repo-item">
                 <h4>CS330 Case Study</h4>
