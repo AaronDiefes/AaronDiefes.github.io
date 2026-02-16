@@ -111,21 +111,30 @@ Plans:
 **Reason**: Current CPU simulator effectively demonstrates core pipeline concepts without needing hazard/stall complexity
 
 #### Phase 13: Documentation Foundation
-**Goal**: CPU project landing page and foundational documentation pages explaining the visualization
-**Depends on**: Phase 12
-**Requirements**: DOC-01, DOC-02, DOC-03, DOC-04
+**Goal**: Comprehensive CPU documentation covering all major components following Duke ECE 350 checkpoint progression (ALU, Register File, MultDiv, Pipeline, Hazards, Instructions, Memory)
+**Depends on**: Phase 11
+**Requirements**: DOC-01, DOC-02, DOC-03, DOC-04, DOC-07, DOC-08
 **Success Criteria** (what must be TRUE):
-  1. CPU project has landing page explaining the animated visualization and linking to demo and docs
-  2. Pipeline Basics documentation explains 5-stage pipeline concept (context for animation)
-  3. ALU Design documentation explains Carry-Lookahead adder implementation (actual Verilog design)
-  4. Instruction Set documentation lists all implemented instructions shown in animations
-  5. All doc pages include code snippets from actual Verilog implementation
-  6. All doc pages link to GitHub repo for full source code
-**Plans**: 2 plans
+  1. CPU project has landing page explaining the project and linking to demo and all doc topics
+  2. ALU Design documentation explains Carry-Lookahead adder implementation (CP1)
+  3. Register File documentation explains 32-register design with $0 hardwired to zero (CP2)
+  4. MultDiv documentation explains Booth's multiplication algorithm (CP3)
+  5. Pipeline Architecture documentation explains 5-stage pipeline design (CP4)
+  6. Hazards & Forwarding documentation explains data hazards and forwarding paths (CP4)
+  7. Instruction Set documentation lists all implemented instructions with encoding formats
+  8. Memory System documentation explains RAM/ROM and instruction/data memory
+  9. All doc pages include Verilog code snippets from actual implementation
+  10. All doc pages link to GitHub repo for full source code
+**Plans:** 7 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — CPU docs landing page, routing, and Pipeline Basics documentation (DOC-01, DOC-02)
-- [ ] 13-02-PLAN.md — ALU Design and Instruction Set documentation pages (DOC-03, DOC-04)
+- [ ] 13-01-PLAN.md — CPU docs landing page + routing setup (DOC-01)
+- [ ] 13-02-PLAN.md — ALU Design documentation page (DOC-03, CP1)
+- [ ] 13-03-PLAN.md — Register File documentation page (CP2)
+- [ ] 13-04-PLAN.md — Multiplication & Division documentation page (CP3)
+- [ ] 13-05-PLAN.md — Pipeline Architecture documentation page (DOC-02, CP4)
+- [ ] 13-06-PLAN.md — Hazards & Forwarding documentation page (CP4)
+- [ ] 13-07-PLAN.md — Instruction Set + Memory System documentation pages (DOC-04)
 
 #### Phase 14: Advanced Documentation
 **Goal**: Complete documentation with advanced topics explaining hardware implementation behind animations
@@ -180,10 +189,10 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 10. Basic Visualization | v1.1 | 4/4 | Complete | 2026-02-15 |
 | 11. Interactive Demo Page | v1.1 | 3/3 | Complete | 2026-02-15 |
 | 12. Hazard Visualization | v1.1 | - | Skipped | - |
-| 13. Documentation Foundation | v1.1 | 0/2 | Planned | - |
+| 13. Documentation Foundation | v1.1 | 0/7 | Planned | - |
 | 14. Advanced Documentation | v1.1 | 0/TBD | Not started | - |
 | 15. Portfolio Integration & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-15 (Phase 13 planned with 2 plans)*
+*Last updated: 2026-02-16 (Phase 13 comprehensively replanned with 7 plans covering all CPU components)*
