@@ -1,22 +1,37 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 /**
- * ProgramSelector - Dropdown to select CPU program
- * Pure React component
+ * ProgramSelector - React wrapper for vanilla JS ProgramSelector
+ * Wraps the original program-selector.js implementation
  */
-function ProgramSelector({ programs, onProgramChange }) {
-  return (
-    <div className="program-selector">
-      <label htmlFor="program-select">Select Program:</label>
-      <select id="program-select" onChange={(e) => onProgramChange(e.target.value)}>
-        {programs.map(program => (
-          <option key={program.id} value={program.id}>
-            {program.name}
-          </option>
-        ))}
-      </select>
-    </div>
-  )
+function ProgramSelector({ engine, onProgramLoad }) {
+  const containerRef = useRef(null)
+  const selectorRef = useRef(null)
+
+  useEffect(() => {
+    // Import and initialize vanilla JS ProgramSelector
+    import('../../lib/cpu/../../../archived/cpu-simulator/src/ui/program-selector.js').then(() => {
+      if (window.ProgramSelector && containerRef.current && engine && !selectorRef.current) {
+        selectorRef.current = new window.ProgramSelector(
+          containerRef.current,
+          engine,
+          {
+            defaultProgram: 'basic',
+            onProgramLoad: onProgramLoad
+          }
+        )
+      }
+    })
+
+    return () => {
+      // Cleanup if needed
+      if (selectorRef.current && selectorRef.current.destroy) {
+        selectorRef.current.destroy()
+      }
+    }
+  }, [engine, onProgramLoad])
+
+  return <div ref={containerRef} />
 }
 
 export default ProgramSelector

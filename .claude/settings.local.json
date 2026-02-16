@@ -17,7 +17,14 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:edumips.org)",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:people.duke.edu)",
+      "Bash(for i in 01 02 03 04 05 06 07)",
+      "Bash(do echo \"=== 13-$i-PLAN.md ===\")",
+      "Bash(done)",
+      "Bash(for plan in /Users/orases/Aaron/website/.planning/phases/13-documentation-foundation/13-0{1..7}-PLAN.md)",
+      "Bash(for plan in .planning/phases/13-documentation-foundation/13-0*.md)"
     ]
   }
 }

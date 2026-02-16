@@ -47,5 +47,12 @@
     "cwd": "/Users/orases/Aaron/website",
     "hook_event_name": "SessionEnd",
     "reason": "clear"
+  },
+  {
+    "session_id": "aec738eb-c4fc-4b7b-a589-031c96c27a5c",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/aec738eb-c4fc-4b7b-a589-031c96c27a5c.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear"
   }
 ]

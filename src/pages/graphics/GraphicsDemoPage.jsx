@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../components/shared/Breadcrumbs'
+import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function GraphicsDemoPage() {
   const canvasRef = useRef(null)

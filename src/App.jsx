@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import CPUSimulatorPage from './pages/CPUSimulatorPage'
-import GraphicsDemoPage from './pages/GraphicsDemoPage'
-import GraphicsWasmPage from './pages/GraphicsWasmPage'
-import AdminPage from './pages/AdminPage'
-import DocsPage from './pages/DocsPage'
-import CpuDocsLanding from './pages/cpu/CpuDocsLanding'
 
-// Phase 13 CPU docs - all pages active
+// Top-level pages
+import HomePage from './pages/HomePage'
+import AdminPage from './pages/AdminPage'
+
+// Graphics Engine pages
+import GraphicsDemoPage from './pages/graphics/GraphicsDemoPage'
+import GraphicsWasmPage from './pages/graphics/GraphicsWasmPage'
+import DocsPage from './pages/graphics/DocsPage'
+
+// CPU pages
+import CPUSimulatorPage from './pages/cpu/CPUSimulatorPage'
+import CpuDocsLanding from './pages/cpu/CpuDocsLanding'
 import CpuAluPage from './pages/cpu/CpuAluPage'
 import CpuRegfilePage from './pages/cpu/CpuRegfilePage'
 import CpuMultdivPage from './pages/cpu/CpuMultdivPage'

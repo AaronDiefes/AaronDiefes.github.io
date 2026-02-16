@@ -1,45 +1,30 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 /**
- * ControlPanel - Playback controls for animation
- * Pure React component (no vanilla JS wrapper needed)
+ * ControlPanel - React wrapper for vanilla JS ControlPanel
+ * Wraps the original control-panel.js implementation
  */
-function ControlPanel({ controls, isPlaying, progress }) {
-  return (
-    <div className="control-panel">
-      <div className="playback-controls">
-        <button onClick={controls.reset} className="control-btn" title="Reset to beginning">
-          ⏮ Reset
-        </button>
-        <button onClick={controls.stepBack} className="control-btn" title="Step backward">
-          ⏪ Back
-        </button>
-        <button
-          onClick={isPlaying ? controls.pause : controls.play}
-          className="control-btn primary"
-          title={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? '⏸ Pause' : '▶ Play'}
-        </button>
-        <button onClick={controls.step} className="control-btn" title="Step forward">
-          Step ⏩
-        </button>
-      </div>
+function ControlPanel({ engine }) {
+  const containerRef = useRef(null)
+  const panelRef = useRef(null)
 
-      <div className="progress-info">
-        <span>Frame: {progress.current} / {progress.total}</span>
-      </div>
+  useEffect(() => {
+    // Import and initialize vanilla JS ControlPanel
+    import('../../lib/cpu/../../../archived/cpu-simulator/src/ui/control-panel.js').then(() => {
+      if (window.ControlPanel && containerRef.current && engine && !panelRef.current) {
+        panelRef.current = new window.ControlPanel(containerRef.current, engine)
+      }
+    })
 
-      <div className="speed-controls">
-        <label>Speed:</label>
-        <button onClick={() => controls.setSpeed(0.25)} className="speed-btn">0.25x</button>
-        <button onClick={() => controls.setSpeed(0.5)} className="speed-btn">0.5x</button>
-        <button onClick={() => controls.setSpeed(1)} className="speed-btn">1x</button>
-        <button onClick={() => controls.setSpeed(2)} className="speed-btn">2x</button>
-        <button onClick={() => controls.setSpeed(4)} className="speed-btn">4x</button>
-      </div>
-    </div>
-  )
+    return () => {
+      // Cleanup if needed
+      if (panelRef.current && panelRef.current.destroy) {
+        panelRef.current.destroy()
+      }
+    }
+  }, [engine])
+
+  return <div ref={containerRef} />
 }
 
 export default ControlPanel
