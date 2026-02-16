@@ -295,7 +295,7 @@ function CpuDocsLanding() {
 
       <header className="landing-header">
         <h1>CPU Documentation</h1>
-        <p>Duke ECE 350 - Verilog Implementation</p>
+        <p>32-bit RISC Processor - Verilog Implementation</p>
       </header>
 
       <div className="container">
@@ -305,7 +305,7 @@ function CpuDocsLanding() {
 
           <h3>What is this?</h3>
           <p>
-            This is a <strong>32-bit processor</strong> built from the ground up in Verilog HDL for Duke University's ECE 350 (Computer Architecture) course. The processor implements a subset of the MIPS instruction set and features a full 5-stage pipeline with hazard detection and data forwarding.
+            This is a <strong>32-bit processor</strong> built from the ground up in Verilog HDL. The processor implements a subset of the MIPS instruction set and features a full 5-stage pipeline with hazard detection and data forwarding.
           </p>
           <p>
             The project was completed through <strong>4 checkpoints</strong>, progressively building the processor from basic arithmetic operations to a fully functional pipelined architecture capable of executing complex programs. Each checkpoint added new capabilities, culminating in a complete processor with advanced features like branch prediction and forwarding paths.

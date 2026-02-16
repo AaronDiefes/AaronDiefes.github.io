@@ -261,9 +261,8 @@ function CpuInstructionsPage() {
         <section className="section">
           <h2>Overview</h2>
           <p>
-            The processor implements a 32-bit RISC instruction set architecture based on the MIPS-like ISA
-            used in ECE 350 at Duke University. All instructions are 32 bits wide (fixed-width encoding),
-            which simplifies instruction fetch and decoding.
+            The processor implements a 32-bit RISC instruction set architecture based on a MIPS-like ISA.
+            All instructions are 32 bits wide (fixed-width encoding), which simplifies instruction fetch and decoding.
           </p>
           <ul>
             <li><strong>32-bit fixed-width instructions</strong> - Every instruction is exactly 32 bits</li>
@@ -552,7 +551,7 @@ function CpuInstructionsPage() {
             </tbody>
           </table>
           <p style={{fontSize: '0.9rem', color: '#666', marginTop: '0.5rem'}}>
-            * Note: Exact opcodes are representative of the ECE 350 ISA. The table provides an educational reference.
+            * Note: Exact opcodes are representative of the implemented ISA. The table provides an educational reference.
           </p>
         </section>
 
@@ -690,7 +689,6 @@ function CpuInstructionsPage() {
 
       <footer>
         <p>&copy; 2024 Aaron Diefes. All rights reserved.</p>
-        <p>Duke ECE 350 Project</p>
       </footer>
     </div>
   )

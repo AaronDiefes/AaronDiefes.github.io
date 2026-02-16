@@ -444,7 +444,6 @@ function CpuMemoryPage() {
 
       <footer>
         <p>&copy; 2024 Aaron Diefes. All rights reserved.</p>
-        <p>Duke ECE 350 Project</p>
       </footer>
     </div>
   )
