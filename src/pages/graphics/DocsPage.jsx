@@ -440,35 +440,35 @@ function DocsPage() {
           </p>
 
           <div className="doc-cards">
-            <a href="/projects/graphics-engine/docs/core-rendering.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/core-rendering" className="doc-card">
               <h3>Core Rendering</h3>
               <p>Edge rasterization, shape drawing, Porter-Duff blend modes, polygon clipping</p>
-            </a>
+            </Link>
 
-            <a href="/projects/graphics-engine/docs/transforms-textures.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/transforms-textures" className="doc-card">
               <h3>Transformations & Textures</h3>
               <p>Matrix math, CTM stack, bitmap shader with tile modes</p>
-            </a>
+            </Link>
 
-            <a href="/projects/graphics-engine/docs/paths-gradients.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/paths-gradients" className="doc-card">
               <h3>Paths & Gradients</h3>
               <p>GPath construction, winding fill, linear and radial gradients</p>
-            </a>
+            </Link>
 
-            <a href="/projects/graphics-engine/docs/advanced-geometry.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/advanced-geometry" className="doc-card">
               <h3>Advanced Geometry</h3>
               <p>Bezier curves, triangle meshes, quad rendering, shader composition</p>
-            </a>
+            </Link>
 
-            <a href="/projects/graphics-engine/docs/final-features.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/final-features" className="doc-card">
               <h3>Advanced Features</h3>
               <p>Sweep gradient, color matrix, stroke polygon, Coons patches</p>
-            </a>
+            </Link>
 
-            <a href="/projects/graphics-engine/docs/optimization-performance.html" className="doc-card">
+            <Link to="/projects/graphics-engine/docs/optimization-performance" className="doc-card">
               <h3>Optimization & Performance</h3>
               <p>Fixed-point division, blend fast paths, static dispatch, memory access patterns</p>
-            </a>
+            </Link>
           </div>
         </section>
 

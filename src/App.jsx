@@ -8,6 +8,12 @@ import AdminPage from './pages/AdminPage'
 // Graphics Engine pages
 import GraphicsWasmPage from './pages/graphics/GraphicsWasmPage'
 import DocsPage from './pages/graphics/DocsPage'
+import GraphicsCoreRenderingPage from './pages/graphics/GraphicsCoreRenderingPage'
+import GraphicsTransformsPage from './pages/graphics/GraphicsTransformsPage'
+import GraphicsPathsPage from './pages/graphics/GraphicsPathsPage'
+import GraphicsAdvancedGeometryPage from './pages/graphics/GraphicsAdvancedGeometryPage'
+import GraphicsFinalFeaturesPage from './pages/graphics/GraphicsFinalFeaturesPage'
+import GraphicsOptimizationPage from './pages/graphics/GraphicsOptimizationPage'
 
 // CPU pages
 import CPUSimulatorPage from './pages/cpu/CPUSimulatorPage'
@@ -64,6 +70,12 @@ function AppContent() {
       {/* Graphics Engine Project */}
       <Route path="/projects/graphics-engine/demo" element={<GraphicsWasmPage />} />
       <Route path="/projects/graphics-engine/docs" element={<DocsPage />} />
+      <Route path="/projects/graphics-engine/docs/core-rendering" element={<GraphicsCoreRenderingPage />} />
+      <Route path="/projects/graphics-engine/docs/transforms-textures" element={<GraphicsTransformsPage />} />
+      <Route path="/projects/graphics-engine/docs/paths-gradients" element={<GraphicsPathsPage />} />
+      <Route path="/projects/graphics-engine/docs/advanced-geometry" element={<GraphicsAdvancedGeometryPage />} />
+      <Route path="/projects/graphics-engine/docs/final-features" element={<GraphicsFinalFeaturesPage />} />
+      <Route path="/projects/graphics-engine/docs/optimization-performance" element={<GraphicsOptimizationPage />} />
     </Routes>
   )
 }
