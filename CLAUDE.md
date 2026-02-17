@@ -36,7 +36,6 @@ This directory contains all the original vanilla JavaScript files before the Rea
 /
 ├── archived/                           # Pre-React vanilla JS files (reference only)
 │   ├── index.html.backup               # Original homepage
-│   ├── graphics-demo.html              # Original JS canvas demo
 │   ├── wasm-graphics-demo.html         # Original WASM demo
 │   ├── admin.html                      # Original admin page
 │   ├── cpu-simulator/                  # Original vanilla JS CPU simulator
@@ -49,18 +48,28 @@ This directory contains all the original vanilla JavaScript files before the Rea
 │   ├── main.jsx                        # Entry point
 │   ├── App.jsx                         # Root component with routing
 │   │
-│   ├── pages/                          # Page components
-│   │   ├── HomePage.jsx                # Portfolio homepage
-│   │   ├── CPUSimulatorPage.jsx        # CPU simulator demo
-│   │   ├── GraphicsDemoPage.jsx        # Graphics JS demo
-│   │   ├── GraphicsWasmPage.jsx        # Graphics WASM demo
-│   │   ├── AdminPage.jsx               # Admin/source viewer
-│   │   └── DocsPage.jsx                # Documentation viewer
+│   ├── pages/                          # Page components (organized by type)
+│   │   ├── HomePage.jsx                # Portfolio homepage (top-level)
+│   │   ├── AdminPage.jsx               # Admin/source viewer (top-level)
+│   │   ├── cpu/                        # CPU project pages
+│   │   │   ├── CPUSimulatorPage.jsx    # CPU simulator demo
+│   │   │   ├── CpuDocsLanding.jsx      # CPU docs landing page
+│   │   │   ├── CpuAluPage.jsx          # ALU documentation
+│   │   │   ├── CpuRegfilePage.jsx      # Register File docs
+│   │   │   ├── CpuMultdivPage.jsx      # Multiplication & Division docs
+│   │   │   ├── CpuPipelinePage.jsx     # Pipeline Architecture docs
+│   │   │   ├── CpuHazardsPage.jsx      # Hazards & Forwarding docs
+│   │   │   ├── CpuInstructionsPage.jsx # Instruction Set docs
+│   │   │   └── CpuMemoryPage.jsx       # Memory System docs
+│   │   └── graphics/                   # Graphics Engine project pages
+│   │       ├── GraphicsWasmPage.jsx    # Graphics WASM demo
+│   │       └── DocsPage.jsx            # Graphics docs landing page
 │   │
 │   ├── components/                     # Shared components
 │   │   ├── shared/
 │   │   │   ├── Navigation.jsx          # Site nav
-│   │   │   └── Footer.jsx              # Site footer
+│   │   │   ├── Footer.jsx              # Site footer
+│   │   │   └── Breadcrumbs.jsx         # Breadcrumb navigation
 │   │   ├── cpu/                        # CPU simulator components
 │   │   │   ├── CPUVisualizer.jsx       # Main coordinator
 │   │   │   ├── BlockDiagram.jsx        # SVG block diagram
@@ -94,8 +103,20 @@ This directory contains all the original vanilla JavaScript files before the Rea
 │       └── images/                     # Test images
 │
 ├── public/                             # Static files (copied to dist/)
+│   ├── graphics_engine.js              # WASM files
+│   ├── graphics_engine.wasm
+│   └── projects/
+│       └── graphics-engine/
+│           └── docs/                   # Graphics engine static HTML docs
+│               ├── core-rendering.html
+│               ├── transforms-textures.html
+│               ├── paths-gradients.html
+│               ├── advanced-geometry.html
+│               ├── final-features.html
+│               ├── optimization-performance.html
+│               └── assets/             # Doc assets (CSS, images)
+│
 ├── dist/                               # Build output (gitignored)
-├── docs/                               # Documentation files
 ├── docker/                             # Docker configuration
 │   ├── Dockerfile                      # Multi-stage build
 │   ├── docker-compose.yml
@@ -111,14 +132,36 @@ This directory contains all the original vanilla JavaScript files before the Rea
 
 ### React Application Structure
 
-The site uses **React Router** for client-side routing with these main routes:
+The site uses **React Router** for client-side routing following a consistent project-based URL pattern.
 
+**URL Pattern for Projects:**
+```
+/projects/[project-name]/demo          # Interactive demo/simulator
+/projects/[project-name]/docs          # Documentation landing page
+/projects/[project-name]/docs/[topic]  # Individual documentation pages
+```
+
+**Active Routes:**
+
+**Top-level:**
 - `/` - Homepage (portfolio landing)
-- `/projects/cpu-simulator` - Interactive CPU simulator
-- `/projects/graphics-engine` - Graphics JS demo (TBD)
-- `/projects/graphics-engine/wasm` - Graphics WASM demo (TBD)
-- `/docs` - Documentation viewer (TBD)
-- `/admin` - Admin page (TBD)
+- `/admin` - Admin/source viewer
+
+**CPU Project:**
+- `/projects/cpu/demo` - Interactive CPU simulator
+- `/projects/cpu/docs` - CPU documentation landing
+- `/projects/cpu/docs/alu` - ALU Design documentation
+- `/projects/cpu/docs/regfile` - Register File documentation
+- `/projects/cpu/docs/multdiv` - Multiplication & Division documentation
+- `/projects/cpu/docs/pipeline` - Pipeline Architecture documentation
+- `/projects/cpu/docs/hazards` - Hazards & Forwarding documentation
+- `/projects/cpu/docs/instructions` - Instruction Set reference
+- `/projects/cpu/docs/memory` - Memory System documentation
+
+**Graphics Engine Project:**
+- `/projects/graphics-engine/demo` - C++ WASM graphics engine demo
+- `/projects/graphics-engine/docs` - Graphics documentation landing (React)
+- `/projects/graphics-engine/docs/*.html` - Component documentation (static HTML, will be converted to React)
 
 ### CPU Simulator Architecture
 
@@ -140,6 +183,43 @@ The site uses **React Router** for client-side routing with these main routes:
 1. **Vanilla JS wrappers:** Components like `BlockDiagram.jsx`, `RegisterView.jsx` use `useRef` to hold DOM container, import vanilla JS class in `useEffect`, call `render(state)` on state changes
 2. **Pure React components:** `ControlPanel.jsx`, `ProgramSelector.jsx` built from scratch in React (no vanilla JS)
 3. **Custom hooks:** Abstract complex logic (animation engine, WASM loading) for reuse
+
+### Page Organization Pattern
+
+**Directory structure** follows a project-based organization:
+
+```
+src/pages/
+├── HomePage.jsx              # Top-level: portfolio landing
+├── AdminPage.jsx             # Top-level: admin/source viewer
+├── cpu/                      # CPU project pages
+│   ├── CPUSimulatorPage.jsx  # Demo page
+│   ├── CpuDocsLanding.jsx    # Docs landing
+│   └── Cpu*Page.jsx          # Component documentation pages
+└── graphics/                 # Graphics Engine project pages
+    ├── GraphicsWasmPage.jsx  # Demo page
+    └── DocsPage.jsx          # Docs landing
+```
+
+**When adding a new project:**
+1. Create `src/pages/[project-name]/` directory
+2. Create demo page: `[ProjectName]DemoPage.jsx`
+3. Create docs landing: `[ProjectName]DocsLanding.jsx`
+4. Create component docs: `[ProjectName][Component]Page.jsx`
+5. Register routes in `App.jsx` following the pattern:
+   ```jsx
+   {/* [Project Name] Project */}
+   <Route path="/projects/[project-name]/demo" element={<DemoPage />} />
+   <Route path="/projects/[project-name]/docs" element={<DocsLanding />} />
+   <Route path="/projects/[project-name]/docs/[topic]" element={<TopicPage />} />
+   ```
+6. Add body class handling: `else if (location.pathname.startsWith('/projects/[project-name]/')) { document.body.classList.add('[project-name]-page') }`
+
+**Navigation principles:**
+- Use React Router `<Link>` components for internal navigation (not `<a>` tags)
+- Breadcrumbs pattern: Home > Project Name > Documentation > [Topic]
+- Footer should include links back to project demo and docs landing
+- All project docs should link to GitHub repo with `target="_blank" rel="noopener noreferrer"`
 
 ## Git Configuration
 
