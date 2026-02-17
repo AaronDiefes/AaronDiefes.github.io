@@ -30,8 +30,8 @@ function AppContent() {
   const location = useLocation()
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0)
+    // Scroll to top instantly on route change
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
 
     // Remove all page-specific classes
     document.body.classList.remove(
