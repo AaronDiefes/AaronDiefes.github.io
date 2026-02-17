@@ -256,14 +256,45 @@ docker-compose up
 
 ### Deployment
 
-**GitHub Pages:** Deploy `dist/` output to gh-pages branch or push to main.
+**GitHub Pages (Automated):**
 
+The site automatically deploys to GitHub Pages when code is pushed to the `main` branch via GitHub Actions.
+
+**Workflow file:** `.github/workflows/deploy.yml`
+
+**How it works:**
+1. Triggered on push to `main` branch
+2. Checks out code
+3. Installs dependencies with `npm ci`
+4. Builds React app with `npm run build`
+5. Deploys `dist/` folder to GitHub Pages
+6. Live at: https://aarondiefes.github.io/
+
+**To deploy:**
 ```bash
-npm run build
-# Deploy dist/ contents
+git push origin main
+# GitHub Actions automatically builds and deploys
+# Check status: https://github.com/AaronDiefes/AaronDiefes.github.io/actions
 ```
 
-**Docker Production:** Multi-stage Dockerfile builds React app, then serves with Nginx.
+**Manual deployment (if needed):**
+```bash
+npm run build
+# Manually copy dist/ contents to gh-pages branch
+```
+
+**Docker Production:**
+
+Multi-stage Dockerfile builds React app, then serves with Nginx.
+
+```bash
+cd docker
+docker-compose down
+docker-compose up --build -d
+# Visit http://localhost:8080
+```
+
+The Docker setup is used for local testing and matches the production build process.
 
 ## Design System
 
