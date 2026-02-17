@@ -385,45 +385,47 @@ function GraphicsFinalFeaturesPage() {
                 sweep gradient rendering. The critical angle calculation happens in the shadeRow loop.
               </p>
 
-              <pre className="code-block">{`void shadeRow(int x, int y, int c, GPixel row[]) override {
-    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
-    float y_prime = (inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]) * (count - 1);
-
-    float dx = P1.x - P0.x;
-    float dy = P1.y - P0.y;
-    // Calculate the angle of the line segment (starting angle)
-    float line_angle = std::atan2(dy, dx);
-
-    for (int i = 0; i < c; i++) {
-        // Calculate angle from center to current pixel
-        float angle_to_pixel = std::atan2(y_prime - P0.y, x_prime - P0.x);
-
-        // Normalize angle to [0, 2*pi]
-        if (angle_to_pixel < 0) {
-            angle_to_pixel += 2 * M_PI;
-        }
-
-        // Calculate relative angle (offset by starting angle)
-        float angle = angle_to_pixel - line_angle;
-        if (angle < 0) {
-            angle += 2 * M_PI;
-        }
-
-        // Normalize angle to [0, 1] for color interpolation
-        float t = angle / (2 * M_PI);
-
-        // Interpolate between colors based on t
-        int k = floor(t * (count - 1));
-        float u = t * (count - 1) - k;
-        GColor gradient_color = (1 - u) * gradient_colors[k] + u * gradient_colors[k + 1];
-
-        row[i] = unpremult(gradient_color);
-
-        // Update position for next pixel in row
-        x_prime += inv[0];
-        y_prime += inv[1];
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">c</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">x_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">2</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">4</span>]) <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">y_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">1</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">3</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">5</span>]) <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">dx</span> <span className="operator">=</span> <span className="signal">P1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">P0</span>.<span className="signal">x</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">dy</span> <span className="operator">=</span> <span className="signal">P1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">P0</span>.<span className="signal">y</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate the angle of the line segment (starting angle)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">line_angle</span> <span className="operator">=</span> <span className="signal">std</span>::<span className="signal">atan2</span>(<span className="signal">dy</span>, <span className="signal">dx</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">c</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate angle from center to current pixel</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">angle_to_pixel</span> <span className="operator">=</span> <span className="signal">std</span>::<span className="signal">atan2</span>(<span className="signal">y_prime</span> <span className="operator">-</span> <span className="signal">P0</span>.<span className="signal">y</span>, <span className="signal">x_prime</span> <span className="operator">-</span> <span className="signal">P0</span>.<span className="signal">x</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Normalize angle to [0, 2*pi]</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">angle_to_pixel</span> <span className="operator">&lt;</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">angle_to_pixel</span> <span className="operator">+=</span> <span className="number">2</span> <span className="operator">*</span> <span className="signal">M_PI</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate relative angle (offset by starting angle)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">angle</span> <span className="operator">=</span> <span className="signal">angle_to_pixel</span> <span className="operator">-</span> <span className="signal">line_angle</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">angle</span> <span className="operator">&lt;</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">angle</span> <span className="operator">+=</span> <span className="number">2</span> <span className="operator">*</span> <span className="signal">M_PI</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Normalize angle to [0, 1] for color interpolation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t</span> <span className="operator">=</span> <span className="signal">angle</span> <span className="operator">/</span> (<span className="number">2</span> <span className="operator">*</span> <span className="signal">M_PI</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Interpolate between colors based on t</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">k</span> <span className="operator">=</span> <span className="signal">floor</span>(<span className="signal">t</span> <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">u</span> <span className="operator">=</span> <span className="signal">t</span> <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>) <span className="operator">-</span> <span className="signal">k</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">gradient_color</span> <span className="operator">=</span> (<span className="number">1</span> <span className="operator">-</span> <span className="signal">u</span>) <span className="operator">*</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span>] <span className="operator">+</span> <span className="signal">u</span> <span className="operator">*</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span> <span className="operator">+</span> <span className="number">1</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">unpremult</span>(<span className="signal">gradient_color</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Update position for next pixel in row</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">0</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">y_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Key Implementation Details</h4>
               <ul>
@@ -476,57 +478,59 @@ function GraphicsFinalFeaturesPage() {
                 color segment and interpolates within it.
               </p>
 
-              <pre className="code-block">{`void shadeRow(int x, int y, int c, GPixel row[]) override {
-    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
-    float currX = x_prime;
-    float prop;
-    int k;
-    GColor mix;
-
-    for (int i = 0; i < c; i++) {
-        currX = x_prime;
-        // Clamp to valid gradient range
-        if (currX < 0) currX = 0;
-        if (currX > count - 1) currX = count - 1;
-
-        // Calculate proportional position along gradient
-        prop = currX / (count - 1);
-        k = 0;
-
-        // Find which color stops bracket this position
-        while (true) {
-            if (prop > positions[k]) {
-                k++;
-            } else {
-                break;
-            }
-        }
-        assert(prop <= positions[k]);
-
-        float fullDiff;
-        float propDiff;
-
-        if (k == 0) {
-            // Before first position, use first color
-            mix = gradient_colors[k];
-        } else if (k < count) {
-            // Between two positions, interpolate
-            fullDiff = positions[k] - positions[k - 1];
-            propDiff = prop - positions[k - 1];
-
-            float propC1 = propDiff / fullDiff;
-            assert(propC1 >= 0.0f && propC1 <= 1.0f);
-
-            mix = gradient_colors[k] * propC1 + gradient_colors[k - 1] * (1.0f - propC1);
-        } else {
-            // Past last position, use last color
-            mix = gradient_colors[k - 1];
-        }
-
-        row[i] = unpremult(mix);
-        x_prime += inv[0] * (count - 1);
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">c</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">x_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">2</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">4</span>]) <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">currX</span> <span className="operator">=</span> <span className="signal">x_prime</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">prop</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">k</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">mix</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">c</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">currX</span> <span className="operator">=</span> <span className="signal">x_prime</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Clamp to valid gradient range</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">currX</span> <span className="operator">&lt;</span> <span className="number">0</span>) <span className="signal">currX</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">currX</span> <span className="operator">&gt;</span> <span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>) <span className="signal">currX</span> <span className="operator">=</span> <span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate proportional position along gradient</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">prop</span> <span className="operator">=</span> <span className="signal">currX</span> <span className="operator">/</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">k</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Find which color stops bracket this position</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">while</span> (<span className="keyword">true</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">prop</span> <span className="operator">&gt;</span> <span className="signal">positions</span>[<span className="signal">k</span>]) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">k</span><span className="operator">++</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125; <span className="keyword">else</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">assert</span>(<span className="signal">prop</span> <span className="operator">&lt;=</span> <span className="signal">positions</span>[<span className="signal">k</span>]);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">fullDiff</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">propDiff</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">k</span> <span className="operator">==</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Before first position, use first color</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mix</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125; <span className="keyword">else if</span> (<span className="signal">k</span> <span className="operator">&lt;</span> <span className="signal">count</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Between two positions, interpolate</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">fullDiff</span> <span className="operator">=</span> <span className="signal">positions</span>[<span className="signal">k</span>] <span className="operator">-</span> <span className="signal">positions</span>[<span className="signal">k</span> <span className="operator">-</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">propDiff</span> <span className="operator">=</span> <span className="signal">prop</span> <span className="operator">-</span> <span className="signal">positions</span>[<span className="signal">k</span> <span className="operator">-</span> <span className="number">1</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">propC1</span> <span className="operator">=</span> <span className="signal">propDiff</span> <span className="operator">/</span> <span className="signal">fullDiff</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">assert</span>(<span className="signal">propC1</span> <span className="operator">&gt;=</span> <span className="number">0.0f</span> <span className="operator">&amp;&amp;</span> <span className="signal">propC1</span> <span className="operator">&lt;=</span> <span className="number">1.0f</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mix</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span>] <span className="operator">*</span> <span className="signal">propC1</span> <span className="operator">+</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span> <span className="operator">-</span> <span className="number">1</span>] <span className="operator">*</span> (<span className="number">1.0f</span> <span className="operator">-</span> <span className="signal">propC1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125; <span className="keyword">else</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Past last position, use last color</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mix</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span> <span className="operator">-</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">unpremult</span>(<span className="signal">mix</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Key Implementation Details</h4>
               <ul>
@@ -599,64 +603,68 @@ function GraphicsFinalFeaturesPage() {
                 Two helper functions implement the mathematical operations:
               </p>
 
-              <pre className="code-block">{`// Evaluate quadratic Bezier curve at parameter t
-GPoint get_quad_bezier(const GPoint* curr_points, float t) {
-    GPoint tangent;
-    tangent.x = curr_points[0].x * pow(1-t, 2) +
-                2 * curr_points[1].x * t * (1-t) +
-                curr_points[2].x * t * t;
-    tangent.y = curr_points[0].y * pow(1-t, 2) +
-                2 * curr_points[1].y * t * (1-t) +
-                curr_points[2].y * t * t;
-    return tangent;
-}
-
-// Bilinear interpolation of four corner points
-GPoint pt_weighted_avg(float u, float v, GPoint p1, GPoint p2, GPoint p3, GPoint p4) {
-    GPoint p = (1-u)*(1-v)* p1 + u * (1-v) * p2 + u * v * p3 + (1-u) * v * p4;
-    return p;
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// Evaluate quadratic Bezier curve at parameter t</span><br/>
+  <span className="signal">GPoint</span> <span className="signal">get_quad_bezier</span>(<span className="keyword">const</span> <span className="signal">GPoint</span><span className="operator">*</span> <span className="signal">curr_points</span>, <span className="keyword">float</span> <span className="signal">t</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">tangent</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">tangent</span>.<span className="signal">x</span> <span className="operator">=</span> <span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">x</span> <span className="operator">*</span> <span className="signal">pow</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>, <span className="number">2</span>) <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="number">2</span> <span className="operator">*</span> <span className="signal">curr_points</span>[<span className="number">1</span>].<span className="signal">x</span> <span className="operator">*</span> <span className="signal">t</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>) <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">curr_points</span>[<span className="number">2</span>].<span className="signal">x</span> <span className="operator">*</span> <span className="signal">t</span> <span className="operator">*</span> <span className="signal">t</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">tangent</span>.<span className="signal">y</span> <span className="operator">=</span> <span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">y</span> <span className="operator">*</span> <span className="signal">pow</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>, <span className="number">2</span>) <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="number">2</span> <span className="operator">*</span> <span className="signal">curr_points</span>[<span className="number">1</span>].<span className="signal">y</span> <span className="operator">*</span> <span className="signal">t</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>) <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">curr_points</span>[<span className="number">2</span>].<span className="signal">y</span> <span className="operator">*</span> <span className="signal">t</span> <span className="operator">*</span> <span className="signal">t</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">tangent</span>;<br/>
+  &#125;<br/>
+  <br/>
+  <span className="comment">// Bilinear interpolation of four corner points</span><br/>
+  <span className="signal">GPoint</span> <span className="signal">pt_weighted_avg</span>(<span className="keyword">float</span> <span className="signal">u</span>, <span className="keyword">float</span> <span className="signal">v</span>, <span className="signal">GPoint</span> <span className="signal">p1</span>, <span className="signal">GPoint</span> <span className="signal">p2</span>, <span className="signal">GPoint</span> <span className="signal">p3</span>, <span className="signal">GPoint</span> <span className="signal">p4</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p</span> <span className="operator">=</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>)<span className="operator">*</span> <span className="signal">p1</span> <span className="operator">+</span> <span className="signal">u</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>) <span className="operator">*</span> <span className="signal">p2</span> <span className="operator">+</span> <span className="signal">u</span> <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">p3</span> <span className="operator">+</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>) <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">p4</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">p</span>;<br/>
+  &#125;
+              </pre>
 
               <h4>Coons Patch Evaluation</h4>
               <p>
                 The main evaluation function implements the Coons formula:
               </p>
 
-              <pre className="code-block">{`GPoint pt_coons_avg(float u, float v, const GPoint pts[8]) {
-    // Handle corners directly (optimization)
-    if (u == 0.0f && v == 0.0f) return pts[0];
-    if (u == 1.0f && v == 0.0f) return pts[2];
-    if (u == 1.0f && v == 1.0f) return pts[4];
-    if (u == 0.0f && v == 1.0f) return pts[6];
-
-    // Define the four boundary curves
-    GPoint top[3] = {pts[0], pts[1], pts[2]};
-    GPoint right[3] = {pts[2], pts[3], pts[4]};
-    GPoint bottom[3] = {pts[6], pts[5], pts[4]};
-    GPoint left[3] = {pts[0], pts[7], pts[6]};
-
-    // Handle edge cases (on boundary curves)
-    if (u == 0.0f) return get_quad_bezier(left, v);
-    if (u == 1.0f) return get_quad_bezier(right, v);
-    if (v == 0.0f) return get_quad_bezier(top, u);
-    if (v == 1.0f) return get_quad_bezier(bottom, u);
-
-    // TB: Top-bottom interpolation
-    GPoint a = get_quad_bezier(top, u);
-    GPoint b = get_quad_bezier(bottom, u);
-    GPoint ab = {a.x + ((b.x - a.x) * v), a.y + ((b.y - a.y) * v)};
-
-    // LR: Left-right interpolation
-    GPoint c = get_quad_bezier(left, v);
-    GPoint d = get_quad_bezier(right, v);
-    GPoint cd = {c.x + ((d.x - c.x) * u), c.y + ((d.y - c.y) * u)};
-
-    // Corners: Bilinear interpolation of corners
-    GPoint mid = pt_weighted_avg(u, v, pts[0], pts[2], pts[4], pts[6]);
-
-    // Coons formula: TB + LR - Corners
-    return (ab + cd) - mid;
-}`}</pre>
+              <pre className="code-block">
+  <span className="signal">GPoint</span> <span className="signal">pt_coons_avg</span>(<span className="keyword">float</span> <span className="signal">u</span>, <span className="keyword">float</span> <span className="signal">v</span>, <span className="keyword">const</span> <span className="signal">GPoint</span> <span className="signal">pts</span>[<span className="number">8</span>]) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Handle corners directly (optimization)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">0.0f</span> <span className="operator">&amp;&amp;</span> <span className="signal">v</span> <span className="operator">==</span> <span className="number">0.0f</span>) <span className="keyword">return</span> <span className="signal">pts</span>[<span className="number">0</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">1.0f</span> <span className="operator">&amp;&amp;</span> <span className="signal">v</span> <span className="operator">==</span> <span className="number">0.0f</span>) <span className="keyword">return</span> <span className="signal">pts</span>[<span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">1.0f</span> <span className="operator">&amp;&amp;</span> <span className="signal">v</span> <span className="operator">==</span> <span className="number">1.0f</span>) <span className="keyword">return</span> <span className="signal">pts</span>[<span className="number">4</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">0.0f</span> <span className="operator">&amp;&amp;</span> <span className="signal">v</span> <span className="operator">==</span> <span className="number">1.0f</span>) <span className="keyword">return</span> <span className="signal">pts</span>[<span className="number">6</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Define the four boundary curves</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">top</span>[<span className="number">3</span>] <span className="operator">=</span> &#123;<span className="signal">pts</span>[<span className="number">0</span>], <span className="signal">pts</span>[<span className="number">1</span>], <span className="signal">pts</span>[<span className="number">2</span>]&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">right</span>[<span className="number">3</span>] <span className="operator">=</span> &#123;<span className="signal">pts</span>[<span className="number">2</span>], <span className="signal">pts</span>[<span className="number">3</span>], <span className="signal">pts</span>[<span className="number">4</span>]&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">bottom</span>[<span className="number">3</span>] <span className="operator">=</span> &#123;<span className="signal">pts</span>[<span className="number">6</span>], <span className="signal">pts</span>[<span className="number">5</span>], <span className="signal">pts</span>[<span className="number">4</span>]&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">left</span>[<span className="number">3</span>] <span className="operator">=</span> &#123;<span className="signal">pts</span>[<span className="number">0</span>], <span className="signal">pts</span>[<span className="number">7</span>], <span className="signal">pts</span>[<span className="number">6</span>]&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Handle edge cases (on boundary curves)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">0.0f</span>) <span className="keyword">return</span> <span className="signal">get_quad_bezier</span>(<span className="signal">left</span>, <span className="signal">v</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">u</span> <span className="operator">==</span> <span className="number">1.0f</span>) <span className="keyword">return</span> <span className="signal">get_quad_bezier</span>(<span className="signal">right</span>, <span className="signal">v</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">v</span> <span className="operator">==</span> <span className="number">0.0f</span>) <span className="keyword">return</span> <span className="signal">get_quad_bezier</span>(<span className="signal">top</span>, <span className="signal">u</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">v</span> <span className="operator">==</span> <span className="number">1.0f</span>) <span className="keyword">return</span> <span className="signal">get_quad_bezier</span>(<span className="signal">bottom</span>, <span className="signal">u</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// TB: Top-bottom interpolation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">a</span> <span className="operator">=</span> <span className="signal">get_quad_bezier</span>(<span className="signal">top</span>, <span className="signal">u</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">b</span> <span className="operator">=</span> <span className="signal">get_quad_bezier</span>(<span className="signal">bottom</span>, <span className="signal">u</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">ab</span> <span className="operator">=</span> &#123;<span className="signal">a</span>.<span className="signal">x</span> <span className="operator">+</span> ((<span className="signal">b</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">a</span>.<span className="signal">x</span>) <span className="operator">*</span> <span className="signal">v</span>), <span className="signal">a</span>.<span className="signal">y</span> <span className="operator">+</span> ((<span className="signal">b</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">a</span>.<span className="signal">y</span>) <span className="operator">*</span> <span className="signal">v</span>)&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// LR: Left-right interpolation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">c</span> <span className="operator">=</span> <span className="signal">get_quad_bezier</span>(<span className="signal">left</span>, <span className="signal">v</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">d</span> <span className="operator">=</span> <span className="signal">get_quad_bezier</span>(<span className="signal">right</span>, <span className="signal">v</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">cd</span> <span className="operator">=</span> &#123;<span className="signal">c</span>.<span className="signal">x</span> <span className="operator">+</span> ((<span className="signal">d</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">c</span>.<span className="signal">x</span>) <span className="operator">*</span> <span className="signal">u</span>), <span className="signal">c</span>.<span className="signal">y</span> <span className="operator">+</span> ((<span className="signal">d</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">c</span>.<span className="signal">y</span>) <span className="operator">*</span> <span className="signal">u</span>)&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Corners: Bilinear interpolation of corners</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">mid</span> <span className="operator">=</span> <span className="signal">pt_weighted_avg</span>(<span className="signal">u</span>, <span className="signal">v</span>, <span className="signal">pts</span>[<span className="number">0</span>], <span className="signal">pts</span>[<span className="number">2</span>], <span className="signal">pts</span>[<span className="number">4</span>], <span className="signal">pts</span>[<span className="number">6</span>]);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Coons formula: TB + LR - Corners</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> (<span className="signal">ab</span> <span className="operator">+</span> <span className="signal">cd</span>) <span className="operator">-</span> <span className="signal">mid</span>;<br/>
+  &#125;
+              </pre>
 
               <h4>Key Implementation Details</h4>
               <ul>

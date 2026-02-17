@@ -363,23 +363,25 @@ function GraphicsPathsPage() {
                 paths interact under the fill rule.
               </p>
 
-              <pre className="code-block">{`// From path_ops.h - GPath::addRect implementation
-void GPath::addRect(const GRect& r, GPath::Direction dir) {
-    this->moveTo(r.left, r.top);
-    if(dir == kCW_Direction){
-        this->lineTo(r.right, r.top);
-        this->lineTo(r.right, r.bottom);
-        this->lineTo(r.left, r.bottom);
-        this->lineTo(r.left, r.top);
-    }
-    else{
-        this->lineTo(r.left, r.bottom);
-        this->lineTo(r.right, r.bottom);
-        this->lineTo(r.right, r.top);
-        this->lineTo(r.left, r.top);
-    }
-    return;
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From path_ops.h - GPath::addRect implementation</span><br/>
+  <span className="keyword">void</span> <span className="signal">GPath</span>::<span className="signal">addRect</span>(<span className="keyword">const</span> <span className="signal">GRect</span><span className="operator">&amp;</span> <span className="signal">r</span>, <span className="signal">GPath</span>::<span className="signal">Direction</span> <span className="signal">dir</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">moveTo</span>(<span className="signal">r</span>.<span className="signal">left</span>, <span className="signal">r</span>.<span className="signal">top</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">dir</span> <span className="operator">==</span> <span className="signal">kCW_Direction</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">right</span>, <span className="signal">r</span>.<span className="signal">top</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">right</span>, <span className="signal">r</span>.<span className="signal">bottom</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">left</span>, <span className="signal">r</span>.<span className="signal">bottom</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">left</span>, <span className="signal">r</span>.<span className="signal">top</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">left</span>, <span className="signal">r</span>.<span className="signal">bottom</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">right</span>, <span className="signal">r</span>.<span className="signal">bottom</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">right</span>, <span className="signal">r</span>.<span className="signal">top</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">lineTo</span>(<span className="signal">r</span>.<span className="signal">left</span>, <span className="signal">r</span>.<span className="signal">top</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &#125;
+              </pre>
 
               <h4>Path Iteration with Edger</h4>
               <p>
@@ -392,31 +394,33 @@ void GPath::addRect(const GRect& r, GPath::Direction dir) {
                 stroked, filled, or analyzed for bounds without changing the underlying representation.
               </p>
 
-              <pre className="code-block">{`// From path_ops.h - Iterating path commands for bounds calculation
-GPath::Edger iter(*this);
-std::vector<float> candidate_x;
-std::vector<float> candidate_y;
-
-while(auto v = iter.next(curr_points)) {
-    switch(v.value()){
-        case GPath::kMove:
-            candidate_x.push_back(curr_points[0].x);
-            candidate_y.push_back(curr_points[0].y);
-            break;
-        case GPath::kLine:
-            candidate_x.push_back(curr_points[0].x);
-            candidate_y.push_back(curr_points[0].y);
-            candidate_x.push_back(curr_points[1].x);
-            candidate_y.push_back(curr_points[1].y);
-            break;
-        case GPath::kQuad:
-            // Handle quadratic bezier...
-            break;
-        case GPath::kCubic:
-            // Handle cubic bezier...
-            break;
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From path_ops.h - Iterating path commands for bounds calculation</span><br/>
+  <span className="signal">GPath</span>::<span className="signal">Edger</span> <span className="signal">iter</span>(<span className="operator">*</span><span className="keyword">this</span>);<br/>
+  <span className="signal">std</span>::<span className="signal">vector</span><span className="operator">&lt;</span><span className="keyword">float</span><span className="operator">&gt;</span> <span className="signal">candidate_x</span>;<br/>
+  <span className="signal">std</span>::<span className="signal">vector</span><span className="operator">&lt;</span><span className="keyword">float</span><span className="operator">&gt;</span> <span className="signal">candidate_y</span>;<br/>
+  <br/>
+  <span className="keyword">while</span>(<span className="keyword">auto</span> <span className="signal">v</span> <span className="operator">=</span> <span className="signal">iter</span>.<span className="signal">next</span>(<span className="signal">curr_points</span>)) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">switch</span>(<span className="signal">v</span>.<span className="signal">value</span>())&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kMove</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_x</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">x</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_y</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kLine</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_x</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">x</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_y</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">0</span>].<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_x</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">1</span>].<span className="signal">x</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">candidate_y</span>.<span className="signal">push_back</span>(<span className="signal">curr_points</span>[<span className="number">1</span>].<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kQuad</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Handle quadratic bezier...</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kCubic</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Handle cubic bezier...</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Constructing Circles from Quadratic Beziers</h4>
               <p>
@@ -428,19 +432,21 @@ while(auto v = iter.next(curr_points)) {
                 the control points to minimize curvature error, ensuring the quadratics closely match a perfect circle.
               </p>
 
-              <pre className="code-block">{`// From path_ops.h - GPath::addCircle with quadratic approximation
-this->moveTo(unit_points[0]);
-
-if(dir == kCCW_Direction){
-    this->quadTo(unit_points[1], unit_points[2]);
-    this->quadTo(unit_points[3], unit_points[4]);
-    this->quadTo(unit_points[5], unit_points[6]);
-    this->quadTo(unit_points[7], unit_points[8]);
-    this->quadTo(unit_points[9], unit_points[10]);
-    this->quadTo(unit_points[11], unit_points[12]);
-    this->quadTo(unit_points[13], unit_points[14]);
-    this->quadTo(unit_points[15], unit_points[0]);
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From path_ops.h - GPath::addCircle with quadratic approximation</span><br/>
+  <span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">moveTo</span>(<span className="signal">unit_points</span>[<span className="number">0</span>]);<br/>
+  <br/>
+  <span className="keyword">if</span>(<span className="signal">dir</span> <span className="operator">==</span> <span className="signal">kCCW_Direction</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">1</span>], <span className="signal">unit_points</span>[<span className="number">2</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">3</span>], <span className="signal">unit_points</span>[<span className="number">4</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">5</span>], <span className="signal">unit_points</span>[<span className="number">6</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">7</span>], <span className="signal">unit_points</span>[<span className="number">8</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">9</span>], <span className="signal">unit_points</span>[<span className="number">10</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">11</span>], <span className="signal">unit_points</span>[<span className="number">12</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">13</span>], <span className="signal">unit_points</span>[<span className="number">14</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">this</span><span className="operator">-&gt;</span><span className="signal">quadTo</span>(<span className="signal">unit_points</span>[<span className="number">15</span>], <span className="signal">unit_points</span>[<span className="number">0</span>]);<br/>
+  &#125;
+              </pre>
 
               <p className="note">
                 <strong>Key Insight:</strong> Path construction is declarative—you describe what shape you want,
@@ -473,45 +479,47 @@ if(dir == kCCW_Direction){
                 When <code>w</code> returns to 0, we've exited—record the right boundary and fill that span.
               </p>
 
-              <pre className="code-block">{`// From my_canvas.cpp - Winding fill implementation
-for(int y = yMin; y < yMax; y++){
-    size_t i = 0;
-    int w = 0;  // Winding count
-    int L = 0;  // Left boundary
-    int R = 0;  // Right boundary
-
-    // Loop through active edges at this y value
-    while (i < edges.size() && edges[i].isValid(y)) {
-        int x = GRoundToInt(edges[i].eval(y));
-
-        if (w == 0) {
-            L = x;  // Entering shape - mark left edge
-        }
-        w += edges[i].dire;  // Update winding count (+1 or -1)
-        if (w == 0) {
-            R = x;  // Exiting shape - mark right edge
-            // Fill pixels from L to R
-            if(paint.getShader()){
-                // Apply shader across span...
-            }
-            else{
-                if(R-L > 0){
-                    blitRow(L, y, R - L, proc, fDevice, src);
-                }
-            }
-        }
-
-        // Move to next edge or remove if complete
-        if (edges[i].isValid(y+1)) {
-            i += 1;
-        }
-        else {
-            edges.erase(edges.begin() + i);
-        }
-    }
-
-    assert(w == 0);  // Winding must return to zero
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From my_canvas.cpp - Winding fill implementation</span><br/>
+  <span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">y</span> <span className="operator">=</span> <span className="signal">yMin</span>; <span className="signal">y</span> <span className="operator">&lt;</span> <span className="signal">yMax</span>; <span className="signal">y</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">size_t</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">w</span> <span className="operator">=</span> <span className="number">0</span>;&nbsp;&nbsp;<span className="comment">// Winding count</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">L</span> <span className="operator">=</span> <span className="number">0</span>;&nbsp;&nbsp;<span className="comment">// Left boundary</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">R</span> <span className="operator">=</span> <span className="number">0</span>;&nbsp;&nbsp;<span className="comment">// Right boundary</span><br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Loop through active edges at this y value</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">while</span> (<span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">edges</span>.<span className="signal">size</span>() <span className="operator">&amp;&amp;</span> <span className="signal">edges</span>[<span className="signal">i</span>].<span className="signal">isValid</span>(<span className="signal">y</span>)) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">x</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">edges</span>[<span className="signal">i</span>].<span className="signal">eval</span>(<span className="signal">y</span>));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">w</span> <span className="operator">==</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">L</span> <span className="operator">=</span> <span className="signal">x</span>;&nbsp;&nbsp;<span className="comment">// Entering shape - mark left edge</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">w</span> <span className="operator">+=</span> <span className="signal">edges</span>[<span className="signal">i</span>].<span className="signal">dire</span>;&nbsp;&nbsp;<span className="comment">// Update winding count (+1 or -1)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">w</span> <span className="operator">==</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">R</span> <span className="operator">=</span> <span className="signal">x</span>;&nbsp;&nbsp;<span className="comment">// Exiting shape - mark right edge</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Fill pixels from L to R</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">paint</span>.<span className="signal">getShader</span>())&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Apply shader across span...</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">R</span><span className="operator">-</span><span className="signal">L</span> <span className="operator">&gt;</span> <span className="number">0</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">blitRow</span>(<span className="signal">L</span>, <span className="signal">y</span>, <span className="signal">R</span> <span className="operator">-</span> <span className="signal">L</span>, <span className="signal">proc</span>, <span className="signal">fDevice</span>, <span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Move to next edge or remove if complete</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">edges</span>[<span className="signal">i</span>].<span className="signal">isValid</span>(<span className="signal">y</span><span className="operator">+</span><span className="number">1</span>)) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">i</span> <span className="operator">+=</span> <span className="number">1</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">edges</span>.<span className="signal">erase</span>(<span className="signal">edges</span>.<span className="signal">begin</span>() <span className="operator">+</span> <span className="signal">i</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">assert</span>(<span className="signal">w</span> <span className="operator">==</span> <span className="number">0</span>);&nbsp;&nbsp;<span className="comment">// Winding must return to zero</span><br/>
+  &#125;
+              </pre>
 
               <h4>Why Winding Matters</h4>
               <p>
@@ -549,20 +557,22 @@ for(int y = yMin; y < yMax; y++){
                 projection to a single coordinate lookup.
               </p>
 
-              <pre className="code-block">{`// From shader_ops.h - Linear gradient setup
-bool setContext(const GMatrix& ctm) override{
-    GMatrix linear_transformation_matrix = GMatrix(
-        p1.x - p0.x,    -(p1.y - p0.y),   p0.x,
-        p1.y - p0.y,    p1.x - p0.x,      p0.y
-    );
-
-    GMatrix temp = ctm * linear_transformation_matrix;
-    if(auto inverted = temp.invert()){
-        inv = *inverted;  // Store inverse for fast per-pixel projection
-        return true;
-    }
-    return false;
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From shader_ops.h - Linear gradient setup</span><br/>
+  <span className="keyword">bool</span> <span className="signal">setContext</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">ctm</span>) <span className="keyword">override</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">linear_transformation_matrix</span> <span className="operator">=</span> <span className="signal">GMatrix</span>(<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="operator">-</span>(<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">y</span>),&nbsp;&nbsp;&nbsp;<span className="signal">p0</span>.<span className="signal">x</span>,<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">y</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p0</span>.<span className="signal">y</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">temp</span> <span className="operator">=</span> <span className="signal">ctm</span> <span className="operator">*</span> <span className="signal">linear_transformation_matrix</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="keyword">auto</span> <span className="signal">inverted</span> <span className="operator">=</span> <span className="signal">temp</span>.<span className="signal">invert</span>())&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">inv</span> <span className="operator">=</span> <span className="operator">*</span><span className="signal">inverted</span>;&nbsp;&nbsp;<span className="comment">// Store inverse for fast per-pixel projection</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">true</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">false</span>;<br/>
+  &#125;
+              </pre>
 
               <h4>Per-Pixel Color Computation</h4>
               <p>
@@ -575,32 +585,34 @@ bool setContext(const GMatrix& ctm) override{
                 extrapolation artifacts.
               </p>
 
-              <pre className="code-block">{`// From shader_ops.h - Linear gradient shadeRow (clamp mode)
-void shadeRow(int x, int y, int c, GPixel row[]) override{
-    // Transform pixel coordinates to gradient space
-    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
-
-    for(int i = 0; i < c; i++){
-        float currX = x_prime;
-        // Clamp to valid range
-        if(currX < 0){
-            currX = 0;
-        }
-        if(currX > count - 1){
-            currX = count - 1;
-        }
-        // Find color stops surrounding this position
-        int k = floor(currX);
-        float t = currX - (float)k;  // Fractional position between stops
-
-        // Interpolate between colors[k] and colors[k+1]
-        GColor gradient_color = (1-t)*gradient_colors[k] + (t * gradient_colors[k + 1]);
-
-        row[i] = unpremult(gradient_color);
-
-        x_prime += inv[0]*(count - 1);  // Advance to next pixel
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From shader_ops.h - Linear gradient shadeRow (clamp mode)</span><br/>
+  <span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">c</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Transform pixel coordinates to gradient space</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">x_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">2</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">4</span>]) <span className="operator">*</span> (<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">c</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">currX</span> <span className="operator">=</span> <span className="signal">x_prime</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Clamp to valid range</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">currX</span> <span className="operator">&lt;</span> <span className="number">0</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">currX</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">currX</span> <span className="operator">&gt;</span> <span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">currX</span> <span className="operator">=</span> <span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Find color stops surrounding this position</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">k</span> <span className="operator">=</span> <span className="signal">floor</span>(<span className="signal">currX</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t</span> <span className="operator">=</span> <span className="signal">currX</span> <span className="operator">-</span> (<span className="keyword">float</span>)<span className="signal">k</span>;&nbsp;&nbsp;<span className="comment">// Fractional position between stops</span><br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Interpolate between colors[k] and colors[k+1]</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">gradient_color</span> <span className="operator">=</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span><span className="signal">gradient_colors</span>[<span className="signal">k</span>] <span className="operator">+</span> (<span className="signal">t</span> <span className="operator">*</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span> <span className="operator">+</span> <span className="number">1</span>]);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">unpremult</span>(<span className="signal">gradient_color</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">0</span>]<span className="operator">*</span>(<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>);&nbsp;&nbsp;<span className="comment">// Advance to next pixel</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Tile Modes</h4>
               <p>
@@ -637,47 +649,49 @@ void shadeRow(int x, int y, int c, GPixel row[]) override{
                 This t-value maps to the color gradient exactly like linear gradients.
               </p>
 
-              <pre className="code-block">{`// From shader_ops.h - Radial gradient shadeRow (clamp mode)
-void shadeRow(int x, int y, int c, GPixel row[]) override {
-    float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]);
-    float y_prime = (inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]);
-
-    for (int i = 0; i < c; i++) {
-        // Compute Euclidean distance from center
-        float distance = sqrt(pow(x_prime - center.x, 2) +
-                             pow(y_prime - center.y, 2));
-
-        if (distance < radius) {
-            // Normalize distance to [0, 1]
-            float t = distance / radius;
-
-            // Map t to color index
-            int num_colors = count;
-            float color_index = t * (num_colors - 1);
-            int k = std::floor(color_index);
-            float t_blend = color_index - k;
-
-            GColor gradient_color;
-            if (k < num_colors - 1) {
-                GColor color0 = gradient_colors[k];
-                GColor color1 = gradient_colors[k + 1];
-                // Interpolate between adjacent color stops
-                gradient_color = (1 - t_blend) * color0 + t_blend * color1;
-            }
-            else {
-                gradient_color = gradient_colors[num_colors - 1];
-            }
-            row[i] = unpremult(gradient_color);
-        }
-        else{
-            // Outside radius: clamp to final color
-            row[i] = unpremult(gradient_colors[count - 1]);
-        }
-
-        x_prime += inv[0];
-        y_prime += inv[1];
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From shader_ops.h - Radial gradient shadeRow (clamp mode)</span><br/>
+  <span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">c</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">x_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">2</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">4</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">y_prime</span> <span className="operator">=</span> (<span className="signal">inv</span>[<span className="number">1</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">3</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">5</span>]);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">c</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Compute Euclidean distance from center</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">distance</span> <span className="operator">=</span> <span className="signal">sqrt</span>(<span className="signal">pow</span>(<span className="signal">x_prime</span> <span className="operator">-</span> <span className="signal">center</span>.<span className="signal">x</span>, <span className="number">2</span>) <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">pow</span>(<span className="signal">y_prime</span> <span className="operator">-</span> <span className="signal">center</span>.<span className="signal">y</span>, <span className="number">2</span>));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">distance</span> <span className="operator">&lt;</span> <span className="signal">radius</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Normalize distance to [0, 1]</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t</span> <span className="operator">=</span> <span className="signal">distance</span> <span className="operator">/</span> <span className="signal">radius</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Map t to color index</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">num_colors</span> <span className="operator">=</span> <span className="signal">count</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">color_index</span> <span className="operator">=</span> <span className="signal">t</span> <span className="operator">*</span> (<span className="signal">num_colors</span> <span className="operator">-</span> <span className="number">1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">k</span> <span className="operator">=</span> <span className="signal">std</span>::<span className="signal">floor</span>(<span className="signal">color_index</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t_blend</span> <span className="operator">=</span> <span className="signal">color_index</span> <span className="operator">-</span> <span className="signal">k</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">gradient_color</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">k</span> <span className="operator">&lt;</span> <span className="signal">num_colors</span> <span className="operator">-</span> <span className="number">1</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">color0</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">color1</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">k</span> <span className="operator">+</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Interpolate between adjacent color stops</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">gradient_color</span> <span className="operator">=</span> (<span className="number">1</span> <span className="operator">-</span> <span className="signal">t_blend</span>) <span className="operator">*</span> <span className="signal">color0</span> <span className="operator">+</span> <span className="signal">t_blend</span> <span className="operator">*</span> <span className="signal">color1</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">gradient_color</span> <span className="operator">=</span> <span className="signal">gradient_colors</span>[<span className="signal">num_colors</span> <span className="operator">-</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">unpremult</span>(<span className="signal">gradient_color</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Outside radius: clamp to final color</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">unpremult</span>(<span className="signal">gradient_colors</span>[<span className="signal">count</span> <span className="operator">-</span> <span className="number">1</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">0</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">y_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Tile Modes for Radial Gradients</h4>
               <p>
@@ -696,15 +710,17 @@ void shadeRow(int x, int y, int c, GPixel row[]) override {
                 ellipses or creating directional radial effects.
               </p>
 
-              <pre className="code-block">{`// From shader_ops.h - Radial gradient context setup
-bool setContext(const GMatrix& ctm) override {
-    inv = ctm;
-    if (auto inverted = inv.invert()) {
-        inv = *inverted;  // Inverse allows pixel → gradient space transformation
-        return true;
-    }
-    return false;
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// From shader_ops.h - Radial gradient context setup</span><br/>
+  <span className="keyword">bool</span> <span className="signal">setContext</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">ctm</span>) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">inv</span> <span className="operator">=</span> <span className="signal">ctm</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="keyword">auto</span> <span className="signal">inverted</span> <span className="operator">=</span> <span className="signal">inv</span>.<span className="signal">invert</span>()) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">inv</span> <span className="operator">=</span> <span className="operator">*</span><span className="signal">inverted</span>;&nbsp;&nbsp;<span className="comment">// Inverse allows pixel &rarr; gradient space transformation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">true</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">false</span>;<br/>
+  &#125;
+              </pre>
 
               <p className="note">
                 <strong>Optimization Consideration:</strong> The square root calculation for distance is unavoidable, but

@@ -374,7 +374,9 @@ function GraphicsOptimizationPage() {
                 <p>
                   Porter-Duff blend formulas require dividing by 255 to normalize alpha-scaled products back to [0, 255]. For example, in src-over blending:
                 </p>
-                <pre className="code-block">result_channel = src_channel + (dest_channel * (255 - src_alpha)) / 255</pre>
+                <pre className="code-block">
+  <span className="signal">result_channel</span> <span className="operator">=</span> <span className="signal">src_channel</span> <span className="operator">+</span> (<span className="signal">dest_channel</span> <span className="operator">*</span> (<span className="number">255</span> <span className="operator">-</span> <span className="signal">src_alpha</span>)) <span className="operator">/</span> <span className="number">255</span>
+                </pre>
                 <p>
                   Integer division is <strong>40-80 cycles</strong> on modern CPUs, making it the bottleneck in blend operations. With millions of pixels per frame, this division dominates rendering time.
                 </p>
@@ -385,9 +387,11 @@ function GraphicsOptimizationPage() {
                 <p>
                   Instead of true division, we use a fixed-point trick that approximates <code>x/255</code> using shifts and adds:
                 </p>
-                <pre className="code-block">{`static inline uint8_t div255(unsigned before) {
-    return (before + 128) * 257 >> 16;
-}`}</pre>
+                <pre className="code-block">
+  <span className="keyword">static</span> <span className="keyword">inline</span> <span className="signal">uint8_t</span> <span className="signal">div255</span>(<span className="keyword">unsigned</span> <span className="signal">before</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> (<span className="signal">before</span> <span className="operator">+</span> <span className="number">128</span>) <span className="operator">*</span> <span className="number">257</span> <span className="operator">&gt;&gt;</span> <span className="number">16</span>;<br/>
+  &#125;
+                </pre>
 
                 <p><strong>Mathematical Proof:</strong></p>
                 <p>
@@ -414,18 +418,20 @@ function GraphicsOptimizationPage() {
                 <p>
                   Every Porter-Duff blend mode uses <code>div255</code> for alpha-scaled multiplication:
                 </p>
-                <pre className="code-block">{`// Src-over blend: S + D * (1 - Sa)
-GPixel src_over_mode(GPixel src, GPixel dest) {
-    int sa = GPixel_GetA(src);
-    // ... extract other channels ...
-
-    int ba = sa + div255((255 - sa) * da);
-    int br = sr + div255((255 - sa) * dr);
-    int bg = sg + div255((255 - sa) * dg);
-    int bb = sb + div255((255 - sa) * db);
-
-    return GPixel_PackARGB(ba, br, bg, bb);
-}`}</pre>
+                <pre className="code-block">
+  <span className="comment">// Src-over blend: S + D * (1 - Sa)</span><br/>
+  <span className="signal">GPixel</span> <span className="signal">src_over_mode</span>(<span className="signal">GPixel</span> <span className="signal">src</span>, <span className="signal">GPixel</span> <span className="signal">dest</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sa</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// ... extract other channels ...</span><br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">ba</span> <span className="operator">=</span> <span className="signal">sa</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span> <span className="operator">-</span> <span className="signal">sa</span>) <span className="operator">*</span> <span className="signal">da</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">br</span> <span className="operator">=</span> <span className="signal">sr</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span> <span className="operator">-</span> <span className="signal">sa</span>) <span className="operator">*</span> <span className="signal">dr</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bg</span> <span className="operator">=</span> <span className="signal">sg</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span> <span className="operator">-</span> <span className="signal">sa</span>) <span className="operator">*</span> <span className="signal">dg</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bb</span> <span className="operator">=</span> <span className="signal">sb</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span> <span className="operator">-</span> <span className="signal">sa</span>) <span className="operator">*</span> <span className="signal">db</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GPixel_PackARGB</span>(<span className="signal">ba</span>, <span className="signal">br</span>, <span className="signal">bg</span>, <span className="signal">bb</span>);<br/>
+  &#125;
+                </pre>
                 <p>
                   This pattern repeats across all 12 blend modes, with <code>div255</code> called 4 times per pixel (once per ARGB channel). The optimization compounds: rendering a 1920×1080 frame with alpha blending performs ~8 million <code>div255</code> calls. Without this trick, frame rendering would take seconds instead of milliseconds.
                 </p>
@@ -452,28 +458,30 @@ GPixel src_over_mode(GPixel src, GPixel dest) {
                 <p>
                   The <code>getBlendMode</code> function analyzes source alpha and rewrites the blend mode at draw time:
                 </p>
-                <pre className="code-block">{`BlendProc getBlendMode(BlendProc proc, GColor color) {
-    // Opaque source (α = 1): Many modes simplify
-    if (color.a == 1) {
-        if (proc == src_over_mode) { return src_mode; }       // S + 0 = S
-        if (proc == dst_out_mode) { return clear_mode; }      // 0
-        if (proc == src_atop_mode) { return src_in_mode; }    // Da*S
-        if (proc == xor_mode) { return src_out_mode; }        // S * (1-Da)
-    }
-
-    // Transparent source (α = 0): Even more modes reduce to no-op or clear
-    if (color.a == 0) {
-        if (proc == src_mode) { return clear_mode; }          // 0
-        if (proc == src_over_mode) { return dst_mode; }       // D (no change)
-        if (proc == dst_over_mode) { return dst_mode; }       // D
-        if (proc == src_in_mode) { return clear_mode; }       // 0
-        if (proc == dst_in_mode) { return clear_mode; }       // 0
-        if (proc == src_atop_mode) { return dst_mode; }       // D
-        if (proc == xor_mode) { return dst_mode; }            // D
-    }
-
-    return proc;  // No optimization available
-}`}</pre>
+                <pre className="code-block">
+  <span className="signal">BlendProc</span> <span className="signal">getBlendMode</span>(<span className="signal">BlendProc</span> <span className="signal">proc</span>, <span className="signal">GColor</span> <span className="signal">color</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Opaque source (α = 1): Many modes simplify</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">color</span>.<span className="signal">a</span> <span className="operator">==</span> <span className="number">1</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_over_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">src_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// S + 0 = S</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">dst_out_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">clear_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// 0</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_atop_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">src_in_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Da*S</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">xor_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">src_out_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// S * (1-Da)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Transparent source (α = 0): Even more modes reduce to no-op or clear</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">color</span>.<span className="signal">a</span> <span className="operator">==</span> <span className="number">0</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">clear_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// 0</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_over_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">dst_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// D (no change)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">dst_over_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">dst_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// D</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_in_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">clear_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// 0</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">dst_in_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">clear_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// 0</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">src_atop_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">dst_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// D</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">proc</span> <span className="operator">==</span> <span className="signal">xor_mode</span>) &#123; <span className="keyword">return</span> <span className="signal">dst_mode</span>; &#125;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// D</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">proc</span>;&nbsp;&nbsp;<span className="comment">// No optimization available</span><br/>
+  &#125;
+                </pre>
               </div>
 
               <div className="content-block">
@@ -535,16 +543,18 @@ GPixel src_over_mode(GPixel src, GPixel dest) {
                 <p>
                   Blend modes could be implemented using a function pointer array and dynamic dispatch:
                 </p>
-                <pre className="code-block">{`// Function pointer array
-const BlendProc gProcs[] = {
-    clear_mode, src_mode, dst_mode, src_over_mode,
-    /* ...8 more blend functions... */
-};
-
-// Dynamic dispatch (slow)
-for (int i = 0; i < n; i++) {
-    dst[i] = gProcs[mode](src[i], dst[i]);  // Indirect call per pixel
-}`}</pre>
+                <pre className="code-block">
+  <span className="comment">// Function pointer array</span><br/>
+  <span className="keyword">const</span> <span className="signal">BlendProc</span> <span className="signal">gProcs</span>[] <span className="operator">=</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">clear_mode</span>, <span className="signal">src_mode</span>, <span className="signal">dst_mode</span>, <span className="signal">src_over_mode</span>,<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">/* ...8 more blend functions... */</span><br/>
+  &#125;;<br/>
+  <br/>
+  <span className="comment">// Dynamic dispatch (slow)</span><br/>
+  <span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">n</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">gProcs</span>[<span className="signal">mode</span>](<span className="signal">src</span>[<span className="signal">i</span>], <span className="signal">dst</span>[<span className="signal">i</span>]);&nbsp;&nbsp;<span className="comment">// Indirect call per pixel</span><br/>
+  &#125;
+                </pre>
                 <p>
                   <strong>Cost:</strong> Each indirect function call adds 10-20 cycles due to pipeline stalls (branch prediction fails, instruction cache misses, register spilling). For a 1920×1080 frame, this adds ~40 million wasted cycles (20+ milliseconds).
                 </p>
@@ -555,22 +565,24 @@ for (int i = 0; i < n; i++) {
                 <p>
                   The engine uses template-based static dispatch with an if-else chain. The compiler unrolls this into a jump table with predictable branches:
                 </p>
-                <pre className="code-block">{`template<typename Proc>
-void blitRow(int x, int y, int n, Proc blend, GBitmap fDevice, GPixel src) {
-    GPixel* dst = fDevice.getAddr(x, y);
-
-    if (blend == src_mode) {
-        for (int i = 0; i < n; i++) {
-            dst[i] = src;  // Direct assignment, no function call
-        }
-    }
-    else if (blend == src_over_mode) {
-        for (int i = 0; i < n; i++) {
-            dst[i] = src_over_mode(src, dst[i]);  // Direct call
-        }
-    }
-    // ...10 more blend modes with direct calls...
-}`}</pre>
+                <pre className="code-block">
+  <span className="keyword">template</span><span className="operator">&lt;</span><span className="keyword">typename</span> <span className="signal">Proc</span><span className="operator">&gt;</span><br/>
+  <span className="keyword">void</span> <span className="signal">blitRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">n</span>, <span className="signal">Proc</span> <span className="signal">blend</span>, <span className="signal">GBitmap</span> <span className="signal">fDevice</span>, <span className="signal">GPixel</span> <span className="signal">src</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPixel</span><span className="operator">*</span> <span className="signal">dst</span> <span className="operator">=</span> <span className="signal">fDevice</span>.<span className="signal">getAddr</span>(<span className="signal">x</span>, <span className="signal">y</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">blend</span> <span className="operator">==</span> <span className="signal">src_mode</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">n</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">src</span>;&nbsp;&nbsp;<span className="comment">// Direct assignment, no function call</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span> <span className="keyword">if</span> (<span className="signal">blend</span> <span className="operator">==</span> <span className="signal">src_over_mode</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">n</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">src_over_mode</span>(<span className="signal">src</span>, <span className="signal">dst</span>[<span className="signal">i</span>]);&nbsp;&nbsp;<span className="comment">// Direct call</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// ...10 more blend modes with direct calls...</span><br/>
+  &#125;
+                </pre>
 
                 <div className="info-box">
                   <strong>Why This Works:</strong> The template parameter <code>Proc</code> is known at compile time. The compiler evaluates <code>blend == src_mode</code> statically, eliminating dead branches. Each instantiation of <code>blitRow</code> compiles to a single tight loop with direct function calls (which can be inlined).
@@ -634,13 +646,15 @@ void blitRow(int x, int y, int n, Proc blend, GBitmap fDevice, GPixel src) {
                 <p>
                   The engine renders shapes scanline-by-scanline (row-by-row), not pixel-by-pixel. This enables highly efficient memory access patterns:
                 </p>
-                <pre className="code-block">{`// Process entire scanline at once
-for (int y = top; y < bottom; y++) {
-    GPixel* dst = fDevice.getAddr(x_left, y);  // Get row pointer
-    for (int x = 0; x < width; x++) {
-        dst[x] = blend(src[x], dst[x]);  // Sequential memory access
-    }
-}`}</pre>
+                <pre className="code-block">
+  <span className="comment">// Process entire scanline at once</span><br/>
+  <span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">y</span> <span className="operator">=</span> <span className="signal">top</span>; <span className="signal">y</span> <span className="operator">&lt;</span> <span className="signal">bottom</span>; <span className="signal">y</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPixel</span><span className="operator">*</span> <span className="signal">dst</span> <span className="operator">=</span> <span className="signal">fDevice</span>.<span className="signal">getAddr</span>(<span className="signal">x_left</span>, <span className="signal">y</span>);&nbsp;&nbsp;<span className="comment">// Get row pointer</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">x</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">x</span> <span className="operator">&lt;</span> <span className="signal">width</span>; <span className="signal">x</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">x</span>] <span className="operator">=</span> <span className="signal">blend</span>(<span className="signal">src</span>[<span className="signal">x</span>], <span className="signal">dst</span>[<span className="signal">x</span>]);&nbsp;&nbsp;<span className="comment">// Sequential memory access</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+                </pre>
 
                 <div className="info-box">
                   <strong>Cache Efficiency:</strong> Sequential row access achieves 95%+ cache hit rate. The CPU prefetcher detects the linear pattern and loads upcoming pixels into L1 cache before they're needed, hiding memory latency.
@@ -664,15 +678,17 @@ for (int y = top; y < bottom; y++) {
                 <p>
                   The blend fast paths eliminate unnecessary writes. When the blend mode is <code>dst</code> (destination unchanged) or when alpha is 0, the engine skips the entire scanline:
                 </p>
-                <pre className="code-block">{`if (blend == dst_mode) {
-    // No write needed - destination unchanged
-    return;  // Skip entire scanline
-}
-
-// Otherwise, process normally
-for (int i = 0; i < n; i++) {
-    dst[i] = blend(src[i], dst[i]);
-}`}</pre>
+                <pre className="code-block">
+  <span className="keyword">if</span> (<span className="signal">blend</span> <span className="operator">==</span> <span className="signal">dst_mode</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// No write needed - destination unchanged</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;&nbsp;&nbsp;<span className="comment">// Skip entire scanline</span><br/>
+  &#125;<br/>
+  <br/>
+  <span className="comment">// Otherwise, process normally</span><br/>
+  <span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">n</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">blend</span>(<span className="signal">src</span>[<span className="signal">i</span>], <span className="signal">dst</span>[<span className="signal">i</span>]);<br/>
+  &#125;
+                </pre>
                 <p>
                   <strong>Impact:</strong> In multi-layer rendering (e.g., UI with transparent overlays), 30-50% of draw calls can skip writing entirely. This reduces memory bandwidth usage and cache pollution.
                 </p>
@@ -683,15 +699,17 @@ for (int i = 0; i < n; i++) {
                 <p>
                   Shaders generate colors into a temporary buffer, which is then blended:
                 </p>
-                <pre className="code-block">{`// Shader fills row buffer
-GPixel row_buffer[width];
-shader->shadeRow(x, y, width, row_buffer);
-
-// Blend from buffer to framebuffer
-GPixel* dst = fDevice.getAddr(x, y);
-for (int i = 0; i < width; i++) {
-    dst[i] = blend(row_buffer[i], dst[i]);
-}`}</pre>
+                <pre className="code-block">
+  <span className="comment">// Shader fills row buffer</span><br/>
+  <span className="signal">GPixel</span> <span className="signal">row_buffer</span>[<span className="signal">width</span>];<br/>
+  <span className="signal">shader</span><span className="operator">-&gt;</span><span className="signal">shadeRow</span>(<span className="signal">x</span>, <span className="signal">y</span>, <span className="signal">width</span>, <span className="signal">row_buffer</span>);<br/>
+  <br/>
+  <span className="comment">// Blend from buffer to framebuffer</span><br/>
+  <span className="signal">GPixel</span><span className="operator">*</span> <span className="signal">dst</span> <span className="operator">=</span> <span className="signal">fDevice</span>.<span className="signal">getAddr</span>(<span className="signal">x</span>, <span className="signal">y</span>);<br/>
+  <span className="keyword">for</span> (<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">width</span>; <span className="signal">i</span><span className="operator">++</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">blend</span>(<span className="signal">row_buffer</span>[<span className="signal">i</span>], <span className="signal">dst</span>[<span className="signal">i</span>]);<br/>
+  &#125;
+                </pre>
                 <p>
                   <strong>Why separate?</strong> This allows shaders to compute colors optimally (e.g., vectorized gradient interpolation) without interleaving with blend operations. The temporary buffer stays in L1 cache, so the extra copy is nearly free (~1 cycle per pixel).
                 </p>

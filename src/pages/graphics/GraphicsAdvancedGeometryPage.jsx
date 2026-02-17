@@ -398,78 +398,80 @@ function GraphicsAdvancedGeometryPage() {
 
               <h4>C++ Implementation</h4>
               <p><strong>File:</strong> <code>my_canvas.cpp</code> (lines 206-258)</p>
-              <pre className="code-block">{`// Quadratic Bezier tessellation
-case GPath::kQuad: {
-    GPoint A = tempPoints[0];
-    GPoint B = tempPoints[1];
-    GPoint C = tempPoints[2];
-
-    // Calculate deviation vector E
-    GPoint E = (A - 2*B + C)*.25f;
-    float mag_E = sqrt(E.x*E.x + E.y*E.y);
-
-    // Adaptive segment count
-    int num_segs = (int)ceil(sqrt(mag_E*4));
-
-    storage[num_segs + 1];
-    float dt = 1.0f/num_segs;
-    float t = 0;
-    storage[0] = A;
-
-    // Evaluate curve at t values
-    for(int i = 1; i < num_segs; i++){
-        t += dt;
-        storage[i] = ((1-t)*(1-t)*A + 2*t*(1-t)*B + t*t*C);
-    }
-    storage[num_segs] = C;
-
-    // Convert to edges
-    for(int i = 0; i < num_segs; i++){
-        Edge::clip(storage[i], storage[i+1], fDevice, edges);
-    }
-    break;
-}
-
-// Cubic Bezier tessellation
-case GPath::kCubic: {
-    GPoint A = tempPoints[0];
-    GPoint B = tempPoints[1];
-    GPoint C = tempPoints[2];
-    GPoint D = tempPoints[3];
-
-    // Calculate two deviation vectors
-    GPoint E0 = A - 2*B + C;
-    GPoint E1 = B - 2*C + D;
-    GPoint E;
-    E.x = max(abs(E0.x), abs(E1.x));
-    E.y = max(abs(E0.y), abs(E1.y));
-
-    float mag_E = sqrt(E.x*E.x + E.y*E.y);
-
-    // Adaptive segment count (higher factor for cubic)
-    int num_segs = (int)ceil(sqrt((3*mag_E)*16));
-
-    storage[num_segs + 1];
-    float dt = 1.0f/num_segs;
-    float t = 0;
-    storage[0] = A;
-
-    // Evaluate cubic Bezier equation
-    for(int i = 1; i < num_segs; i++){
-        t += dt;
-        storage[i] = ((1-t)*(1-t)*(1-t) * A +
-                      3 * (1-t)*(1-t) * t * B +
-                      3 * (1-t) * t*t * C +
-                      t*t*t * D);
-    }
-    storage[num_segs] = D;
-
-    // Convert to edges
-    for(int i = 0; i < num_segs; i++){
-        Edge::clip(storage[i], storage[i+1], fDevice, edges);
-    }
-    break;
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// Quadratic Bezier tessellation</span><br/>
+  <span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kQuad</span>: &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">A</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">0</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">B</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">C</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">2</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate deviation vector E</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">E</span> <span className="operator">=</span> (<span className="signal">A</span> <span className="operator">-</span> <span className="number">2</span><span className="operator">*</span><span className="signal">B</span> <span className="operator">+</span> <span className="signal">C</span>)<span className="operator">*</span><span className="number">.25f</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">mag_E</span> <span className="operator">=</span> <span className="signal">sqrt</span>(<span className="signal">E</span>.<span className="signal">x</span><span className="operator">*</span><span className="signal">E</span>.<span className="signal">x</span> <span className="operator">+</span> <span className="signal">E</span>.<span className="signal">y</span><span className="operator">*</span><span className="signal">E</span>.<span className="signal">y</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Adaptive segment count</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">num_segs</span> <span className="operator">=</span> (<span className="keyword">int</span>)<span className="signal">ceil</span>(<span className="signal">sqrt</span>(<span className="signal">mag_E</span><span className="operator">*</span><span className="number">4</span>));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">num_segs</span> <span className="operator">+</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">dt</span> <span className="operator">=</span> <span className="number">1.0f</span><span className="operator">/</span><span className="signal">num_segs</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="number">0</span>] <span className="operator">=</span> <span className="signal">A</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Evaluate curve at t values</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">1</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">num_segs</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t</span> <span className="operator">+=</span> <span className="signal">dt</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">i</span>] <span className="operator">=</span> ((<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span><span className="signal">A</span> <span className="operator">+</span> <span className="number">2</span><span className="operator">*</span><span className="signal">t</span><span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span><span className="signal">B</span> <span className="operator">+</span> <span className="signal">t</span><span className="operator">*</span><span className="signal">t</span><span className="operator">*</span><span className="signal">C</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">num_segs</span>] <span className="operator">=</span> <span className="signal">C</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Convert to edges</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">num_segs</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span>::<span className="signal">clip</span>(<span className="signal">storage</span>[<span className="signal">i</span>], <span className="signal">storage</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>], <span className="signal">fDevice</span>, <span className="signal">edges</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &#125;<br/>
+  <br/>
+  <span className="comment">// Cubic Bezier tessellation</span><br/>
+  <span className="keyword">case</span> <span className="signal">GPath</span>::<span className="signal">kCubic</span>: &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">A</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">0</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">B</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">C</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">D</span> <span className="operator">=</span> <span className="signal">tempPoints</span>[<span className="number">3</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Calculate two deviation vectors</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">E0</span> <span className="operator">=</span> <span className="signal">A</span> <span className="operator">-</span> <span className="number">2</span><span className="operator">*</span><span className="signal">B</span> <span className="operator">+</span> <span className="signal">C</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">E1</span> <span className="operator">=</span> <span className="signal">B</span> <span className="operator">-</span> <span className="number">2</span><span className="operator">*</span><span className="signal">C</span> <span className="operator">+</span> <span className="signal">D</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">E</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">E</span>.<span className="signal">x</span> <span className="operator">=</span> <span className="signal">max</span>(<span className="signal">abs</span>(<span className="signal">E0</span>.<span className="signal">x</span>), <span className="signal">abs</span>(<span className="signal">E1</span>.<span className="signal">x</span>));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">E</span>.<span className="signal">y</span> <span className="operator">=</span> <span className="signal">max</span>(<span className="signal">abs</span>(<span className="signal">E0</span>.<span className="signal">y</span>), <span className="signal">abs</span>(<span className="signal">E1</span>.<span className="signal">y</span>));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">mag_E</span> <span className="operator">=</span> <span className="signal">sqrt</span>(<span className="signal">E</span>.<span className="signal">x</span><span className="operator">*</span><span className="signal">E</span>.<span className="signal">x</span> <span className="operator">+</span> <span className="signal">E</span>.<span className="signal">y</span><span className="operator">*</span><span className="signal">E</span>.<span className="signal">y</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Adaptive segment count (higher factor for cubic)</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">num_segs</span> <span className="operator">=</span> (<span className="keyword">int</span>)<span className="signal">ceil</span>(<span className="signal">sqrt</span>((<span className="number">3</span><span className="operator">*</span><span className="signal">mag_E</span>)<span className="operator">*</span><span className="number">16</span>));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">num_segs</span> <span className="operator">+</span> <span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">dt</span> <span className="operator">=</span> <span className="number">1.0f</span><span className="operator">/</span><span className="signal">num_segs</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">t</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="number">0</span>] <span className="operator">=</span> <span className="signal">A</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Evaluate cubic Bezier equation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">1</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">num_segs</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t</span> <span className="operator">+=</span> <span className="signal">dt</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">i</span>] <span className="operator">=</span> ((<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>) <span className="operator">*</span> <span className="signal">A</span> <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="number">3</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>) <span className="operator">*</span> <span className="signal">t</span> <span className="operator">*</span> <span className="signal">B</span> <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="number">3</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">t</span>) <span className="operator">*</span> <span className="signal">t</span><span className="operator">*</span><span className="signal">t</span> <span className="operator">*</span> <span className="signal">C</span> <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t</span><span className="operator">*</span><span className="signal">t</span><span className="operator">*</span><span className="signal">t</span> <span className="operator">*</span> <span className="signal">D</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">storage</span>[<span className="signal">num_segs</span>] <span className="operator">=</span> <span className="signal">D</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Convert to edges</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">num_segs</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span>::<span className="signal">clip</span>(<span className="signal">storage</span>[<span className="signal">i</span>], <span className="signal">storage</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>], <span className="signal">fDevice</span>, <span className="signal">edges</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">break</span>;<br/>
+  &#125;
+              </pre>
             </div>
 
             {/* Tab Panel 2: Triangle Meshes */}
@@ -521,52 +523,54 @@ case GPath::kCubic: {
 
               <h4>C++ Implementation</h4>
               <p><strong>File:</strong> <code>my_canvas.cpp</code> (lines 380-414)</p>
-              <pre className="code-block">{`// drawMesh: Texture-only mode
-if(colors == nullptr && texs != nullptr){
-    int n = 0;
-    for(int i = 0; i < count; i++){
-        // Extract triangle vertices
-        GPoint p0 = verts[indices[n+0]];
-        GPoint p1 = verts[indices[n+1]];
-        GPoint p2 = verts[indices[n+2]];
-
-        // Extract texture coordinates
-        GPoint t0 = texs[indices[n+0]];
-        GPoint t1 = texs[indices[n+1]];
-        GPoint t2 = texs[indices[n+2]];
-
-        GPoint points[] = {p0, p1, p2};
-
-        // Build texture coordinate matrix
-        GMatrix T = GMatrix(
-            t1.x - t0.x,    t2.x - t0.x,    t0.x,
-            t1.y - t0.y,    t2.y - t0.y,    t0.y
-        );
-
-        // Build position matrix
-        GMatrix P = GMatrix(
-            p1.x - p0.x,    p2.x - p0.x,    p0.x,
-            p1.y - p0.y,    p2.y - p0.y,    p0.y
-        );
-
-        // Get the base shader from paint
-        auto real_sh = paint.getShader();
-
-        // Invert T to map from screen to texture space
-        GMatrix invT;
-        if(auto inverted = T.invert()){
-            invT = *inverted;
-        }
-
-        // Create proxy shader with composed transformation
-        ProxyShader proxy(real_sh,(P * invT));
-        GPaint p(&proxy);
-
-        // Render the triangle
-        drawConvexPolygon(points, 3, p);
-        n += 3;
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// drawMesh: Texture-only mode</span><br/>
+  <span className="keyword">if</span>(<span className="signal">colors</span> <span className="operator">==</span> <span className="keyword">nullptr</span> <span className="operator">&amp;&amp;</span> <span className="signal">texs</span> <span className="operator">!=</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">n</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">count</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Extract triangle vertices</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p0</span> <span className="operator">=</span> <span className="signal">verts</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">0</span>]];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p1</span> <span className="operator">=</span> <span className="signal">verts</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">1</span>]];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p2</span> <span className="operator">=</span> <span className="signal">verts</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">2</span>]];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Extract texture coordinates</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">t0</span> <span className="operator">=</span> <span className="signal">texs</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">0</span>]];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">t1</span> <span className="operator">=</span> <span className="signal">texs</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">1</span>]];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">t2</span> <span className="operator">=</span> <span className="signal">texs</span>[<span className="signal">indices</span>[<span className="signal">n</span><span className="operator">+</span><span className="number">2</span>]];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">points</span>[] <span className="operator">=</span> &#123;<span className="signal">p0</span>, <span className="signal">p1</span>, <span className="signal">p2</span>&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Build texture coordinate matrix</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">T</span> <span className="operator">=</span> <span className="signal">GMatrix</span>(<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">t0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t2</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">t0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t0</span>.<span className="signal">x</span>,<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">t0</span>.<span className="signal">y</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t2</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">t0</span>.<span className="signal">y</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">t0</span>.<span className="signal">y</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Build position matrix</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">P</span> <span className="operator">=</span> <span className="signal">GMatrix</span>(<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p2</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">x</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p0</span>.<span className="signal">x</span>,<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">y</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p2</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">y</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p0</span>.<span className="signal">y</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Get the base shader from paint</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">auto</span> <span className="signal">real_sh</span> <span className="operator">=</span> <span className="signal">paint</span>.<span className="signal">getShader</span>();<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Invert T to map from screen to texture space</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">invT</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="keyword">auto</span> <span className="signal">inverted</span> <span className="operator">=</span> <span className="signal">T</span>.<span className="signal">invert</span>())&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">invT</span> <span className="operator">=</span> <span className="operator">*</span><span className="signal">inverted</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Create proxy shader with composed transformation</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">ProxyShader</span> <span className="signal">proxy</span>(<span className="signal">real_sh</span>,(<span className="signal">P</span> <span className="operator">*</span> <span className="signal">invT</span>));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPaint</span> <span className="signal">p</span>(<span className="operator">&amp;</span><span className="signal">proxy</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Render the triangle</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">drawConvexPolygon</span>(<span className="signal">points</span>, <span className="number">3</span>, <span className="signal">p</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">n</span> <span className="operator">+=</span> <span className="number">3</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Interactive Demo</h4>
               <p className="demo-instruction">
@@ -615,96 +619,98 @@ if(colors == nullptr && texs != nullptr){
 
               <h4>C++ Implementation</h4>
               <p><strong>File:</strong> <code>my_canvas.cpp</code> (lines 482-563)</p>
-              <pre className="code-block">{`void MyCanvas::drawQuad(const GPoint verts[4], const GColor colors[4],
-                        const GPoint texs[4], int level, const GPaint& paint)
-{
-    // Allocate grid storage
-    GPoint** new_quads = new GPoint*[level+2];
-    GColor** new_colors = new GColor*[level+2];
-    GPoint** new_texs = new GPoint*[level+2];
-
-    // Generate interpolated grid
-    for(int i = 0; i < level + 2; i++){
-        float u = float(i) / (1 + level);
-
-        new_quads[i] = new GPoint[level + 2];
-        new_colors[i] = new GColor[level + 2];
-        new_texs[i] = new GPoint[level + 2];
-
-        for(int j = 0; j < level + 2; j++){
-            float v = float(j) / (1 + level);
-
-            // Bilinear interpolation for position
-            GPoint p = (1-u)*(1-v)* verts[0] +
-                       u * (1-v) * verts[1] +
-                       u * v * verts[2] +
-                       (1-u) * v * verts[3];
-            new_quads[i][j] = p;
-
-            // Bilinear interpolation for color
-            if(colors != nullptr){
-                GColor c = (1-u)*(1-v)* colors[0] +
-                           u * (1-v) * colors[1] +
-                           u * v * colors[2] +
-                           (1-u) * v * colors[3];
-                new_colors[i][j] = c;
-            }
-
-            // Bilinear interpolation for texture coordinates
-            if(texs != nullptr){
-                GPoint t = (1-u)*(1-v)* texs[0] +
-                           u * (1-v) * texs[1] +
-                           u * v * texs[2] +
-                           (1-u) * v * texs[3];
-                new_texs[i][j] = t;
-            }
-        }
-    }
-
-    // Render grid as triangles
-    for(int i = 0; i < level + 1; i++){
-        for(int j = 0; j < level + 1; j++){
-            // Two triangles per grid cell
-            GPoint mesh_verts[6] = {
-                new_quads[i][j], new_quads[i+1][j], new_quads[i][j+1],
-                new_quads[i+1][j], new_quads[i+1][j+1], new_quads[i][j+1]
-            };
-
-            GColor mesh_colors[6];
-            if(colors != nullptr){
-                mesh_colors[0] = new_colors[i][j];
-                mesh_colors[1] = new_colors[i+1][j];
-                mesh_colors[2] = new_colors[i][j+1];
-                mesh_colors[3] = new_colors[i+1][j];
-                mesh_colors[4] = new_colors[i+1][j+1];
-                mesh_colors[5] = new_colors[i][j+1];
-            }
-
-            GPoint mesh_texs[6];
-            if(texs != nullptr){
-                mesh_texs[0] = new_texs[i][j];
-                mesh_texs[1] = new_texs[i+1][j];
-                mesh_texs[2] = new_texs[i][j+1];
-                mesh_texs[3] = new_texs[i+1][j];
-                mesh_texs[4] = new_texs[i+1][j+1];
-                mesh_texs[5] = new_texs[i][j+1];
-            }
-
-            int indices[] = {0, 1, 2, 3, 4, 5};
-
-            // Render based on available attributes
-            if(colors == nullptr){
-                drawMesh(mesh_verts, nullptr, mesh_texs, 2, indices, paint);
-            }
-            else if(texs == nullptr){
-                drawMesh(mesh_verts, mesh_colors, nullptr, 2, indices, paint);
-            }
-            else{
-                drawMesh(mesh_verts, mesh_colors, mesh_texs, 2, indices, paint);
-            }
-        }
-    }
-}`}</pre>
+              <pre className="code-block">
+  <span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">drawQuad</span>(<span className="keyword">const</span> <span className="signal">GPoint</span> <span className="signal">verts</span>[<span className="number">4</span>], <span className="keyword">const</span> <span className="signal">GColor</span> <span className="signal">colors</span>[<span className="number">4</span>],<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">const</span> <span className="signal">GPoint</span> <span className="signal">texs</span>[<span className="number">4</span>], <span className="keyword">int</span> <span className="signal">level</span>, <span className="keyword">const</span> <span className="signal">GPaint</span><span className="operator">&amp;</span> <span className="signal">paint</span>)<br/>
+  &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Allocate grid storage</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span><span className="operator">**</span> <span className="signal">new_quads</span> <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GPoint</span><span className="operator">*</span>[<span className="signal">level</span><span className="operator">+</span><span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span><span className="operator">**</span> <span className="signal">new_colors</span> <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GColor</span><span className="operator">*</span>[<span className="signal">level</span><span className="operator">+</span><span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span><span className="operator">**</span> <span className="signal">new_texs</span> <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GPoint</span><span className="operator">*</span>[<span className="signal">level</span><span className="operator">+</span><span className="number">2</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Generate interpolated grid</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">level</span> <span className="operator">+</span> <span className="number">2</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">u</span> <span className="operator">=</span> <span className="keyword">float</span>(<span className="signal">i</span>) <span className="operator">/</span> (<span className="number">1</span> <span className="operator">+</span> <span className="signal">level</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_quads</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GPoint</span>[<span className="signal">level</span> <span className="operator">+</span> <span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_colors</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GColor</span>[<span className="signal">level</span> <span className="operator">+</span> <span className="number">2</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_texs</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="keyword">new</span> <span className="signal">GPoint</span>[<span className="signal">level</span> <span className="operator">+</span> <span className="number">2</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">j</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">j</span> <span className="operator">&lt;</span> <span className="signal">level</span> <span className="operator">+</span> <span className="number">2</span>; <span className="signal">j</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">v</span> <span className="operator">=</span> <span className="keyword">float</span>(<span className="signal">j</span>) <span className="operator">/</span> (<span className="number">1</span> <span className="operator">+</span> <span className="signal">level</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Bilinear interpolation for position</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p</span> <span className="operator">=</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>)<span className="operator">*</span> <span className="signal">verts</span>[<span className="number">0</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>) <span className="operator">*</span> <span className="signal">verts</span>[<span className="number">1</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">verts</span>[<span className="number">2</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>) <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">verts</span>[<span className="number">3</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_quads</span>[<span className="signal">i</span>][<span className="signal">j</span>] <span className="operator">=</span> <span className="signal">p</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Bilinear interpolation for color</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">colors</span> <span className="operator">!=</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">c</span> <span className="operator">=</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>)<span className="operator">*</span> <span className="signal">colors</span>[<span className="number">0</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>) <span className="operator">*</span> <span className="signal">colors</span>[<span className="number">1</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">colors</span>[<span className="number">2</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>) <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">colors</span>[<span className="number">3</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_colors</span>[<span className="signal">i</span>][<span className="signal">j</span>] <span className="operator">=</span> <span className="signal">c</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Bilinear interpolation for texture coordinates</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">texs</span> <span className="operator">!=</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">t</span> <span className="operator">=</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>)<span className="operator">*</span>(<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>)<span className="operator">*</span> <span className="signal">texs</span>[<span className="number">0</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> (<span className="number">1</span><span className="operator">-</span><span className="signal">v</span>) <span className="operator">*</span> <span className="signal">texs</span>[<span className="number">1</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">u</span> <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">texs</span>[<span className="number">2</span>] <span className="operator">+</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="number">1</span><span className="operator">-</span><span className="signal">u</span>) <span className="operator">*</span> <span className="signal">v</span> <span className="operator">*</span> <span className="signal">texs</span>[<span className="number">3</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_texs</span>[<span className="signal">i</span>][<span className="signal">j</span>] <span className="operator">=</span> <span className="signal">t</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Render grid as triangles</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">level</span> <span className="operator">+</span> <span className="number">1</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">j</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">j</span> <span className="operator">&lt;</span> <span className="signal">level</span> <span className="operator">+</span> <span className="number">1</span>; <span className="signal">j</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Two triangles per grid cell</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">mesh_verts</span>[<span className="number">6</span>] <span className="operator">=</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_quads</span>[<span className="signal">i</span>][<span className="signal">j</span>], <span className="signal">new_quads</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>], <span className="signal">new_quads</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>],<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_quads</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>], <span className="signal">new_quads</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>], <span className="signal">new_quads</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>]<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GColor</span> <span className="signal">mesh_colors</span>[<span className="number">6</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">colors</span> <span className="operator">!=</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">0</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">1</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">2</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">3</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">4</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_colors</span>[<span className="number">5</span>] <span className="operator">=</span> <span className="signal">new_colors</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">mesh_texs</span>[<span className="number">6</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">texs</span> <span className="operator">!=</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">0</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">1</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">2</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">3</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">4</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span><span className="operator">+</span><span className="number">1</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mesh_texs</span>[<span className="number">5</span>] <span className="operator">=</span> <span className="signal">new_texs</span>[<span className="signal">i</span>][<span className="signal">j</span><span className="operator">+</span><span className="number">1</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">indices</span>[] <span className="operator">=</span> &#123;<span className="number">0</span>, <span className="number">1</span>, <span className="number">2</span>, <span className="number">3</span>, <span className="number">4</span>, <span className="number">5</span>&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Render based on available attributes</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">colors</span> <span className="operator">==</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">drawMesh</span>(<span className="signal">mesh_verts</span>, <span className="keyword">nullptr</span>, <span className="signal">mesh_texs</span>, <span className="number">2</span>, <span className="signal">indices</span>, <span className="signal">paint</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span> <span className="keyword">if</span>(<span className="signal">texs</span> <span className="operator">==</span> <span className="keyword">nullptr</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">drawMesh</span>(<span className="signal">mesh_verts</span>, <span className="signal">mesh_colors</span>, <span className="keyword">nullptr</span>, <span className="number">2</span>, <span className="signal">indices</span>, <span className="signal">paint</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">else</span>&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">drawMesh</span>(<span className="signal">mesh_verts</span>, <span className="signal">mesh_colors</span>, <span className="signal">mesh_texs</span>, <span className="number">2</span>, <span className="signal">indices</span>, <span className="signal">paint</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;
+              </pre>
 
               <h4>Demo Note</h4>
               <p className="demo-instruction">
@@ -748,96 +754,104 @@ if(colors == nullptr && texs != nullptr){
 
               <h4>ProxyShader Implementation</h4>
               <p><strong>File:</strong> <code>shader_ops.h</code> (lines 629-645)</p>
-              <pre className="code-block">{`class ProxyShader : public GShader {
-    GShader* fRealShader;
-    GMatrix  fExtraTransform;
-public:
-    ProxyShader(GShader* shader, const GMatrix& extraTransform)
-        : fRealShader(shader), fExtraTransform(extraTransform) {}
-
-    bool isOpaque() override {
-        return fRealShader->isOpaque();
-    }
-
-    // Chain transformations: apply extraTransform after ctm
-    bool setContext(const GMatrix& ctm) override {
-        return fRealShader->setContext(ctm * fExtraTransform);
-    }
-
-    // Delegate rendering to wrapped shader
-    void shadeRow(int x, int y, int count, GPixel row[]) override {
-        fRealShader->shadeRow(x, y, count, row);
-    }
-};`}</pre>
+              <pre className="code-block">
+  <span className="keyword">class</span> <span className="signal">ProxyShader</span> : <span className="keyword">public</span> <span className="signal">GShader</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GShader</span><span className="operator">*</span> <span className="signal">fRealShader</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span>&nbsp;&nbsp;<span className="signal">fExtraTransform</span>;<br/>
+  <span className="keyword">public</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">ProxyShader</span>(<span className="signal">GShader</span><span className="operator">*</span> <span className="signal">shader</span>, <span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">extraTransform</span>)<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span className="signal">fRealShader</span>(<span className="signal">shader</span>), <span className="signal">fExtraTransform</span>(<span className="signal">extraTransform</span>) &#123;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">bool</span> <span className="signal">isOpaque</span>() <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">fRealShader</span><span className="operator">-&gt;</span><span className="signal">isOpaque</span>();<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Chain transformations: apply extraTransform after ctm</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">bool</span> <span className="signal">setContext</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">ctm</span>) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">fRealShader</span><span className="operator">-&gt;</span><span className="signal">setContext</span>(<span className="signal">ctm</span> <span className="operator">*</span> <span className="signal">fExtraTransform</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Delegate rendering to wrapped shader</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">count</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">fRealShader</span><span className="operator">-&gt;</span><span className="signal">shadeRow</span>(<span className="signal">x</span>, <span className="signal">y</span>, <span className="signal">count</span>, <span className="signal">row</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;;
+              </pre>
 
               <h4>ComposeShader Implementation</h4>
               <p><strong>File:</strong> <code>shader_ops.h</code> (lines 647-679)</p>
-              <pre className="code-block">{`class ComposeShader : public GShader {
-    GShader* sh1;
-    GShader* sh2;
-public:
-    // Modulate two pixels by multiplying components
-    GPixel modulate(GPixel p1, GPixel p2){
-        int new_a = GRoundToInt(div255(GPixel_GetA(p1) * GPixel_GetA(p2)));
-        int new_r = GRoundToInt(div255(GPixel_GetR(p1) * GPixel_GetR(p2)));
-        int new_g = GRoundToInt(div255(GPixel_GetG(p1) * GPixel_GetG(p2)));
-        int new_b = GRoundToInt(div255(GPixel_GetB(p1) * GPixel_GetB(p2)));
-
-        return GPixel_PackARGB(new_a, new_r, new_g, new_b);
-    }
-
-    ComposeShader(GShader* shader1, GShader* shader2)
-        : sh1(shader1), sh2(shader2) {}
-
-    // Opaque only if both shaders are opaque
-    bool isOpaque() override {
-        return sh1->isOpaque() && sh2->isOpaque();
-    }
-
-    // Both shaders must set context successfully
-    bool setContext(const GMatrix& ctm) override {
-        return sh1->setContext(ctm) && sh2->setContext(ctm);
-    }
-
-    // Shade with both shaders and modulate results
-    void shadeRow(int x, int y, int c, GPixel row[]) override {
-        GPixel row1[c];
-        GPixel row2[c];
-
-        // Get colors from both shaders
-        sh1->shadeRow(x, y, c, row1);
-        sh2->shadeRow(x, y, c, row2);
-
-        // Modulate each pixel
-        for(int i = 0; i < c; i++){
-            row[i] = modulate(row1[i], row2[i]);
-        }
-    }
-};`}</pre>
+              <pre className="code-block">
+  <span className="keyword">class</span> <span className="signal">ComposeShader</span> : <span className="keyword">public</span> <span className="signal">GShader</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GShader</span><span className="operator">*</span> <span className="signal">sh1</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GShader</span><span className="operator">*</span> <span className="signal">sh2</span>;<br/>
+  <span className="keyword">public</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Modulate two pixels by multiplying components</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPixel</span> <span className="signal">modulate</span>(<span className="signal">GPixel</span> <span className="signal">p1</span>, <span className="signal">GPixel</span> <span className="signal">p2</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">new_a</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">div255</span>(<span className="signal">GPixel_GetA</span>(<span className="signal">p1</span>) <span className="operator">*</span> <span className="signal">GPixel_GetA</span>(<span className="signal">p2</span>)));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">new_r</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">div255</span>(<span className="signal">GPixel_GetR</span>(<span className="signal">p1</span>) <span className="operator">*</span> <span className="signal">GPixel_GetR</span>(<span className="signal">p2</span>)));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">new_g</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">div255</span>(<span className="signal">GPixel_GetG</span>(<span className="signal">p1</span>) <span className="operator">*</span> <span className="signal">GPixel_GetG</span>(<span className="signal">p2</span>)));<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">new_b</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">div255</span>(<span className="signal">GPixel_GetB</span>(<span className="signal">p1</span>) <span className="operator">*</span> <span className="signal">GPixel_GetB</span>(<span className="signal">p2</span>)));<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GPixel_PackARGB</span>(<span className="signal">new_a</span>, <span className="signal">new_r</span>, <span className="signal">new_g</span>, <span className="signal">new_b</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">ComposeShader</span>(<span className="signal">GShader</span><span className="operator">*</span> <span className="signal">shader1</span>, <span className="signal">GShader</span><span className="operator">*</span> <span className="signal">shader2</span>)<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span className="signal">sh1</span>(<span className="signal">shader1</span>), <span className="signal">sh2</span>(<span className="signal">shader2</span>) &#123;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Opaque only if both shaders are opaque</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">bool</span> <span className="signal">isOpaque</span>() <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">sh1</span><span className="operator">-&gt;</span><span className="signal">isOpaque</span>() <span className="operator">&amp;&amp;</span> <span className="signal">sh2</span><span className="operator">-&gt;</span><span className="signal">isOpaque</span>();<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Both shaders must set context successfully</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">bool</span> <span className="signal">setContext</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">ctm</span>) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">sh1</span><span className="operator">-&gt;</span><span className="signal">setContext</span>(<span className="signal">ctm</span>) <span className="operator">&amp;&amp;</span> <span className="signal">sh2</span><span className="operator">-&gt;</span><span className="signal">setContext</span>(<span className="signal">ctm</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Shade with both shaders and modulate results</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">c</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span> &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPixel</span> <span className="signal">row1</span>[<span className="signal">c</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPixel</span> <span className="signal">row2</span>[<span className="signal">c</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Get colors from both shaders</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">sh1</span><span className="operator">-&gt;</span><span className="signal">shadeRow</span>(<span className="signal">x</span>, <span className="signal">y</span>, <span className="signal">c</span>, <span className="signal">row1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">sh2</span><span className="operator">-&gt;</span><span className="signal">shadeRow</span>(<span className="signal">x</span>, <span className="signal">y</span>, <span className="signal">c</span>, <span className="signal">row2</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Modulate each pixel</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">c</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="signal">modulate</span>(<span className="signal">row1</span>[<span className="signal">i</span>], <span className="signal">row2</span>[<span className="signal">i</span>]);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;;
+              </pre>
 
               <h4>Usage Patterns</h4>
               <p>
                 <strong>ProxyShader in mesh rendering:</strong>
               </p>
-              <pre className="code-block">{`// Transform texture shader to triangle space
-auto real_sh = paint.getShader();
-GMatrix invT = T.invert();
-ProxyShader proxy(real_sh, (P * invT));
-GPaint p(&proxy);
-drawConvexPolygon(points, 3, p);`}</pre>
+              <pre className="code-block">
+  <span className="comment">// Transform texture shader to triangle space</span><br/>
+  <span className="keyword">auto</span> <span className="signal">real_sh</span> <span className="operator">=</span> <span className="signal">paint</span>.<span className="signal">getShader</span>();<br/>
+  <span className="signal">GMatrix</span> <span className="signal">invT</span> <span className="operator">=</span> <span className="signal">T</span>.<span className="signal">invert</span>();<br/>
+  <span className="signal">ProxyShader</span> <span className="signal">proxy</span>(<span className="signal">real_sh</span>, (<span className="signal">P</span> <span className="operator">*</span> <span className="signal">invT</span>));<br/>
+  <span className="signal">GPaint</span> <span className="signal">p</span>(<span className="operator">&amp;</span><span className="signal">proxy</span>);<br/>
+  <span className="signal">drawConvexPolygon</span>(<span className="signal">points</span>, <span className="number">3</span>, <span className="signal">p</span>);
+              </pre>
 
               <p>
                 <strong>ComposeShader for textured color mesh:</strong>
               </p>
-              <pre className="code-block">{`// Combine color interpolation with texture
-auto color_shader = GCreateTriColorShader(points, colors, count);
-auto texture_shader = GCreateProxyShader(real_sh, (P * invT));
-auto compose_shader = GCreateComposeShader(
-    color_shader.get(),
-    texture_shader.get()
-);
-GPaint p(compose_shader.get());
-drawConvexPolygon(points, 3, p);`}</pre>
+              <pre className="code-block">
+  <span className="comment">// Combine color interpolation with texture</span><br/>
+  <span className="keyword">auto</span> <span className="signal">color_shader</span> <span className="operator">=</span> <span className="signal">GCreateTriColorShader</span>(<span className="signal">points</span>, <span className="signal">colors</span>, <span className="signal">count</span>);<br/>
+  <span className="keyword">auto</span> <span className="signal">texture_shader</span> <span className="operator">=</span> <span className="signal">GCreateProxyShader</span>(<span className="signal">real_sh</span>, (<span className="signal">P</span> <span className="operator">*</span> <span className="signal">invT</span>));<br/>
+  <span className="keyword">auto</span> <span className="signal">compose_shader</span> <span className="operator">=</span> <span className="signal">GCreateComposeShader</span>(<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">color_shader</span>.<span className="signal">get</span>(),<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">texture_shader</span>.<span className="signal">get</span>()<br/>
+  );<br/>
+  <span className="signal">GPaint</span> <span className="signal">p</span>(<span className="signal">compose_shader</span>.<span className="signal">get</span>());<br/>
+  <span className="signal">drawConvexPolygon</span>(<span className="signal">points</span>, <span className="number">3</span>, <span className="signal">p</span>);
+              </pre>
 
               <h4>Demo Note</h4>
               <p className="demo-instruction">

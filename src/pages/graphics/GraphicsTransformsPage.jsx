@@ -334,9 +334,11 @@ function GraphicsTransformsPage() {
                 operations using a 3×3 matrix with homogeneous coordinates. The bottom row is always
                 [0, 0, 1] and is implied but not stored:
               </p>
-              <pre className="code-block">{`[ a  c  e ]     [ 0 2 4 ]  <-- indices
-[ b  d  f ]     [ 1 3 5 ]
-[ 0  0  1 ]  <-- implied`}</pre>
+              <pre className="code-block">
+[ <span className="signal">a</span>  <span className="signal">c</span>  <span className="signal">e</span> ]     [ <span className="number">0</span> <span className="number">2</span> <span className="number">4</span> ]  <span className="comment">&lt;-- indices</span><br/>
+[ <span className="signal">b</span>  <span className="signal">d</span>  <span className="signal">f</span> ]     [ <span className="number">1</span> <span className="number">3</span> <span className="number">5</span> ]<br/>
+[ <span className="number">0</span>  <span className="number">0</span>  <span className="number">1</span> ]  <span className="comment">&lt;-- implied</span>
+              </pre>
 
               <p>
                 When transforming a point (x, y) by this matrix, the resulting point (x', y') is computed as:
@@ -357,20 +359,22 @@ function GraphicsTransformsPage() {
                 These matrices can be composed by multiplication to build complex transformations.
               </p>
 
-              <pre className="code-block">{`GMatrix GMatrix::Translate(float tx, float ty){
-    GMatrix translate_matrix = GMatrix((float)1, (float)0, tx, (float)0, (float)1, ty);
-    return translate_matrix;
-}
-
-GMatrix GMatrix::Scale(float sx, float sy){
-    GMatrix scale_matrix = GMatrix(sx, (float)0, (float)0, (float)0, sy, (float)0);
-    return scale_matrix;
-}
-
-GMatrix GMatrix::Rotate(float radians){
-    GMatrix rotate_matrix = GMatrix(cos(radians), -sin(radians), 0, sin(radians), cos(radians), 0);
-    return rotate_matrix;
-}`}</pre>
+              <pre className="code-block">
+<span className="signal">GMatrix</span> <span className="signal">GMatrix</span>::<span className="signal">Translate</span>(<span className="keyword">float</span> <span className="signal">tx</span>, <span className="keyword">float</span> <span className="signal">ty</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">translate_matrix</span> <span className="operator">=</span> <span className="signal">GMatrix</span>((<span className="keyword">float</span>)<span className="number">1</span>, (<span className="keyword">float</span>)<span className="number">0</span>, <span className="signal">tx</span>, (<span className="keyword">float</span>)<span className="number">0</span>, (<span className="keyword">float</span>)<span className="number">1</span>, <span className="signal">ty</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">translate_matrix</span>;<br/>
+&#125;<br/>
+<br/>
+<span className="signal">GMatrix</span> <span className="signal">GMatrix</span>::<span className="signal">Scale</span>(<span className="keyword">float</span> <span className="signal">sx</span>, <span className="keyword">float</span> <span className="signal">sy</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">scale_matrix</span> <span className="operator">=</span> <span className="signal">GMatrix</span>(<span className="signal">sx</span>, (<span className="keyword">float</span>)<span className="number">0</span>, (<span className="keyword">float</span>)<span className="number">0</span>, (<span className="keyword">float</span>)<span className="number">0</span>, <span className="signal">sy</span>, (<span className="keyword">float</span>)<span className="number">0</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">scale_matrix</span>;<br/>
+&#125;<br/>
+<br/>
+<span className="signal">GMatrix</span> <span className="signal">GMatrix</span>::<span className="signal">Rotate</span>(<span className="keyword">float</span> <span className="signal">radians</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">rotate_matrix</span> <span className="operator">=</span> <span className="signal">GMatrix</span>(<span className="signal">cos</span>(<span className="signal">radians</span>), <span className="operator">-</span><span className="signal">sin</span>(<span className="signal">radians</span>), <span className="number">0</span>, <span className="signal">sin</span>(<span className="signal">radians</span>), <span className="signal">cos</span>(<span className="signal">radians</span>), <span className="number">0</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">rotate_matrix</span>;<br/>
+&#125;
+              </pre>
 
               <h4>Matrix Composition</h4>
               <p>
@@ -379,16 +383,18 @@ GMatrix GMatrix::Rotate(float radians){
                 in sequence. Matrix multiplication is <strong>not commutative</strong>: A × B ≠ B × A.
               </p>
 
-              <pre className="code-block">{`GMatrix GMatrix::Concat(const GMatrix& a, const GMatrix& b){
-    return GMatrix(
-            (a[0] * b[0]) + (a[2] * b[1]),
-            (a[0] * b[2]) + (a[2] * b[3]),
-            (a[0] * b[4]) + (a[2] * b[5]) + a[4],
-            (a[1] * b[0]) + (a[3] * b[1]),
-            (a[1] * b[2]) + (a[3] * b[3]),
-            (a[1] * b[4]) + (a[3] * b[5]) + a[5]
-    );
-}`}</pre>
+              <pre className="code-block">
+<span className="signal">GMatrix</span> <span className="signal">GMatrix</span>::<span className="signal">Concat</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">a</span>, <span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">b</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GMatrix</span>(<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">0</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">0</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">2</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">1</span>]),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">0</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">2</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">2</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">3</span>]),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">0</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">4</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">2</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">5</span>]) <span className="operator">+</span> <span className="signal">a</span>[<span className="number">4</span>],<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">1</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">0</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">3</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">1</span>]),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">1</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">2</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">3</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">3</span>]),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span className="signal">a</span>[<span className="number">1</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">4</span>]) <span className="operator">+</span> (<span className="signal">a</span>[<span className="number">3</span>] <span className="operator">*</span> <span className="signal">b</span>[<span className="number">5</span>]) <span className="operator">+</span> <span className="signal">a</span>[<span className="number">5</span>]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+&#125;
+              </pre>
 
               <h4>Point Transformation</h4>
               <p>
@@ -396,16 +402,18 @@ GMatrix GMatrix::Rotate(float radians){
                 Each point (x, y) is transformed using the affine transformation formula shown above.
               </p>
 
-              <pre className="code-block">{`void GMatrix::mapPoints(GPoint dst[], const GPoint src[], int count) const {
-    GMatrix curr = (*this);
-    for(int i = 0; i < count; ++i) {
-        float mapped_x = (curr[0] * src[i].x) + (curr[2] * src[i].y) + curr[4];
-        float mapped_y = (curr[1] * src[i].x) + (curr[3] * src[i].y) + curr[5];
-
-        dst[i].x = mapped_x;
-        dst[i].y = mapped_y;
-    }
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">void</span> <span className="signal">GMatrix</span>::<span className="signal">mapPoints</span>(<span className="signal">GPoint</span> <span className="signal">dst</span>[], <span className="keyword">const</span> <span className="signal">GPoint</span> <span className="signal">src</span>[], <span className="keyword">int</span> <span className="signal">count</span>) <span className="keyword">const</span> &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">curr</span> <span className="operator">=</span> (<span className="operator">*</span><span className="keyword">this</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">count</span>; <span className="operator">++</span><span className="signal">i</span>) &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">mapped_x</span> <span className="operator">=</span> (<span className="signal">curr</span>[<span className="number">0</span>] <span className="operator">*</span> <span className="signal">src</span>[<span className="signal">i</span>].<span className="signal">x</span>) <span className="operator">+</span> (<span className="signal">curr</span>[<span className="number">2</span>] <span className="operator">*</span> <span className="signal">src</span>[<span className="signal">i</span>].<span className="signal">y</span>) <span className="operator">+</span> <span className="signal">curr</span>[<span className="number">4</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">mapped_y</span> <span className="operator">=</span> (<span className="signal">curr</span>[<span className="number">1</span>] <span className="operator">*</span> <span className="signal">src</span>[<span className="signal">i</span>].<span className="signal">x</span>) <span className="operator">+</span> (<span className="signal">curr</span>[<span className="number">3</span>] <span className="operator">*</span> <span className="signal">src</span>[<span className="signal">i</span>].<span className="signal">y</span>) <span className="operator">+</span> <span className="signal">curr</span>[<span className="number">5</span>];<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>].<span className="signal">x</span> <span className="operator">=</span> <span className="signal">mapped_x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dst</span>[<span className="signal">i</span>].<span className="signal">y</span> <span className="operator">=</span> <span className="signal">mapped_y</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+&#125;
+              </pre>
             </div>
 
             {/* Tab 2: CTM Stack */}
@@ -431,10 +439,12 @@ GMatrix GMatrix::Rotate(float radians){
                 inner transformations can be undone without affecting outer ones.
               </p>
 
-              <pre className="code-block">{`void MyCanvas::save() {
-    GMatrix top = ctm[ctm.size() - 1];
-    ctm.push_back(top);
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">save</span>() &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">top</span> <span className="operator">=</span> <span className="signal">ctm</span>[<span className="signal">ctm</span>.<span className="signal">size</span>() <span className="operator">-</span> <span className="number">1</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">ctm</span>.<span className="signal">push_back</span>(<span className="signal">top</span>);<br/>
+&#125;
+              </pre>
 
               <h4>Restore Operation</h4>
               <p>
@@ -443,9 +453,11 @@ GMatrix GMatrix::Rotate(float radians){
                 to the previous coordinate system.
               </p>
 
-              <pre className="code-block">{`void MyCanvas::restore() {
-    ctm.erase(ctm.end() -1);
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">restore</span>() &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">ctm</span>.<span className="signal">erase</span>(<span className="signal">ctm</span>.<span className="signal">end</span>() <span className="operator">-</span><span className="number">1</span>);<br/>
+&#125;
+              </pre>
 
               <h4>Concat Operation</h4>
               <p>
@@ -454,10 +466,12 @@ GMatrix GMatrix::Rotate(float radians){
                 accumulate: each <code>concat()</code> builds upon the previous transformation state.
               </p>
 
-              <pre className="code-block">{`void MyCanvas::concat(const GMatrix& matrix) {
-    GMatrix& top = ctm.back();
-    top = GMatrix::Concat(top, matrix);
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">concat</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">matrix</span>) &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">top</span> <span className="operator">=</span> <span className="signal">ctm</span>.<span className="signal">back</span>();<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">top</span> <span className="operator">=</span> <span className="signal">GMatrix</span>::<span className="signal">Concat</span>(<span className="signal">top</span>, <span className="signal">matrix</span>);<br/>
+&#125;
+              </pre>
 
               <h4>Why the CTM Stack Matters</h4>
               <p>
@@ -498,16 +512,18 @@ GMatrix GMatrix::Rotate(float radians){
                 coordinates.
               </p>
 
-              <pre className="code-block">{`bool setContext(const GMatrix& ctm) override{
-    GMatrix temp = ctm * fMat;
-
-    if(auto inverted = temp.invert()){
-      inv = *inverted;
-      return true;
-    }
-    inv = fMat;
-    return false;
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">bool</span> <span className="signal">setContext</span>(<span className="keyword">const</span> <span className="signal">GMatrix</span><span className="operator">&amp;</span> <span className="signal">ctm</span>) <span className="keyword">override</span>&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">temp</span> <span className="operator">=</span> <span className="signal">ctm</span> <span className="operator">*</span> <span className="signal">fMat</span>;<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="keyword">auto</span> <span className="signal">inverted</span> <span className="operator">=</span> <span className="signal">temp</span>.<span className="signal">invert</span>())&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">inv</span> <span className="operator">=</span> <span className="operator">*</span><span className="signal">inverted</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">true</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">inv</span> <span className="operator">=</span> <span className="signal">fMat</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="keyword">false</span>;<br/>
+&#125;
+              </pre>
 
               <h4>Tile Modes</h4>
               <p>
@@ -526,25 +542,27 @@ GMatrix GMatrix::Rotate(float radians){
                 coordinates greater than or equal to the texture dimension become dimension-1.
               </p>
 
-              <pre className="code-block">{`int clamp_x(int x){
-  if(x <= 0){
-    return 0;
-  }
-  if(x >= fDevice.width()){
-    return fDevice.width() - 1;
-  }
-  return x;
-}
-
-int clamp_y(int y){
-  if(y <= 0){
-    return 0;
-  }
-  if(y >= fDevice.height()){
-    return fDevice.height() - 1;
-  }
-  return y;
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">int</span> <span className="signal">clamp_x</span>(<span className="keyword">int</span> <span className="signal">x</span>)&#123;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">x</span> <span className="operator">&lt;=</span> <span className="number">0</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="number">0</span>;<br/>
+&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">x</span> <span className="operator">&gt;=</span> <span className="signal">fDevice</span>.<span className="signal">width</span>())&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">fDevice</span>.<span className="signal">width</span>() <span className="operator">-</span> <span className="number">1</span>;<br/>
+&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">x</span>;<br/>
+&#125;<br/>
+<br/>
+<span className="keyword">int</span> <span className="signal">clamp_y</span>(<span className="keyword">int</span> <span className="signal">y</span>)&#123;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">y</span> <span className="operator">&lt;=</span> <span className="number">0</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="number">0</span>;<br/>
+&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">y</span> <span className="operator">&gt;=</span> <span className="signal">fDevice</span>.<span className="signal">height</span>())&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">fDevice</span>.<span className="signal">height</span>() <span className="operator">-</span> <span className="number">1</span>;<br/>
+&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">y</span>;<br/>
+&#125;
+              </pre>
 
               <h4>Repeat Tile Mode</h4>
               <p>
@@ -552,17 +570,19 @@ int clamp_y(int y){
                 wrapping from the opposite edge. This creates a seamless tiling pattern.
               </p>
 
-              <pre className="code-block">{`int repeatX(const GBitmap& bm, float x) {
-
-  int res;
-  if (x < 0.0f) {
-    res = bm.width() - (GRoundToInt(abs(x)) % bm.width());
-  } else {
-    res = GRoundToInt(x) % bm.width();
-  }
-  if (res == bm.width()) return bm.width() - 1;
-  return res;
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">int</span> <span className="signal">repeatX</span>(<span className="keyword">const</span> <span className="signal">GBitmap</span><span className="operator">&amp;</span> <span className="signal">bm</span>, <span className="keyword">float</span> <span className="signal">x</span>) &#123;<br/>
+<br/>
+&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">res</span>;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">x</span> <span className="operator">&lt;</span> <span className="number">0.0f</span>) &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">res</span> <span className="operator">=</span> <span className="signal">bm</span>.<span className="signal">width</span>() <span className="operator">-</span> (<span className="signal">GRoundToInt</span>(<span className="signal">abs</span>(<span className="signal">x</span>)) <span className="operator">%</span> <span className="signal">bm</span>.<span className="signal">width</span>());<br/>
+&nbsp;&nbsp;&#125; <span className="keyword">else</span> &#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">res</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">x</span>) <span className="operator">%</span> <span className="signal">bm</span>.<span className="signal">width</span>();<br/>
+&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">res</span> <span className="operator">==</span> <span className="signal">bm</span>.<span className="signal">width</span>()) <span className="keyword">return</span> <span className="signal">bm</span>.<span className="signal">width</span>() <span className="operator">-</span> <span className="number">1</span>;<br/>
+&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">res</span>;<br/>
+&#125;
+              </pre>
 
               <h4>Mirror Tile Mode</h4>
               <p>
@@ -570,12 +590,14 @@ int clamp_y(int y){
                 texture dimension. If the result exceeds the dimension, it's reflected back from the far edge.
               </p>
 
-              <pre className="code-block">{`int mirrorX(const GBitmap& bm, float x) {
-  x = x < 0.0f ? -x : x;
-  int map = GRoundToInt(x) % (bm.width() * 2);
-  if (map >= bm.width()) return (bm.width() * 2) - map - 1;
-  return map;
-}`}</pre>
+              <pre className="code-block">
+<span className="keyword">int</span> <span className="signal">mirrorX</span>(<span className="keyword">const</span> <span className="signal">GBitmap</span><span className="operator">&amp;</span> <span className="signal">bm</span>, <span className="keyword">float</span> <span className="signal">x</span>) &#123;<br/>
+&nbsp;&nbsp;<span className="signal">x</span> <span className="operator">=</span> <span className="signal">x</span> <span className="operator">&lt;</span> <span className="number">0.0f</span> <span className="operator">?</span> <span className="operator">-</span><span className="signal">x</span> : <span className="signal">x</span>;<br/>
+&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">map</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">x</span>) <span className="operator">%</span> (<span className="signal">bm</span>.<span className="signal">width</span>() <span className="operator">*</span> <span className="number">2</span>);<br/>
+&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">map</span> <span className="operator">&gt;=</span> <span className="signal">bm</span>.<span className="signal">width</span>()) <span className="keyword">return</span> (<span className="signal">bm</span>.<span className="signal">width</span>() <span className="operator">*</span> <span className="number">2</span>) <span className="operator">-</span> <span className="signal">map</span> <span className="operator">-</span> <span className="number">1</span>;<br/>
+&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">map</span>;<br/>
+&#125;
+              </pre>
 
               <h4>Shader Row Processing</h4>
               <p>
@@ -584,25 +606,27 @@ int clamp_y(int y){
                 sampling texels and applying the appropriate tile mode.
               </p>
 
-              <pre className="code-block">{`void shadeRow(int x, int y, int count, GPixel row[]) override{
-  float x_prime = inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]; //x' = ax + cy + e
-  float y_prime = inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]; //y' = bx + dy + f
-
-  if(tile_mode == GTileMode::kRepeat){
-    for(int i = 0; i < count; i++){
-      int xCurr = GFloorToInt(x_prime);
-      int yCurr = GFloorToInt(y_prime);
-
-
-      xCurr = repeatX(fDevice, xCurr);
-      yCurr = repeatY(fDevice, yCurr);
-
-
-      row[i] = *(fDevice.getAddr(xCurr, yCurr));
-      x_prime += inv[0];
-      y_prime += inv[1];
-    }
-  }`}</pre>
+              <pre className="code-block">
+<span className="keyword">void</span> <span className="signal">shadeRow</span>(<span className="keyword">int</span> <span className="signal">x</span>, <span className="keyword">int</span> <span className="signal">y</span>, <span className="keyword">int</span> <span className="signal">count</span>, <span className="signal">GPixel</span> <span className="signal">row</span>[]) <span className="keyword">override</span>&#123;<br/>
+&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">x_prime</span> <span className="operator">=</span> <span className="signal">inv</span>[<span className="number">0</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">2</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">4</span>]; <span className="comment">//x' = ax + cy + e</span><br/>
+&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">y_prime</span> <span className="operator">=</span> <span className="signal">inv</span>[<span className="number">1</span>] <span className="operator">*</span> (<span className="signal">x</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">3</span>] <span className="operator">*</span> (<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">inv</span>[<span className="number">5</span>]; <span className="comment">//y' = bx + dy + f</span><br/>
+<br/>
+&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">tile_mode</span> <span className="operator">==</span> <span className="signal">GTileMode</span>::<span className="signal">kRepeat</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">count</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">xCurr</span> <span className="operator">=</span> <span className="signal">GFloorToInt</span>(<span className="signal">x_prime</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">yCurr</span> <span className="operator">=</span> <span className="signal">GFloorToInt</span>(<span className="signal">y_prime</span>);<br/>
+<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">xCurr</span> <span className="operator">=</span> <span className="signal">repeatX</span>(<span className="signal">fDevice</span>, <span className="signal">xCurr</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">yCurr</span> <span className="operator">=</span> <span className="signal">repeatY</span>(<span className="signal">fDevice</span>, <span className="signal">yCurr</span>);<br/>
+<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">row</span>[<span className="signal">i</span>] <span className="operator">=</span> <span className="operator">*</span>(<span className="signal">fDevice</span>.<span className="signal">getAddr</span>(<span className="signal">xCurr</span>, <span className="signal">yCurr</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">0</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">y_prime</span> <span className="operator">+=</span> <span className="signal">inv</span>[<span className="number">1</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+&nbsp;&nbsp;&#125;
+              </pre>
             </div>
           </div>
         </div>

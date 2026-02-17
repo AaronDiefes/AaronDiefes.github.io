@@ -341,41 +341,43 @@ function GraphicsCoreRenderingPage() {
                 Each edge stores its vertical span (top to bottom), its current X position, and its slope for efficient scanline traversal. The <code>dire</code> (direction) field tracks whether the edge runs left-to-right or right-to-left, which is crucial for the winding rule used in complex path rendering.
               </p>
 
-              <pre className="code-block">{`class Edge {
-public:
-    int top, bottom;
-    float m, x;
-    int dire;
-    float left_x;
-
-    Edge(GPoint p0, GPoint p1, GBitmap fDevice, int dir) {
-       if (p0.y > p1.y) {
-            std::swap(p0, p1);
-        }
-        top = GRoundToInt(p0.y);
-        bottom = GRoundToInt(p1.y);
-        left_x = p0.x;
-        m = calculateSlope(p0, p1);
-
-        float b = calculateB(p0, p1);
-        x = b;
-
-        dire = dir;
-    }
-
-    float eval(int y){
-        return m * ((float)y + 0.5f) + x;
-    }
-
-private:
-    float calculateSlope(GPoint p0, GPoint p1) {
-        return (p1.x - p0.x) / (p1.y - p0.y);
-    }
-
-    float calculateB(GPoint p0, GPoint p1) {
-        return p0.x - (m * p0.y);
-    }
-};`}</pre>
+              <pre className="code-block">
+  <span className="keyword">class</span> <span className="signal">Edge</span> &#123;<br/>
+  <span className="keyword">public</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">top</span>, <span className="signal">bottom</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">m</span>, <span className="signal">x</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dire</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">left_x</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span>(<span className="signal">GPoint</span> <span className="signal">p0</span>, <span className="signal">GPoint</span> <span className="signal">p1</span>, <span className="signal">GBitmap</span> <span className="signal">fDevice</span>, <span className="keyword">int</span> <span className="signal">dir</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p0</span>.<span className="signal">y</span> <span className="operator">&gt;</span> <span className="signal">p1</span>.<span className="signal">y</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">std</span>::<span className="signal">swap</span>(<span className="signal">p0</span>, <span className="signal">p1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">top</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">p0</span>.<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">bottom</span> <span className="operator">=</span> <span className="signal">GRoundToInt</span>(<span className="signal">p1</span>.<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">left_x</span> <span className="operator">=</span> <span className="signal">p0</span>.<span className="signal">x</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">m</span> <span className="operator">=</span> <span className="signal">calculateSlope</span>(<span className="signal">p0</span>, <span className="signal">p1</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">b</span> <span className="operator">=</span> <span className="signal">calculateB</span>(<span className="signal">p0</span>, <span className="signal">p1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">x</span> <span className="operator">=</span> <span className="signal">b</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">dire</span> <span className="operator">=</span> <span className="signal">dir</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">eval</span>(<span className="keyword">int</span> <span className="signal">y</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">m</span> <span className="operator">*</span> ((<span className="keyword">float</span>)<span className="signal">y</span> <span className="operator">+</span> <span className="number">0.5f</span>) <span className="operator">+</span> <span className="signal">x</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  <span className="keyword">private</span>:<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">calculateSlope</span>(<span className="signal">GPoint</span> <span className="signal">p0</span>, <span className="signal">GPoint</span> <span className="signal">p1</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> (<span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">x</span>) <span className="operator">/</span> (<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">-</span> <span className="signal">p0</span>.<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">float</span> <span className="signal">calculateB</span>(<span className="signal">GPoint</span> <span className="signal">p0</span>, <span className="signal">GPoint</span> <span className="signal">p1</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">p0</span>.<span className="signal">x</span> <span className="operator">-</span> (<span className="signal">m</span> <span className="operator">*</span> <span className="signal">p0</span>.<span className="signal">y</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &#125;;
+              </pre>
 
               <h4>Scanline Filling</h4>
               <p>
@@ -397,54 +399,58 @@ private:
               </p>
 
               <h4>Rectangle to Polygon Conversion</h4>
-              <pre className="code-block">{`void MyCanvas::drawRect(const GRect& rect, const GPaint& paint) {
-
-    GPoint p1 = {rect.left, rect.top};
-    GPoint p2 = {rect.right, rect.top};
-    GPoint p3 = {rect.right, rect.bottom};
-    GPoint p4 = {rect.left, rect.bottom};
-
-    GPoint src[4] = {p1, p2, p3, p4};
-    drawConvexPolygon(src, 4, paint);
-};`}</pre>
+              <pre className="code-block">
+  <span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">drawRect</span>(<span className="keyword">const</span> <span className="signal">GRect</span><span className="operator">&amp;</span> <span className="signal">rect</span>, <span className="keyword">const</span> <span className="signal">GPaint</span><span className="operator">&amp;</span> <span className="signal">paint</span>) &#123;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p1</span> <span className="operator">=</span> &#123;<span className="signal">rect</span>.<span className="signal">left</span>, <span className="signal">rect</span>.<span className="signal">top</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p2</span> <span className="operator">=</span> &#123;<span className="signal">rect</span>.<span className="signal">right</span>, <span className="signal">rect</span>.<span className="signal">top</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p3</span> <span className="operator">=</span> &#123;<span className="signal">rect</span>.<span className="signal">right</span>, <span className="signal">rect</span>.<span className="signal">bottom</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">p4</span> <span className="operator">=</span> &#123;<span className="signal">rect</span>.<span className="signal">left</span>, <span className="signal">rect</span>.<span className="signal">bottom</span>&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">src</span>[<span className="number">4</span>] <span className="operator">=</span> &#123;<span className="signal">p1</span>, <span className="signal">p2</span>, <span className="signal">p3</span>, <span className="signal">p4</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">drawConvexPolygon</span>(<span className="signal">src</span>, <span className="number">4</span>, <span className="signal">paint</span>);<br/>
+  &#125;;
+              </pre>
 
               <h4>Convex Polygon Rendering</h4>
               <p>
                 The <code>drawConvexPolygon()</code> function handles all convex shapes. It transforms points by the current transformation matrix, creates edges between consecutive vertices (wrapping from the last back to the first), clips those edges to the viewport, sorts them by Y coordinate, and finally fills the polygon using the scanline algorithm.
               </p>
 
-              <pre className="code-block">{`void MyCanvas::drawConvexPolygon(const GPoint points[], int count, const GPaint& paint){
-
-    if(count < 3){
-        return;
-    }
-
-    GPoint dst[count];
-    GMatrix mat = ctm[ctm.size() - 1];
-
-    mat.mapPoints(dst, points, count);
-
-    std::vector<Edge> edges;
-
-    // Create array of edges
-    for(int i = 0; i < count; i++){
-        int nextIndex = (i + 1) % count;
-        Edge::clip(dst[i], dst[nextIndex], fDevice, edges);
-    }
-
-    if (edges.size() < 2){
-        return;
-    }
-
-    // Sort by top value
-    std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
-        return a.top > b.top;
-    });
-
-    // ... blend mode selection and optimization ...
-
-    fillPolygon(edges, color, proc, fDevice);
-}`}</pre>
+              <pre className="code-block">
+  <span className="keyword">void</span> <span className="signal">MyCanvas</span>::<span className="signal">drawConvexPolygon</span>(<span className="keyword">const</span> <span className="signal">GPoint</span> <span className="signal">points</span>[], <span className="keyword">int</span> <span className="signal">count</span>, <span className="keyword">const</span> <span className="signal">GPaint</span><span className="operator">&amp;</span> <span className="signal">paint</span>)&#123;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">count</span> <span className="operator">&lt;</span> <span className="number">3</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">dst</span>[<span className="signal">count</span>];<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GMatrix</span> <span className="signal">mat</span> <span className="operator">=</span> <span className="signal">ctm</span>[<span className="signal">ctm</span>.<span className="signal">size</span>() <span className="operator">-</span> <span className="number">1</span>];<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">mat</span>.<span className="signal">mapPoints</span>(<span className="signal">dst</span>, <span className="signal">points</span>, <span className="signal">count</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">std</span>::<span className="signal">vector</span><span className="operator">&lt;</span><span className="signal">Edge</span><span className="operator">&gt;</span> <span className="signal">edges</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Create array of edges</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">for</span>(<span className="keyword">int</span> <span className="signal">i</span> <span className="operator">=</span> <span className="number">0</span>; <span className="signal">i</span> <span className="operator">&lt;</span> <span className="signal">count</span>; <span className="signal">i</span><span className="operator">++</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">nextIndex</span> <span className="operator">=</span> (<span className="signal">i</span> <span className="operator">+</span> <span className="number">1</span>) <span className="operator">%</span> <span className="signal">count</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span>::<span className="signal">clip</span>(<span className="signal">dst</span>[<span className="signal">i</span>], <span className="signal">dst</span>[<span className="signal">nextIndex</span>], <span className="signal">fDevice</span>, <span className="signal">edges</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">edges</span>.<span className="signal">size</span>() <span className="operator">&lt;</span> <span className="number">2</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Sort by top value</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">std</span>::<span className="signal">sort</span>(<span className="signal">edges</span>.<span className="signal">begin</span>(), <span className="signal">edges</span>.<span className="signal">end</span>(), [](<span className="keyword">const</span> <span className="signal">Edge</span><span className="operator">&amp;</span> <span className="signal">a</span>, <span className="keyword">const</span> <span className="signal">Edge</span><span className="operator">&amp;</span> <span className="signal">b</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">a</span>.<span className="signal">top</span> <span className="operator">&gt;</span> <span className="signal">b</span>.<span className="signal">top</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// ... blend mode selection and optimization ...</span><br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">fillPolygon</span>(<span className="signal">edges</span>, <span className="signal">color</span>, <span className="signal">proc</span>, <span className="signal">fDevice</span>);<br/>
+  &#125;
+              </pre>
 
               <p>
                 Note how the function creates edges by connecting each vertex to the next, with the last vertex wrapping back to the first via modulo arithmetic. This automatically closes the polygon. The edges are then clipped and sorted before being passed to the fill routine.
@@ -466,26 +472,28 @@ private:
                 The <code>src_over</code> blend mode is the default compositing operation used when drawing one image over another. It places the source pixel "over" the destination, with the destination showing through transparent areas. The formula is: <code>S + (1 - Sa) * D</code>, where Sa is the source alpha.
               </p>
 
-              <pre className="code-block">{`// S + (1 - Sa)*D
-GPixel src_over_mode(GPixel src, GPixel dest){
-    int sa = GPixel_GetA(src);
-    int sr = GPixel_GetR(src);
-    int sg = GPixel_GetG(src);
-    int sb = GPixel_GetB(src);
-
-    int da = GPixel_GetA(dest);
-    int dr = GPixel_GetR(dest);
-    int dg = GPixel_GetG(dest);
-    int db = GPixel_GetB(dest);
-
-
-    int ba = sa + div255((255-sa)*da);
-    int br = sr + div255((255-sa)*dr);
-    int bg = sg + div255((255-sa)*dg);
-    int bb = sb + div255((255-sa)*db);
-
-    return GPixel_PackARGB(ba, br, bg, bb);
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// S + (1 - Sa)*D</span><br/>
+  <span className="signal">GPixel</span> <span className="signal">src_over_mode</span>(<span className="signal">GPixel</span> <span className="signal">src</span>, <span className="signal">GPixel</span> <span className="signal">dest</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sa</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sb</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">src</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">da</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">db</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">dest</span>);<br/>
+  <br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">ba</span> <span className="operator">=</span> <span className="signal">sa</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">da</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">br</span> <span className="operator">=</span> <span className="signal">sr</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">dr</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bg</span> <span className="operator">=</span> <span className="signal">sg</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">dg</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bb</span> <span className="operator">=</span> <span className="signal">sb</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">db</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GPixel_PackARGB</span>(<span className="signal">ba</span>, <span className="signal">br</span>, <span className="signal">bg</span>, <span className="signal">bb</span>);<br/>
+  &#125;
+              </pre>
 
               <p>
                 The <code>div255()</code> helper function performs fast fixed-point division by 255, essential for performance since blending happens per-pixel. The alpha math <code>sa + div255((255-sa)*da)</code> produces the final alpha: fully opaque where source is opaque, blending source and destination alpha elsewhere.
@@ -496,46 +504,48 @@ GPixel src_over_mode(GPixel src, GPixel dest){
                 The engine supports all 12 standard Porter-Duff operators. Here are two more examples:
               </p>
 
-              <pre className="code-block">{`// D + (1 - Da)*S
-GPixel dst_over_mode(GPixel src, GPixel dest){
-    int sa = GPixel_GetA(src);
-    int sr = GPixel_GetR(src);
-    int sg = GPixel_GetG(src);
-    int sb = GPixel_GetB(src);
-
-    int da = GPixel_GetA(dest);
-    int dr = GPixel_GetR(dest);
-    int dg = GPixel_GetG(dest);
-    int db = GPixel_GetB(dest);
-
-
-    int ba = da + div255((255-da)*sa);
-    int br = dr + div255((255-da)*sr);
-    int bg = dg + div255((255-da)*sg);
-    int bb = db + div255((255-da)*sb);
-
-    return GPixel_PackARGB(ba, br, bg, bb);
-}
-
-// (1 - Sa)*D + (1 - Da)*S
-GPixel xor_mode(GPixel src, GPixel dest){
-    int sa = GPixel_GetA(src);
-    int sr = GPixel_GetR(src);
-    int sg = GPixel_GetG(src);
-    int sb = GPixel_GetB(src);
-
-    int da = GPixel_GetA(dest);
-    int dr = GPixel_GetR(dest);
-    int dg = GPixel_GetG(dest);
-    int db = GPixel_GetB(dest);
-
-    int ba = div255((255-sa)*da) + div255((255-da)*sa);
-    int br = div255((255-sa)*dr) + div255((255-da)*sr);
-    int bg = div255((255-sa)*dg) + div255((255-da)*sg);
-    int bb = div255((255-sa)*db) + div255((255-da)*sb);
-
-    return GPixel_PackARGB(ba, br, bg, bb);
-}`}</pre>
+              <pre className="code-block">
+  <span className="comment">// D + (1 - Da)*S</span><br/>
+  <span className="signal">GPixel</span> <span className="signal">dst_over_mode</span>(<span className="signal">GPixel</span> <span className="signal">src</span>, <span className="signal">GPixel</span> <span className="signal">dest</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sa</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sb</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">src</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">da</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">db</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">dest</span>);<br/>
+  <br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">ba</span> <span className="operator">=</span> <span className="signal">da</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sa</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">br</span> <span className="operator">=</span> <span className="signal">dr</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sr</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bg</span> <span className="operator">=</span> <span className="signal">dg</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sg</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bb</span> <span className="operator">=</span> <span className="signal">db</span> <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sb</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GPixel_PackARGB</span>(<span className="signal">ba</span>, <span className="signal">br</span>, <span className="signal">bg</span>, <span className="signal">bb</span>);<br/>
+  &#125;<br/>
+  <br/>
+  <span className="comment">// (1 - Sa)*D + (1 - Da)*S</span><br/>
+  <span className="signal">GPixel</span> <span className="signal">xor_mode</span>(<span className="signal">GPixel</span> <span className="signal">src</span>, <span className="signal">GPixel</span> <span className="signal">dest</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sa</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">src</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">sb</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">src</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">da</span> <span className="operator">=</span> <span className="signal">GPixel_GetA</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dr</span> <span className="operator">=</span> <span className="signal">GPixel_GetR</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dg</span> <span className="operator">=</span> <span className="signal">GPixel_GetG</span>(<span className="signal">dest</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">db</span> <span className="operator">=</span> <span className="signal">GPixel_GetB</span>(<span className="signal">dest</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">ba</span> <span className="operator">=</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">da</span>) <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sa</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">br</span> <span className="operator">=</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">dr</span>) <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sr</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bg</span> <span className="operator">=</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">dg</span>) <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sg</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">bb</span> <span className="operator">=</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">sa</span>)<span className="operator">*</span><span className="signal">db</span>) <span className="operator">+</span> <span className="signal">div255</span>((<span className="number">255</span><span className="operator">-</span><span className="signal">da</span>)<span className="operator">*</span><span className="signal">sb</span>);<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span> <span className="signal">GPixel_PackARGB</span>(<span className="signal">ba</span>, <span className="signal">br</span>, <span className="signal">bg</span>, <span className="signal">bb</span>);<br/>
+  &#125;
+              </pre>
 
               <h4>Complete Blend Mode List</h4>
               <p>The engine implements these 12 Porter-Duff operators:</p>
@@ -570,85 +580,89 @@ GPixel xor_mode(GPixel src, GPixel dest){
                 First, the function clips against top and bottom boundaries. If an edge is completely above or below the viewport, it's discarded. If it crosses a boundary, the function calculates the X coordinate where the edge intersects the boundary and creates a new point at that intersection.
               </p>
 
-              <pre className="code-block">{`static void clip(GPoint p0, GPoint p1, GBitmap fDevice, std::vector<Edge> &edges){
-
-    int w = p0.y > p1.y;
-    int dir = 2*w - 1;
-    if (p0.y > p1.y) {
-        std::swap(p0, p1);
-    }
-
-    GPoint new_p0 = p0;
-    GPoint new_p1 = p1;
-
-    // Line segment is completely out of bounds
-    if (p1.y < 0 || p0.y >= fDevice.height()) {
-        return;
-    }
-
-    // Line segment top point is out of bounds
-    if (p0.y < 0){
-        new_p0 = {getTopX(p0, p1), 0};
-    }
-
-    // Line segment bottom point is out of bounds
-    if (p1.y > fDevice.height()){
-        new_p1 = {getBottomX(p0, p1, fDevice), float(fDevice.height())};
-    }
-
-    // Reassign p0 and p1 with new x values
-    p0 = new_p0;
-    p1 = new_p1;
-
-    // ... horizontal clipping continues ...
-}`}</pre>
+              <pre className="code-block">
+  <span className="keyword">static</span> <span className="keyword">void</span> <span className="signal">clip</span>(<span className="signal">GPoint</span> <span className="signal">p0</span>, <span className="signal">GPoint</span> <span className="signal">p1</span>, <span className="signal">GBitmap</span> <span className="signal">fDevice</span>, <span className="signal">std</span>::<span className="signal">vector</span><span className="operator">&lt;</span><span className="signal">Edge</span><span className="operator">&gt;</span> <span className="operator">&amp;</span><span className="signal">edges</span>)&#123;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">w</span> <span className="operator">=</span> <span className="signal">p0</span>.<span className="signal">y</span> <span className="operator">&gt;</span> <span className="signal">p1</span>.<span className="signal">y</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">dir</span> <span className="operator">=</span> <span className="number">2</span><span className="operator">*</span><span className="signal">w</span> <span className="operator">-</span> <span className="number">1</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p0</span>.<span className="signal">y</span> <span className="operator">&gt;</span> <span className="signal">p1</span>.<span className="signal">y</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">std</span>::<span className="signal">swap</span>(<span className="signal">p0</span>, <span className="signal">p1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">new_p0</span> <span className="operator">=</span> <span className="signal">p0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">new_p1</span> <span className="operator">=</span> <span className="signal">p1</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Line segment is completely out of bounds</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">&lt;</span> <span className="number">0</span> <span className="operator">||</span> <span className="signal">p0</span>.<span className="signal">y</span> <span className="operator">&gt;=</span> <span className="signal">fDevice</span>.<span className="signal">height</span>()) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Line segment top point is out of bounds</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p0</span>.<span className="signal">y</span> <span className="operator">&lt;</span> <span className="number">0</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_p0</span> <span className="operator">=</span> &#123;<span className="signal">getTopX</span>(<span className="signal">p0</span>, <span className="signal">p1</span>), <span className="number">0</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Line segment bottom point is out of bounds</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p1</span>.<span className="signal">y</span> <span className="operator">&gt;</span> <span className="signal">fDevice</span>.<span className="signal">height</span>())&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">new_p1</span> <span className="operator">=</span> &#123;<span className="signal">getBottomX</span>(<span className="signal">p0</span>, <span className="signal">p1</span>, <span className="signal">fDevice</span>), <span className="keyword">float</span>(<span className="signal">fDevice</span>.<span className="signal">height</span>())&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Reassign p0 and p1 with new x values</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p0</span> <span className="operator">=</span> <span className="signal">new_p0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">p1</span> <span className="operator">=</span> <span className="signal">new_p1</span>;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// ... horizontal clipping continues ...</span><br/>
+  &#125;
+              </pre>
 
               <h4>Horizontal Clipping Cases</h4>
               <p>
                 After vertical clipping, the function handles horizontal clipping. There are several cases: edge completely inside (add as-is), completely left (create vertical edge at x=0), completely right (create vertical edge at x=width), partially left, partially right, or spanning entirely across (create multiple edge segments).
               </p>
 
-              <pre className="code-block">{`    int left = 0;
-    int right = fDevice.width();
-
-    if (p0.x > p1.x) {
-        std::swap(p0, p1);
-    }
-
-    // IF edge is completely horizontally contained
-    if(p0.x >= left && p1.x < right){
-        Edge inEdge = Edge(p0, p1, fDevice, dir);
-        if(inEdge.top < inEdge.bottom){
-            edges.push_back(inEdge);
-        }
-        return;
-    }
-
-    // Line segment completely to the left
-    if (p1.x < left) {
-        GPoint pp0 = {0, p0.y};
-        GPoint pp1 = {0, p1.y};
-        Edge leftEdge = Edge(pp0, pp1, fDevice, dir);
-        if(leftEdge.top < leftEdge.bottom){
-            edges.push_back(leftEdge);
-        }
-        return;
-    }
-
-    // Line segment completely to the right
-    if (p0.x >= right ) {
-        GPoint pp0 = {fDevice.width(), p0.y};
-        GPoint pp1 = {fDevice.width(), p1.y};
-
-        Edge rightEdge = Edge(pp0, pp1, fDevice, dir);
-        if(rightEdge.top < rightEdge.bottom){
-            edges.push_back(rightEdge);
-        }
-        return;
-    }
-
-    // ... additional cases for partially clipped edges ...
-}`}</pre>
+              <pre className="code-block">
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">left</span> <span className="operator">=</span> <span className="number">0</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">int</span> <span className="signal">right</span> <span className="operator">=</span> <span className="signal">fDevice</span>.<span className="signal">width</span>();<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p0</span>.<span className="signal">x</span> <span className="operator">&gt;</span> <span className="signal">p1</span>.<span className="signal">x</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">std</span>::<span className="signal">swap</span>(<span className="signal">p0</span>, <span className="signal">p1</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// IF edge is completely horizontally contained</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">p0</span>.<span className="signal">x</span> <span className="operator">&gt;=</span> <span className="signal">left</span> <span className="operator">&amp;&amp;</span> <span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">&lt;</span> <span className="signal">right</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span> <span className="signal">inEdge</span> <span className="operator">=</span> <span className="signal">Edge</span>(<span className="signal">p0</span>, <span className="signal">p1</span>, <span className="signal">fDevice</span>, <span className="signal">dir</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">inEdge</span>.<span className="signal">top</span> <span className="operator">&lt;</span> <span className="signal">inEdge</span>.<span className="signal">bottom</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">edges</span>.<span className="signal">push_back</span>(<span className="signal">inEdge</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Line segment completely to the left</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p1</span>.<span className="signal">x</span> <span className="operator">&lt;</span> <span className="signal">left</span>) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">pp0</span> <span className="operator">=</span> &#123;<span className="number">0</span>, <span className="signal">p0</span>.<span className="signal">y</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">pp1</span> <span className="operator">=</span> &#123;<span className="number">0</span>, <span className="signal">p1</span>.<span className="signal">y</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span> <span className="signal">leftEdge</span> <span className="operator">=</span> <span className="signal">Edge</span>(<span className="signal">pp0</span>, <span className="signal">pp1</span>, <span className="signal">fDevice</span>, <span className="signal">dir</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">leftEdge</span>.<span className="signal">top</span> <span className="operator">&lt;</span> <span className="signal">leftEdge</span>.<span className="signal">bottom</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">edges</span>.<span className="signal">push_back</span>(<span className="signal">leftEdge</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// Line segment completely to the right</span><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span> (<span className="signal">p0</span>.<span className="signal">x</span> <span className="operator">&gt;=</span> <span className="signal">right</span> ) &#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">pp0</span> <span className="operator">=</span> &#123;<span className="signal">fDevice</span>.<span className="signal">width</span>(), <span className="signal">p0</span>.<span className="signal">y</span>&#125;;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">GPoint</span> <span className="signal">pp1</span> <span className="operator">=</span> &#123;<span className="signal">fDevice</span>.<span className="signal">width</span>(), <span className="signal">p1</span>.<span className="signal">y</span>&#125;;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">Edge</span> <span className="signal">rightEdge</span> <span className="operator">=</span> <span className="signal">Edge</span>(<span className="signal">pp0</span>, <span className="signal">pp1</span>, <span className="signal">fDevice</span>, <span className="signal">dir</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">if</span>(<span className="signal">rightEdge</span>.<span className="signal">top</span> <span className="operator">&lt;</span> <span className="signal">rightEdge</span>.<span className="signal">bottom</span>)&#123;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="signal">edges</span>.<span className="signal">push_back</span>(<span className="signal">rightEdge</span>);<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="keyword">return</span>;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&#125;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span className="comment">// ... additional cases for partially clipped edges ...</span><br/>
+  &#125;
+              </pre>
 
               <h4>Clipping Benefits</h4>
               <p>
