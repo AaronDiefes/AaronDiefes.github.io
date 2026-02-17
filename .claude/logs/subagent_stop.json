@@ -1329,5 +1329,49 @@
     "agent_id": "ac92671",
     "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-ac92671.jsonl",
     "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "ab98c45",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-ab98c45.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a5ecf02",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-a5ecf02.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a94a110",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-a94a110.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a0a1016",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-a0a1016.jsonl",
+    "agent_type": ""
   }
 ]

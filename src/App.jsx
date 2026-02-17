@@ -6,7 +6,6 @@ import HomePage from './pages/HomePage'
 import AdminPage from './pages/AdminPage'
 
 // Graphics Engine pages
-import GraphicsDemoPage from './pages/graphics/GraphicsDemoPage'
 import GraphicsWasmPage from './pages/graphics/GraphicsWasmPage'
 import DocsPage from './pages/graphics/DocsPage'
 
@@ -29,7 +28,6 @@ function AppContent() {
     document.body.classList.remove(
       'home-page',
       'cpu-simulator-page',
-      'graphics-demo-page',
       'wasm-demo-page',
       'docs-page',
       'admin-page',
@@ -41,8 +39,6 @@ function AppContent() {
       document.body.classList.add('home-page')
     } else if (location.pathname === '/projects/cpu-simulator') {
       document.body.classList.add('cpu-simulator-page')
-    } else if (location.pathname === '/projects/graphics-engine') {
-      document.body.classList.add('graphics-demo-page')
     } else if (location.pathname === '/projects/graphics-engine/wasm') {
       document.body.classList.add('wasm-demo-page')
     } else if (location.pathname === '/docs') {
@@ -58,7 +54,6 @@ function AppContent() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/projects/cpu-simulator" element={<CPUSimulatorPage />} />
-      <Route path="/projects/graphics-engine" element={<GraphicsDemoPage />} />
       <Route path="/projects/graphics-engine/wasm" element={<GraphicsWasmPage />} />
       <Route path="/docs" element={<DocsPage />} />
       <Route path="/admin" element={<AdminPage />} />
