@@ -5,8 +5,8 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuHazardsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu-simulator' },
-    { label: 'Documentation', href: '/cpu-docs' },
+    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Hazards & Forwarding' }
   ]
 
@@ -684,8 +684,8 @@ function CpuHazardsPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/cpu-docs/multdiv" className="quick-link">← Multiplication & Division</Link>
-            <Link to="/cpu-docs" className="quick-link">Back to CPU Docs</Link>
+            <Link to="/projects/cpu/docs/multdiv" className="quick-link">← Multiplication & Division</Link>
+            <Link to="/projects/cpu/docs" className="quick-link">Back to CPU Docs</Link>
             <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="quick-link">View on GitHub</a>
           </div>
         </section>
@@ -706,8 +706,8 @@ function CpuHazardsPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu-simulator" style={{ color: '#ecf0f1', textDecoration: 'none' }}>Interactive Simulator</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs" style={{ color: '#ecf0f1', textDecoration: 'none' }}>CPU Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none' }}>Interactive Simulator</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none' }}>CPU Documentation</Link></li>
               </ul>
             </div>
 

@@ -5,8 +5,8 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuPipelinePage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu-simulator' },
-    { label: 'Documentation', href: '/cpu-docs' },
+    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Pipeline Architecture' }
   ]
 
@@ -789,7 +789,7 @@ function CpuPipelinePage() {
           </p>
 
           <p>
-            <strong>Hazards</strong> can disrupt this ideal flow. Data hazards (when an instruction depends on the result of a previous instruction still in the pipeline), control hazards (branches), and structural hazards (resource conflicts) can force the pipeline to stall or flush, reducing throughput. These are covered in detail in the <Link to="/cpu-docs/hazards">Hazards & Forwarding</Link> documentation.
+            <strong>Hazards</strong> can disrupt this ideal flow. Data hazards (when an instruction depends on the result of a previous instruction still in the pipeline), control hazards (branches), and structural hazards (resource conflicts) can force the pipeline to stall or flush, reducing throughput. These are covered in detail in the <Link to="/projects/cpu/docs/hazards">Hazards & Forwarding</Link> documentation.
           </p>
         </section>
 
@@ -797,9 +797,9 @@ function CpuPipelinePage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/cpu-docs/multdiv" className="quick-link">← Previous: Multiplication & Division</Link>
-            <Link to="/cpu-docs/hazards" className="quick-link">Next: Hazards & Forwarding →</Link>
-            <Link to="/cpu-docs" className="quick-link">Back to CPU Docs</Link>
+            <Link to="/projects/cpu/docs/multdiv" className="quick-link">← Previous: Multiplication & Division</Link>
+            <Link to="/projects/cpu/docs/hazards" className="quick-link">Next: Hazards & Forwarding →</Link>
+            <Link to="/projects/cpu/docs" className="quick-link">Back to CPU Docs</Link>
             <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="quick-link">View on GitHub →</a>
           </div>
         </section>
@@ -820,8 +820,8 @@ function CpuPipelinePage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu-simulator" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Repository</a></li>
               </ul>
             </div>
@@ -830,10 +830,10 @@ function CpuPipelinePage() {
             <div>
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs/alu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>ALU Design</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs/regfile" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Register File</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs/multdiv" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Multiplication & Division</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs/hazards" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Hazards & Forwarding</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/alu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>ALU Design</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/regfile" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Register File</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/multdiv" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Multiplication & Division</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/hazards" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Hazards & Forwarding</Link></li>
               </ul>
             </div>
 

@@ -27,44 +27,43 @@ function AppContent() {
     // Remove all page-specific classes
     document.body.classList.remove(
       'home-page',
-      'cpu-simulator-page',
-      'wasm-demo-page',
+      'cpu-page',
+      'graphics-page',
       'docs-page',
-      'admin-page',
-      'cpu-docs-page'
+      'admin-page'
     )
 
     // Add class based on current route
     if (location.pathname === '/') {
       document.body.classList.add('home-page')
-    } else if (location.pathname === '/projects/cpu-simulator') {
-      document.body.classList.add('cpu-simulator-page')
-    } else if (location.pathname === '/projects/graphics-engine/wasm') {
-      document.body.classList.add('wasm-demo-page')
-    } else if (location.pathname === '/docs') {
-      document.body.classList.add('docs-page')
+    } else if (location.pathname.startsWith('/projects/cpu')) {
+      document.body.classList.add('cpu-page')
+    } else if (location.pathname.startsWith('/projects/graphics-engine')) {
+      document.body.classList.add('graphics-page')
     } else if (location.pathname === '/admin') {
       document.body.classList.add('admin-page')
-    } else if (location.pathname.startsWith('/cpu-docs')) {
-      document.body.classList.add('cpu-docs-page')
     }
   }, [location])
 
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/projects/cpu-simulator" element={<CPUSimulatorPage />} />
-      <Route path="/projects/graphics-engine/wasm" element={<GraphicsWasmPage />} />
-      <Route path="/docs" element={<DocsPage />} />
       <Route path="/admin" element={<AdminPage />} />
-      <Route path="/cpu-docs" element={<CpuDocsLanding />} />
-      <Route path="/cpu-docs/alu" element={<CpuAluPage />} />
-      <Route path="/cpu-docs/regfile" element={<CpuRegfilePage />} />
-      <Route path="/cpu-docs/multdiv" element={<CpuMultdivPage />} />
-      <Route path="/cpu-docs/pipeline" element={<CpuPipelinePage />} />
-      <Route path="/cpu-docs/hazards" element={<CpuHazardsPage />} />
-      <Route path="/cpu-docs/instructions" element={<CpuInstructionsPage />} />
-      <Route path="/cpu-docs/memory" element={<CpuMemoryPage />} />
+
+      {/* CPU Project */}
+      <Route path="/projects/cpu" element={<CPUSimulatorPage />} />
+      <Route path="/projects/cpu/docs" element={<CpuDocsLanding />} />
+      <Route path="/projects/cpu/docs/alu" element={<CpuAluPage />} />
+      <Route path="/projects/cpu/docs/regfile" element={<CpuRegfilePage />} />
+      <Route path="/projects/cpu/docs/multdiv" element={<CpuMultdivPage />} />
+      <Route path="/projects/cpu/docs/pipeline" element={<CpuPipelinePage />} />
+      <Route path="/projects/cpu/docs/hazards" element={<CpuHazardsPage />} />
+      <Route path="/projects/cpu/docs/instructions" element={<CpuInstructionsPage />} />
+      <Route path="/projects/cpu/docs/memory" element={<CpuMemoryPage />} />
+
+      {/* Graphics Engine Project */}
+      <Route path="/projects/graphics-engine" element={<GraphicsWasmPage />} />
+      <Route path="/projects/graphics-engine/docs" element={<DocsPage />} />
     </Routes>
   )
 }

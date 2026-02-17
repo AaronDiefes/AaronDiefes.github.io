@@ -5,8 +5,8 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuInstructionsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu-simulator' },
-    { label: 'Documentation', href: '/cpu-docs' },
+    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Instruction Set' }
   ]
 
@@ -677,9 +677,9 @@ function CpuInstructionsPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/cpu-docs/hazards" className="quick-link">← Previous: Hazards & Forwarding</Link>
-            <Link to="/cpu-docs/memory" className="quick-link">Next: Memory System →</Link>
-            <Link to="/cpu-docs" className="quick-link">Back to CPU Docs</Link>
+            <Link to="/projects/cpu/docs/hazards" className="quick-link">← Previous: Hazards & Forwarding</Link>
+            <Link to="/projects/cpu/docs/memory" className="quick-link">Next: Memory System →</Link>
+            <Link to="/projects/cpu/docs" className="quick-link">Back to CPU Docs</Link>
             <a href="https://github.com/AaronDiefes/CPU" className="quick-link" target="_blank" rel="noopener noreferrer">
               View on GitHub
             </a>

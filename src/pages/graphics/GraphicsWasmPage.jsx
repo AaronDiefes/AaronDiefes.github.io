@@ -1091,7 +1091,7 @@ function GraphicsWasmPage() {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Graphics Engine', href: '/projects/graphics-engine/wasm' },
+    { label: 'Graphics Engine', href: '/projects/graphics-engine' },
     { label: 'Interactive Demo' }
   ]
 

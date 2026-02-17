@@ -340,8 +340,8 @@ export default function HomePage() {
                 <li>PNG image loading via virtual filesystem</li>
               </ul>
 
-              <Link to="/projects/graphics-engine/wasm" className="btn">Try Real C++ Engine →</Link>
-              <Link to="/docs" className="btn">View Documentation</Link>
+              <Link to="/projects/graphics-engine" className="btn">Try Real C++ Engine →</Link>
+              <Link to="/projects/graphics-engine/docs" className="btn">View Documentation</Link>
             </div>
 
             <div className="project-card">
@@ -366,8 +366,8 @@ export default function HomePage() {
                 <li>Interactive step-through visualization</li>
               </ul>
 
-              <Link to="/projects/cpu-simulator" className="btn">CPU Simulator →</Link>
-              <Link to="/cpu-docs" className="btn">View Documentation</Link>
+              <Link to="/projects/cpu" className="btn">CPU Simulator →</Link>
+              <Link to="/projects/cpu/docs" className="btn">View Documentation</Link>
             </div>
           </div>
         </section>

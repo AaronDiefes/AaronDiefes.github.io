@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuDocsLanding() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu-simulator' },
+    { label: 'CPU Simulator', href: '/projects/cpu' },
     { label: 'Documentation' }
   ]
 
@@ -364,37 +364,37 @@ function CpuDocsLanding() {
           </p>
 
           <div className="doc-cards">
-            <Link to="/cpu-docs/alu" className="doc-card">
+            <Link to="/projects/cpu/docs/alu" className="doc-card">
               <h3>ALU Design</h3>
               <p>Carry-Lookahead adder, arithmetic and logic operations</p>
             </Link>
 
-            <Link to="/cpu-docs/regfile" className="doc-card">
+            <Link to="/projects/cpu/docs/regfile" className="doc-card">
               <h3>Register File</h3>
               <p>32 registers, dual read ports, $0 hardwired to zero</p>
             </Link>
 
-            <Link to="/cpu-docs/multdiv" className="doc-card">
+            <Link to="/projects/cpu/docs/multdiv" className="doc-card">
               <h3>Multiplication & Division</h3>
               <p>Booth's algorithm, 2-layer implementation</p>
             </Link>
 
-            <Link to="/cpu-docs/pipeline" className="doc-card">
+            <Link to="/projects/cpu/docs/pipeline" className="doc-card">
               <h3>Pipeline Architecture</h3>
               <p>5-stage pipeline, datapath design</p>
             </Link>
 
-            <Link to="/cpu-docs/hazards" className="doc-card">
+            <Link to="/projects/cpu/docs/hazards" className="doc-card">
               <h3>Hazards & Forwarding</h3>
               <p>Data hazards, forwarding paths, stall logic</p>
             </Link>
 
-            <Link to="/cpu-docs/instructions" className="doc-card">
+            <Link to="/projects/cpu/docs/instructions" className="doc-card">
               <h3>Instruction Set</h3>
               <p>Complete instruction reference with encoding formats</p>
             </Link>
 
-            <Link to="/cpu-docs/memory" className="doc-card">
+            <Link to="/projects/cpu/docs/memory" className="doc-card">
               <h3>Memory System</h3>
               <p>RAM, ROM, instruction and data memory</p>
             </Link>
@@ -405,7 +405,7 @@ function CpuDocsLanding() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/cpu-simulator" className="quick-link">Try Interactive Simulator →</Link>
+            <Link to="/projects/cpu" className="quick-link">Try Interactive Simulator →</Link>
             <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/" className="quick-link">Back to Portfolio →</Link>
           </div>
@@ -427,8 +427,8 @@ function CpuDocsLanding() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu-simulator" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
               </ul>
             </div>

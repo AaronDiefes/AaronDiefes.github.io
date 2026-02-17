@@ -5,8 +5,8 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuAluPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu-simulator' },
-    { label: 'Documentation', href: '/cpu-docs' },
+    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'ALU Design' }
   ]
 
@@ -454,8 +454,8 @@ function CpuAluPage() {
           <h2>Explore Further</h2>
           <div className="quick-links">
             <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="quick-link">View CPU Source on GitHub →</a>
-            <Link to="/cpu-docs/regfile" className="quick-link">Next: Register File →</Link>
-            <Link to="/cpu-docs" className="quick-link">Back to CPU Documentation →</Link>
+            <Link to="/projects/cpu/docs/regfile" className="quick-link">Next: Register File →</Link>
+            <Link to="/projects/cpu/docs" className="quick-link">Back to CPU Documentation →</Link>
           </div>
         </section>
       </div>
@@ -475,8 +475,8 @@ function CpuAluPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu-simulator" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/cpu-docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
               </ul>
             </div>
 

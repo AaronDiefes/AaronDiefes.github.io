@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function DocsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Graphics Engine', href: '/projects/graphics-engine/wasm' },
+    { label: 'Graphics Engine', href: '/projects/graphics-engine' },
     { label: 'Documentation' }
   ]
 
@@ -440,32 +440,32 @@ function DocsPage() {
           </p>
 
           <div className="doc-cards">
-            <a href="/docs/core-rendering.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/core-rendering.html" className="doc-card">
               <h3>Core Rendering</h3>
               <p>Edge rasterization, shape drawing, Porter-Duff blend modes, polygon clipping</p>
             </a>
 
-            <a href="/docs/transforms-textures.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/transforms-textures.html" className="doc-card">
               <h3>Transformations & Textures</h3>
               <p>Matrix math, CTM stack, bitmap shader with tile modes</p>
             </a>
 
-            <a href="/docs/paths-gradients.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/paths-gradients.html" className="doc-card">
               <h3>Paths & Gradients</h3>
               <p>GPath construction, winding fill, linear and radial gradients</p>
             </a>
 
-            <a href="/docs/advanced-geometry.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/advanced-geometry.html" className="doc-card">
               <h3>Advanced Geometry</h3>
               <p>Bezier curves, triangle meshes, quad rendering, shader composition</p>
             </a>
 
-            <a href="/docs/final-features.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/final-features.html" className="doc-card">
               <h3>Advanced Features</h3>
               <p>Sweep gradient, color matrix, stroke polygon, Coons patches</p>
             </a>
 
-            <a href="/docs/optimization-performance.html" className="doc-card">
+            <a href="/projects/graphics-engine/docs/optimization-performance.html" className="doc-card">
               <h3>Optimization & Performance</h3>
               <p>Fixed-point division, blend fast paths, static dispatch, memory access patterns</p>
             </a>
@@ -569,7 +569,7 @@ function DocsPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/graphics-engine/wasm" className="quick-link">Try Interactive Demos →</Link>
+            <Link to="/projects/graphics-engine" className="quick-link">Try Interactive Demos →</Link>
             <a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/" className="quick-link">Back to Portfolio →</Link>
           </div>
@@ -591,8 +591,8 @@ function DocsPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/wasm" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Interactive Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Interactive Demo</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
               </ul>
             </div>
