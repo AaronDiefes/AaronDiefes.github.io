@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuDocsLanding() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
     { label: 'Documentation' }
   ]
 
@@ -405,7 +405,7 @@ function CpuDocsLanding() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/cpu" className="quick-link">Try Interactive Simulator →</Link>
+            <Link to="/projects/cpu/demo" className="quick-link">Try Interactive Simulator →</Link>
             <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/" className="quick-link">Back to Portfolio →</Link>
           </div>
@@ -427,7 +427,7 @@ function CpuDocsLanding() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/demo" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
               </ul>

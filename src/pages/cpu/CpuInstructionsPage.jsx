@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuInstructionsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
     { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Instruction Set' }
   ]

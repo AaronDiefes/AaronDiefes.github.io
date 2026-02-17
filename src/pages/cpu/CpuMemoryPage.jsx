@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuMemoryPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
     { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Memory System' }
   ]
@@ -422,7 +422,7 @@ function CpuMemoryPage() {
           </p>
 
           <div className="quick-links">
-            <Link to="/projects/cpu" className="quick-link">
+            <Link to="/projects/cpu/demo" className="quick-link">
               Launch CPU Simulator →
             </Link>
           </div>
@@ -434,7 +434,7 @@ function CpuMemoryPage() {
           <div className="quick-links">
             <Link to="/projects/cpu/docs/instructions" className="quick-link">← Previous: Instruction Set</Link>
             <Link to="/projects/cpu/docs" className="quick-link">Back to CPU Docs</Link>
-            <Link to="/projects/cpu" className="quick-link">Try the Simulator</Link>
+            <Link to="/projects/cpu/demo" className="quick-link">Try the Simulator</Link>
             <a href="https://github.com/AaronDiefes/CPU" className="quick-link" target="_blank" rel="noopener noreferrer">
               View on GitHub
             </a>

@@ -24,7 +24,8 @@
       "Bash(do echo \"=== 13-$i-PLAN.md ===\")",
       "Bash(done)",
       "Bash(for plan in /Users/orases/Aaron/website/.planning/phases/13-documentation-foundation/13-0{1..7}-PLAN.md)",
-      "Bash(for plan in .planning/phases/13-documentation-foundation/13-0*.md)"
+      "Bash(for plan in .planning/phases/13-documentation-foundation/13-0*.md)",
+      "Bash(docker ps:*)"
     ]
   }
 }

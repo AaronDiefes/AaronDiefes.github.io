@@ -36,9 +36,9 @@ function AppContent() {
     // Add class based on current route
     if (location.pathname === '/') {
       document.body.classList.add('home-page')
-    } else if (location.pathname.startsWith('/projects/cpu')) {
+    } else if (location.pathname.startsWith('/projects/cpu/')) {
       document.body.classList.add('cpu-page')
-    } else if (location.pathname.startsWith('/projects/graphics-engine')) {
+    } else if (location.pathname.startsWith('/projects/graphics-engine/')) {
       document.body.classList.add('graphics-page')
     } else if (location.pathname === '/admin') {
       document.body.classList.add('admin-page')
@@ -51,7 +51,7 @@ function AppContent() {
       <Route path="/admin" element={<AdminPage />} />
 
       {/* CPU Project */}
-      <Route path="/projects/cpu" element={<CPUSimulatorPage />} />
+      <Route path="/projects/cpu/demo" element={<CPUSimulatorPage />} />
       <Route path="/projects/cpu/docs" element={<CpuDocsLanding />} />
       <Route path="/projects/cpu/docs/alu" element={<CpuAluPage />} />
       <Route path="/projects/cpu/docs/regfile" element={<CpuRegfilePage />} />
@@ -62,7 +62,7 @@ function AppContent() {
       <Route path="/projects/cpu/docs/memory" element={<CpuMemoryPage />} />
 
       {/* Graphics Engine Project */}
-      <Route path="/projects/graphics-engine" element={<GraphicsWasmPage />} />
+      <Route path="/projects/graphics-engine/demo" element={<GraphicsWasmPage />} />
       <Route path="/projects/graphics-engine/docs" element={<DocsPage />} />
     </Routes>
   )

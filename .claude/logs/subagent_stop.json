@@ -1406,5 +1406,27 @@
     "agent_id": "a7e0e7b",
     "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-a7e0e7b.jsonl",
     "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a77c2b6",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-a77c2b6.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca",
+    "transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca.jsonl",
+    "cwd": "/Users/orases/Aaron/website",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "af30e6d",
+    "agent_transcript_path": "/Users/orases/.claude/projects/-Users-orases-Aaron-website/e3d2e0c8-1293-42a6-8e7c-d40494c9a3ca/subagents/agent-af30e6d.jsonl",
+    "agent_type": ""
   }
 ]

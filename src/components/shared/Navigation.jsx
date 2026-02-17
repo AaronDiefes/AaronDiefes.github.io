@@ -79,18 +79,18 @@ function Navigation() {
         </li>
         <li>
           <Link
-            to="/projects/cpu"
-            className={isActive('/projects/cpu') ? 'active' : ''}
-            aria-current={isActive('/projects/cpu') ? 'page' : undefined}
+            to="/projects/cpu/demo"
+            className={isActive('/projects/cpu/demo') ? 'active' : ''}
+            aria-current={isActive('/projects/cpu/demo') ? 'page' : undefined}
           >
             CPU Simulator
           </Link>
         </li>
         <li>
           <Link
-            to="/projects/graphics-engine"
-            className={isActive('/projects/graphics-engine') ? 'active' : ''}
-            aria-current={isActive('/projects/graphics-engine') ? 'page' : undefined}
+            to="/projects/graphics-engine/demo"
+            className={isActive('/projects/graphics-engine/demo') ? 'active' : ''}
+            aria-current={isActive('/projects/graphics-engine/demo') ? 'page' : undefined}
           >
             Graphics Engine
           </Link>

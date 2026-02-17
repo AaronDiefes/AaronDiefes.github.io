@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function DocsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Graphics Engine', href: '/projects/graphics-engine' },
+    { label: 'Graphics Engine', href: '/projects/graphics-engine/demo' },
     { label: 'Documentation' }
   ]
 
@@ -569,7 +569,7 @@ function DocsPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/graphics-engine" className="quick-link">Try Interactive Demos →</Link>
+            <Link to="/projects/graphics-engine/demo" className="quick-link">Try Interactive Demos →</Link>
             <a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/" className="quick-link">Back to Portfolio →</Link>
           </div>
@@ -591,7 +591,7 @@ function DocsPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Interactive Demo</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/demo" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Interactive Demo</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
               </ul>

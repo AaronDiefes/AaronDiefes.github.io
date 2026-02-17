@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/shared/Breadcrumbs'
 function CpuHazardsPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu' },
+    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
     { label: 'Documentation', href: '/projects/cpu/docs' },
     { label: 'Hazards & Forwarding' }
   ]
@@ -706,7 +706,7 @@ function CpuHazardsPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu" style={{ color: '#ecf0f1', textDecoration: 'none' }}>Interactive Simulator</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/demo" style={{ color: '#ecf0f1', textDecoration: 'none' }}>Interactive Simulator</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none' }}>CPU Documentation</Link></li>
               </ul>
             </div>
