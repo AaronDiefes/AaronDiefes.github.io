@@ -115,6 +115,18 @@ function GraphicsPathsPage() {
         }
 
         .code-block .comment {
+
+        .code-block .signal {
+            color: #9cdcfe;
+        }
+
+        .code-block .operator {
+            color: #d4d4d4;
+        }
+
+        .code-block .number {
+            color: #b5cea8;
+        }
             color: #6a9955;
         }
 

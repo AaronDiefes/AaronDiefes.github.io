@@ -30,6 +30,9 @@ function AppContent() {
   const location = useLocation()
 
   useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0)
+
     // Remove all page-specific classes
     document.body.classList.remove(
       'home-page',
