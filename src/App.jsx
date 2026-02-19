@@ -26,6 +26,9 @@ import CpuHazardsPage from './pages/cpu/CpuHazardsPage'
 import CpuInstructionsPage from './pages/cpu/CpuInstructionsPage'
 import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 
+// CS330 Case Study pages
+import Cs330DocsLanding from './pages/cs330/Cs330DocsLanding'
+
 function AppContent() {
   const location = useLocation()
 
@@ -38,6 +41,7 @@ function AppContent() {
       'home-page',
       'cpu-page',
       'graphics-page',
+      'cs330-page',
       'docs-page',
       'admin-page'
     )
@@ -49,6 +53,8 @@ function AppContent() {
       document.body.classList.add('cpu-page')
     } else if (location.pathname.startsWith('/projects/graphics-engine/')) {
       document.body.classList.add('graphics-page')
+    } else if (location.pathname.startsWith('/projects/cs330/')) {
+      document.body.classList.add('cs330-page')
     } else if (location.pathname === '/admin') {
       document.body.classList.add('admin-page')
     }
@@ -79,6 +85,9 @@ function AppContent() {
       <Route path="/projects/graphics-engine/docs/advanced-geometry" element={<GraphicsAdvancedGeometryPage />} />
       <Route path="/projects/graphics-engine/docs/final-features" element={<GraphicsFinalFeaturesPage />} />
       <Route path="/projects/graphics-engine/docs/optimization-performance" element={<GraphicsOptimizationPage />} />
+
+      {/* CS330 Case Study Project */}
+      <Route path="/projects/cs330/docs" element={<Cs330DocsLanding />} />
     </Routes>
   )
 }
