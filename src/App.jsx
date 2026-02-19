@@ -30,6 +30,7 @@ import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 import Cs330DocsLanding from './pages/cs330/Cs330DocsLanding'
 import Cs330AlgorithmPage from './pages/cs330/Cs330AlgorithmPage'
 import Cs330KdtreePage from './pages/cs330/Cs330KdtreePage'
+import Cs330PathfindingPage from './pages/cs330/Cs330PathfindingPage'
 
 function AppContent() {
   const location = useLocation()
@@ -92,6 +93,7 @@ function AppContent() {
       <Route path="/projects/cs330/docs" element={<Cs330DocsLanding />} />
       <Route path="/projects/cs330/docs/algorithm" element={<Cs330AlgorithmPage />} />
       <Route path="/projects/cs330/docs/kdtree" element={<Cs330KdtreePage />} />
+      <Route path="/projects/cs330/docs/pathfinding" element={<Cs330PathfindingPage />} />
     </Routes>
   )
 }
