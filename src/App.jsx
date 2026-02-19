@@ -28,6 +28,7 @@ import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 
 // CS330 Case Study pages
 import Cs330DocsLanding from './pages/cs330/Cs330DocsLanding'
+import Cs330AlgorithmPage from './pages/cs330/Cs330AlgorithmPage'
 
 function AppContent() {
   const location = useLocation()
@@ -88,6 +89,7 @@ function AppContent() {
 
       {/* CS330 Case Study Project */}
       <Route path="/projects/cs330/docs" element={<Cs330DocsLanding />} />
+      <Route path="/projects/cs330/docs/algorithm" element={<Cs330AlgorithmPage />} />
     </Routes>
   )
 }
