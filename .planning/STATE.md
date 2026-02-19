@@ -108,7 +108,12 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+1. **Add CS330 Case Study documentation to portfolio** (2026-02-19)
+   - Area: documentation
+   - Create `/projects/cs330/docs` structure following CPU/Graphics pattern
+   - No demo page needed (docs-only project)
+   - Include images from code output
+   - Match green theme, breadcrumbs, inline CSS styling
 
 ### Blockers/Concerns
 
