@@ -4,6 +4,7 @@
 
 - ✅ **v1.0 Graphics Engine** - Phases 1-8 (shipped 2026-02-11)
 - ✅ **v1.1 CPU Simulator** - Phases 9-15 (shipped 2026-02-16)
+- 🚧 **v1.2 CS330 Case Study** - Phases 16-20 (in progress)
 
 ## Phases
 
@@ -44,11 +45,10 @@
 
 </details>
 
-### 🚧 v1.1 CPU Simulator (In Progress)
+<details>
+<summary>✅ v1.1 CPU Simulator (Phases 9-15) - SHIPPED 2026-02-16</summary>
 
-**Milestone Goal:** Add 5-stage pipelined CPU simulator to portfolio with interactive step-through demo and progression-based documentation.
-
-#### Phase 9: Animation Framework & Data Structures
+### Phase 9: Animation Framework & Data Structures
 **Goal**: Pre-scripted animation system displays CPU pipeline execution through step-by-step walkthroughs
 **Depends on**: Nothing (first phase of milestone)
 **Requirements**: ANIM-01, ANIM-02, ANIM-03, ANIM-04, ANIM-06
@@ -61,11 +61,11 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — CPU State data structures & Instruction Set definitions (ANIM-01, ANIM-04)
-- [ ] 09-02-PLAN.md — Animation Engine & Timing Controller (ANIM-03, ANIM-06)
-- [ ] 09-03-PLAN.md — Sequence Generator, pre-scripted programs & integration tests (ANIM-02, ANIM-04)
+- [x] 09-01-PLAN.md — CPU State data structures & Instruction Set definitions (ANIM-01, ANIM-04)
+- [x] 09-02-PLAN.md — Animation Engine & Timing Controller (ANIM-03, ANIM-06)
+- [x] 09-03-PLAN.md — Sequence Generator, pre-scripted programs & integration tests (ANIM-02, ANIM-04)
 
-#### Phase 10: Basic Visualization
+### Phase 10: Basic Visualization
 **Goal**: SVG block diagram visualization of 5-stage pipelined processor with hardware components, pipeline registers, and active state highlighting during animation playback
 **Depends on**: Phase 9
 **Requirements**: VIZ-01, VIZ-02, VIZ-03, VIZ-06
@@ -84,7 +84,7 @@ Plans:
 - [x] 10-03-PLAN.md — SVG BlockDiagramView component + updated CSS styles
 - [x] 10-04-PLAN.md — CPUVisualizer integration update + test page + visual verification
 
-#### Phase 11: Interactive Demo Page
+### Phase 11: Interactive Demo Page
 **Goal**: Complete demo page with step-through controls for navigating pre-scripted animation sequences
 **Depends on**: Phase 10
 **Requirements**: DEMO-01, DEMO-02, DEMO-03, DEMO-04, DEMO-05, DEMO-06, DEMO-07, VIZ-04, VIZ-05
@@ -105,12 +105,12 @@ Plans:
 - [x] 11-02-PLAN.md — ControlPanel and ProgramSelector UI components (DEMO-01-04, DEMO-06, DEMO-07)
 - [x] 11-03-PLAN.md — Demo page assembly, CPUVisualizer integration, keyboard shortcuts + visual verification
 
-#### Phase 12: Hazard Visualization
+### Phase 12: Hazard Visualization
 **Goal**: Pre-scripted hazard sequences demonstrate data dependencies and stalls through animated walkthroughs
 **Status**: SKIPPED - Advanced topic beyond portfolio scope
 **Reason**: Current CPU simulator effectively demonstrates core pipeline concepts without needing hazard/stall complexity
 
-#### Phase 13: Documentation Foundation
+### Phase 13: Documentation Foundation
 **Goal**: Comprehensive CPU documentation covering all major components following Duke ECE 350 checkpoint progression (ALU, Register File, MultDiv, Pipeline, Hazards, Instructions, Memory)
 **Depends on**: Phase 11
 **Requirements**: DOC-01, DOC-02, DOC-03, DOC-04, DOC-07, DOC-08
@@ -128,15 +128,15 @@ Plans:
 **Plans:** 7 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — CPU docs landing page + routing setup (DOC-01)
-- [ ] 13-02-PLAN.md — ALU Design documentation page (DOC-03, CP1)
-- [ ] 13-03-PLAN.md — Register File documentation page (CP2)
-- [ ] 13-04-PLAN.md — Multiplication & Division documentation page (CP3)
-- [ ] 13-05-PLAN.md — Pipeline Architecture documentation page (DOC-02, CP4)
-- [ ] 13-06-PLAN.md — Hazards & Forwarding documentation page (CP4)
-- [ ] 13-07-PLAN.md — Instruction Set + Memory System documentation pages (DOC-04)
+- [x] 13-01-PLAN.md — CPU docs landing page + routing setup (DOC-01)
+- [x] 13-02-PLAN.md — ALU Design documentation page (DOC-03, CP1)
+- [x] 13-03-PLAN.md — Register File documentation page (CP2)
+- [x] 13-04-PLAN.md — Multiplication & Division documentation page (CP3)
+- [x] 13-05-PLAN.md — Pipeline Architecture documentation page (DOC-02, CP4)
+- [x] 13-06-PLAN.md — Hazards & Forwarding documentation page (CP4)
+- [x] 13-07-PLAN.md — Instruction Set + Memory System documentation pages (DOC-04)
 
-#### Phase 14: Advanced Documentation
+### Phase 14: Advanced Documentation
 **Goal**: Complete documentation with advanced topics explaining hardware implementation behind animations
 **Depends on**: Phase 13
 **Requirements**: DOC-05, DOC-06, DOC-07, DOC-08
@@ -150,7 +150,7 @@ Plans:
 
 **Note**: All requirements were satisfied during Phase 13 execution. No additional plans needed.
 
-#### Phase 15: Portfolio Integration & Polish
+### Phase 15: Portfolio Integration & Polish
 **Goal**: Integrate CPU visualization into portfolio with performance validation and quality checks
 **Depends on**: Phase 14
 **Requirements**: INT-01, INT-02, INT-03, INT-04, INT-05, PERF-01, PERF-02, PERF-03, QUAL-01, QUAL-02
@@ -170,10 +170,93 @@ Plans:
 
 **Note**: All integration completed during Phase 13 execution and subsequent refinements. Performance and accessibility targets met through existing implementation.
 
+</details>
+
+### 🚧 v1.2 CS330 Case Study (In Progress)
+
+**Milestone Goal:** Add CS330 algorithm design case study documentation to portfolio showcasing ride-sharing optimization algorithms with performance analysis.
+
+#### Phase 16: Documentation Foundation & React Setup
+**Goal**: CS330 project structure with landing page, routing, and shared React components
+**Depends on**: Phase 15
+**Requirements**: DOC-01, INT-04, REACT-01, REACT-02, REACT-04
+**Success Criteria** (what must be TRUE):
+  1. Visitor can navigate to `/projects/cs330/docs` and see CS330 landing page
+  2. Landing page uses forest green design system matching existing portfolio
+  3. All CS330 documentation pages are React components in `src/pages/cs330/`
+  4. React components use inline CSS in style tags matching CPU/Graphics pattern
+  5. Shared Breadcrumbs component works on all CS330 pages
+  6. Routes registered in App.jsx following `/projects/cs330/docs` pattern
+**Plans**: TBD
+
+Plans:
+- [ ] 16-01: [To be planned]
+
+#### Phase 17: Core Algorithm Documentation
+**Goal**: Complete documentation for algorithm evolution (T1-T5), KD-Tree spatial indexing, and Dijkstra pathfinding with code examples
+**Depends on**: Phase 16
+**Requirements**: DOC-03, DOC-04, DOC-05, CODE-01, CODE-02, CODE-03, REACT-03
+**Success Criteria** (what must be TRUE):
+  1. Algorithm Evolution page documents T1-T5 progression with side-by-side code examples
+  2. KD-Tree page explains spatial indexing implementation with annotated Python code
+  3. Pathfinding page explains Dijkstra's algorithm on road networks with code snippets
+  4. Python code blocks include syntax highlighting with keyword/comment/signal/operator/number span classes
+  5. Key algorithms shown with inline annotations explaining implementation details
+  6. Data structure implementations (KD-tree nodes, priority queue) explained with code
+**Plans**: TBD
+
+Plans:
+- [ ] 17-01: [To be planned]
+
+#### Phase 18: Performance Analysis Documentation
+**Goal**: Performance Analysis page with D1/D2 metrics, matplotlib graphs, supply-demand visualizations, and algorithm comparison tables
+**Depends on**: Phase 17
+**Requirements**: DOC-06, VIZ-01, VIZ-02, VIZ-03, VIZ-04
+**Success Criteria** (what must be TRUE):
+  1. Performance Analysis page shows D1/D2 time series graphs comparing T1-T5 algorithms
+  2. Supply-demand scatter plots visualize spatial distribution of riders and drivers
+  3. Algorithm comparison tables display metrics (avg match time, search radius, complexity)
+  4. All performance graphs (PNG/SVG) stored in `public/projects/cs330/images/`
+  5. Images load correctly and are referenced from React components
+**Plans**: TBD
+
+Plans:
+- [ ] 18-01: [To be planned]
+
+#### Phase 19: Bonus Algorithms Documentation
+**Goal**: Bonus Algorithms page documenting B1-B4 advanced optimizations (load balancing, traffic modeling, cache optimization)
+**Depends on**: Phase 18
+**Requirements**: DOC-07
+**Success Criteria** (what must be TRUE):
+  1. Bonus Algorithms page documents B1 (load balancing) implementation
+  2. Bonus Algorithms page documents B2 (traffic-aware routing) approach
+  3. Bonus Algorithms page documents B3 (predictive caching) strategy
+  4. Bonus Algorithms page documents B4 (batching optimization) technique
+  5. Each bonus algorithm includes code snippet and performance impact discussion
+**Plans**: TBD
+
+Plans:
+- [ ] 19-01: [To be planned]
+
+#### Phase 20: Portfolio Integration
+**Goal**: CS330 project integrated into portfolio homepage with complete navigation and GitHub links
+**Depends on**: Phase 19
+**Requirements**: INT-01, INT-02, INT-03, INT-05, DOC-02
+**Success Criteria** (what must be TRUE):
+  1. CS330 project card appears on portfolio homepage linking to documentation
+  2. All CS330 pages use forest green design system (#2E7D32) matching portfolio
+  3. Breadcrumb navigation appears on all pages (Home > CS330 > Documentation > [Topic])
+  4. All CS330 pages link to GitHub repo (https://github.com/AaronDiefes/cs330-case-study)
+  5. Landing page explains the ride-sharing matching problem and links to all documentation pages
+**Plans**: TBD
+
+Plans:
+- [ ] 20-01: [To be planned]
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
+Phases execute in numeric order: 16 → 17 → 18 → 19 → 20
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -192,8 +275,14 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 13. Documentation Foundation | v1.1 | 7/7 | Complete | 2026-02-16 |
 | 14. Advanced Documentation | v1.1 | - | Complete | 2026-02-16 |
 | 15. Portfolio Integration & Polish | v1.1 | - | Complete | 2026-02-16 |
+| 16. Documentation Foundation & React Setup | v1.2 | 0/TBD | Not started | - |
+| 17. Core Algorithm Documentation | v1.2 | 0/TBD | Not started | - |
+| 18. Performance Analysis Documentation | v1.2 | 0/TBD | Not started | - |
+| 19. Bonus Algorithms Documentation | v1.2 | 0/TBD | Not started | - |
+| 20. Portfolio Integration | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-16*
+*Last updated: 2026-02-18*
 *Milestone v1.1 (CPU Simulator) complete: 2026-02-16*
+*Milestone v1.2 (CS330 Case Study) started: 2026-02-18*

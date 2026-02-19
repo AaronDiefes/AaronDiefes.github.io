@@ -55,13 +55,44 @@
 
 ## Traceability
 
-*Will be populated during roadmap creation*
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DOC-01 | Phase 16 | Pending |
+| DOC-02 | Phase 20 | Pending |
+| DOC-03 | Phase 17 | Pending |
+| DOC-04 | Phase 17 | Pending |
+| DOC-05 | Phase 17 | Pending |
+| DOC-06 | Phase 18 | Pending |
+| DOC-07 | Phase 19 | Pending |
+| VIZ-01 | Phase 18 | Pending |
+| VIZ-02 | Phase 18 | Pending |
+| VIZ-03 | Phase 18 | Pending |
+| VIZ-04 | Phase 18 | Pending |
+| INT-01 | Phase 20 | Pending |
+| INT-02 | Phase 20 | Pending |
+| INT-03 | Phase 20 | Pending |
+| INT-04 | Phase 16 | Pending |
+| INT-05 | Phase 20 | Pending |
+| CODE-01 | Phase 17 | Pending |
+| CODE-02 | Phase 17 | Pending |
+| CODE-03 | Phase 17 | Pending |
+| REACT-01 | Phase 16 | Pending |
+| REACT-02 | Phase 16 | Pending |
+| REACT-03 | Phase 17 | Pending |
+| REACT-04 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 22 total
-- Mapped to phases: TBD
-- Unmapped: TBD
+- Mapped to phases: 22/22 (100%)
+- Unmapped: 0
+
+**Phase Distribution:**
+- Phase 16: 5 requirements (DOC-01, INT-04, REACT-01, REACT-02, REACT-04)
+- Phase 17: 7 requirements (DOC-03, DOC-04, DOC-05, CODE-01, CODE-02, CODE-03, REACT-03)
+- Phase 18: 4 requirements (DOC-06, VIZ-01, VIZ-02, VIZ-03, VIZ-04)
+- Phase 19: 1 requirement (DOC-07)
+- Phase 20: 5 requirements (DOC-02, INT-01, INT-02, INT-03, INT-05)
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-18 after roadmap creation*
