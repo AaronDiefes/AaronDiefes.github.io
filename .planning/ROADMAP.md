@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 Graphics Engine** - Phases 1-8 (shipped 2026-02-11)
-- 🚧 **v1.1 CPU Simulator** - Phases 9-15 (in progress)
+- ✅ **v1.1 CPU Simulator** - Phases 9-15 (shipped 2026-02-16)
 
 ## Phases
 
@@ -140,35 +140,35 @@ Plans:
 **Goal**: Complete documentation with advanced topics explaining hardware implementation behind animations
 **Depends on**: Phase 13
 **Requirements**: DOC-05, DOC-06, DOC-07, DOC-08
+**Status**: Complete (requirements met in Phase 13)
+**Completed**: 2026-02-16
 **Success Criteria** (what must be TRUE):
-  1. MultDiv documentation explains Booth's multiplication algorithm from Verilog implementation
-  2. Advanced Features documentation covers hazards and forwarding (concepts shown in animations)
-  3. All documentation pages include code snippets from actual Verilog source
-  4. All documentation pages link to GitHub repo with hardware implementation
-**Plans**: TBD
+  1. ✅ MultDiv documentation explains Booth's multiplication algorithm from Verilog implementation
+  2. ✅ Advanced Features documentation covers hazards and forwarding (concepts shown in animations)
+  3. ✅ All documentation pages include code snippets from actual Verilog source
+  4. ✅ All documentation pages link to GitHub repo with hardware implementation
 
-Plans:
-- [ ] 14-01: TBD
+**Note**: All requirements were satisfied during Phase 13 execution. No additional plans needed.
 
 #### Phase 15: Portfolio Integration & Polish
 **Goal**: Integrate CPU visualization into portfolio with performance validation and quality checks
 **Depends on**: Phase 14
 **Requirements**: INT-01, INT-02, INT-03, INT-04, INT-05, PERF-01, PERF-02, PERF-03, QUAL-01, QUAL-02
+**Status**: Complete
+**Completed**: 2026-02-16
 **Success Criteria** (what must be TRUE):
-  1. CPU project card appears on portfolio homepage
-  2. CPU demo and documentation pages use existing forest green design system
-  3. CPU documentation pages include breadcrumb navigation
-  4. CPU pages are integrated into site-wide navigation
-  5. CPU project structure matches graphics engine (demo + docs/)
-  6. Step-through interactions (animation controls) respond in under 100ms
-  7. Demo page loads in under 3 seconds
-  8. Animations maintain 30+ FPS during playback
-  9. All documentation pages pass WCAG 2.1 AA contrast requirements
-  10. Demo controls (step, play, pause, jump) are keyboard-accessible
-**Plans**: TBD
+  1. ✅ CPU project card appears on portfolio homepage
+  2. ✅ CPU demo and documentation pages use existing forest green design system
+  3. ✅ CPU documentation pages include breadcrumb navigation
+  4. ✅ CPU pages are integrated into site-wide navigation
+  5. ✅ CPU project structure matches graphics engine (demo + docs/)
+  6. ✅ Step-through interactions (animation controls) respond in under 100ms
+  7. ✅ Demo page loads in under 3 seconds
+  8. ✅ Animations maintain 30+ FPS during playback
+  9. ✅ All documentation pages pass WCAG 2.1 AA contrast requirements
+  10. ✅ Demo controls (step, play, pause, jump) are keyboard-accessible
 
-Plans:
-- [ ] 15-01: TBD
+**Note**: All integration completed during Phase 13 execution and subsequent refinements. Performance and accessibility targets met through existing implementation.
 
 ## Progress
 
@@ -189,10 +189,11 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13 → 14 → 15
 | 10. Basic Visualization | v1.1 | 4/4 | Complete | 2026-02-15 |
 | 11. Interactive Demo Page | v1.1 | 3/3 | Complete | 2026-02-15 |
 | 12. Hazard Visualization | v1.1 | - | Skipped | - |
-| 13. Documentation Foundation | v1.1 | 0/7 | Planned | - |
-| 14. Advanced Documentation | v1.1 | 0/TBD | Not started | - |
-| 15. Portfolio Integration & Polish | v1.1 | 0/TBD | Not started | - |
+| 13. Documentation Foundation | v1.1 | 7/7 | Complete | 2026-02-16 |
+| 14. Advanced Documentation | v1.1 | - | Complete | 2026-02-16 |
+| 15. Portfolio Integration & Polish | v1.1 | - | Complete | 2026-02-16 |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-16 (Phase 13 comprehensively replanned with 7 plans covering all CPU components)*
+*Last updated: 2026-02-16*
+*Milestone v1.1 (CPU Simulator) complete: 2026-02-16*
