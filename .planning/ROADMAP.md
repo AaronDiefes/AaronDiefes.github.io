@@ -187,10 +187,10 @@ Plans:
   4. React components use inline CSS in style tags matching CPU/Graphics pattern
   5. Shared Breadcrumbs component works on all CS330 pages
   6. Routes registered in App.jsx following `/projects/cs330/docs` pattern
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: [To be planned]
+- [ ] 16-01-PLAN.md — CS330 landing page + routing setup (DOC-01, INT-04, REACT-01, REACT-02, REACT-04)
 
 #### Phase 17: Core Algorithm Documentation
 **Goal**: Complete documentation for algorithm evolution (T1-T5), KD-Tree spatial indexing, and Dijkstra pathfinding with code examples
@@ -275,7 +275,7 @@ Phases execute in numeric order: 16 → 17 → 18 → 19 → 20
 | 13. Documentation Foundation | v1.1 | 7/7 | Complete | 2026-02-16 |
 | 14. Advanced Documentation | v1.1 | - | Complete | 2026-02-16 |
 | 15. Portfolio Integration & Polish | v1.1 | - | Complete | 2026-02-16 |
-| 16. Documentation Foundation & React Setup | v1.2 | 0/TBD | Not started | - |
+| 16. Documentation Foundation & React Setup | v1.2 | 0/1 | Not started | - |
 | 17. Core Algorithm Documentation | v1.2 | 0/TBD | Not started | - |
 | 18. Performance Analysis Documentation | v1.2 | 0/TBD | Not started | - |
 | 19. Bonus Algorithms Documentation | v1.2 | 0/TBD | Not started | - |
