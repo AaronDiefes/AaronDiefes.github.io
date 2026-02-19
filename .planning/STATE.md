@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Showcase technical depth through interactive project demonstrations with comprehensive documentation
-**Current focus:** Milestone v1.1 (CPU Simulator) - COMPLETE
+**Current focus:** Milestone v1.2 (CS330 Case Study) - Defining requirements
 
 ## Current Position
 
-Milestone: v1.1 CPU Simulator - COMPLETE
-Phase: 15 of 15 (all phases complete)
-Status: Milestone shipped
-Last activity: 2026-02-16 — Phases 14 & 15 marked complete (requirements met)
+Milestone: v1.2 CS330 Case Study
+Phase: Not started (defining requirements)
+Status: Defining requirements
+Last activity: 2026-02-16 — Milestone v1.2 started
 
-Progress: [████████████████████] 100% (15/15 phases, 1 skipped)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (milestone just started)
 
 ## Performance Metrics
 

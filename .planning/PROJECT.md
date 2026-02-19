@@ -8,16 +8,19 @@ Showcase technical depth through interactive project demonstrations with compreh
 
 Portfolio website featuring multiple technical projects with interactive demos and in-depth documentation.
 
-## Current Milestone: v1.1 - CPU Simulator
+## Current Milestone: v1.2 - CS330 Case Study
 
-**Goal:** Add 5-stage pipelined CPU simulator to portfolio with interactive step-through demo and progression-based documentation.
+**Goal:** Add CS330 algorithm design case study documentation to portfolio showcasing ride-sharing optimization algorithms with performance analysis.
 
 **Target features:**
-- Interactive step-through visualization (step, play/pause, jump controls)
-- Programs: Basic instructions + Fibonacci
-- Visualize: Instruction decode, register state, memory, pipeline stages
-- Documentation: Pipeline basics → ALU design → Instruction set → Advanced features
-- Integration with existing portfolio design system
+- Documentation-only project (no interactive demo)
+- Algorithm evolution: T1-T5 progressive optimization with comparisons
+- KD-tree spatial indexing deep dive
+- Pathfinding with Dijkstra's algorithm on road networks
+- Performance analysis with D1/D2 metric visualizations
+- Bonus algorithms: Load balancing, traffic modeling, cache optimization
+- Include matplotlib graphs and performance comparisons
+- Match existing portfolio design and navigation patterns
 
 ## Success Criteria
 
@@ -71,4 +74,4 @@ The portfolio succeeds when:
 - Cohesive design system across all projects
 
 ---
-*Last updated: 2026-02-11 after starting milestone v1.1*
+*Last updated: 2026-02-16 after starting milestone v1.2*
