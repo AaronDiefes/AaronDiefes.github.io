@@ -203,10 +203,12 @@ Plans:
   4. Python code blocks include syntax highlighting with keyword/comment/signal/operator/number span classes
   5. Key algorithms shown with inline annotations explaining implementation details
   6. Data structure implementations (KD-tree nodes, priority queue) explained with code
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 17-01: [To be planned]
+- [ ] 17-01-PLAN.md — Algorithm Evolution page (T1-T5 progression with Python code examples)
+- [ ] 17-02-PLAN.md — KD-Tree Spatial Indexing page (node structure, construction, nearest-neighbor search)
+- [ ] 17-03-PLAN.md — Pathfinding page (Dijkstra's algorithm on road networks)
 
 #### Phase 18: Performance Analysis Documentation
 **Goal**: Performance Analysis page with D1/D2 metrics, matplotlib graphs, supply-demand visualizations, and algorithm comparison tables
