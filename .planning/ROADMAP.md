@@ -220,10 +220,11 @@ Plans:
   3. Algorithm comparison tables display metrics (avg match time, search radius, complexity)
   4. All performance graphs (PNG/SVG) stored in `public/projects/cs330/images/`
   5. Images load correctly and are referenced from React components
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 18-01: [To be planned]
+- [ ] 18-01-PLAN.md — Generate matplotlib performance graphs (D1/D2 time series, supply-demand scatter, runtime comparison)
+- [ ] 18-02-PLAN.md — Create Performance Analysis React page with embedded graphs, comparison tables, and route registration
 
 #### Phase 19: Bonus Algorithms Documentation
 **Goal**: Bonus Algorithms page documenting B1-B4 advanced optimizations (load balancing, traffic modeling, cache optimization)
@@ -279,12 +280,12 @@ Phases execute in numeric order: 16 → 17 → 18 → 19 → 20
 | 15. Portfolio Integration & Polish | v1.1 | - | Complete | 2026-02-16 |
 | 16. Documentation Foundation & React Setup | v1.2 | 0/1 | Not started | - |
 | 17. Core Algorithm Documentation | v1.2 | 0/TBD | Not started | - |
-| 18. Performance Analysis Documentation | v1.2 | 0/TBD | Not started | - |
+| 18. Performance Analysis Documentation | v1.2 | 0/2 | Not started | - |
 | 19. Bonus Algorithms Documentation | v1.2 | 0/TBD | Not started | - |
 | 20. Portfolio Integration | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-18*
+*Last updated: 2026-02-26*
 *Milestone v1.1 (CPU Simulator) complete: 2026-02-16*
 *Milestone v1.2 (CS330 Case Study) started: 2026-02-18*
