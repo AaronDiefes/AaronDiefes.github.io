@@ -197,6 +197,108 @@ function Cs330AlgorithmPage() {
                 text-align: center;
             }
         }
+
+        .performance-results {
+          margin: 2rem 0;
+          padding: 1.5rem;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border-left: 4px solid #2E7D32;
+        }
+
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .metric-card {
+          background: white;
+          padding: 1rem;
+          border-radius: 6px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .metric-label {
+          display: block;
+          font-weight: 600;
+          color: #2E7D32;
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #2c3e50;
+        }
+
+        .performance-graph {
+          width: 100%;
+          max-width: 800px;
+          height: auto;
+          margin: 1rem auto;
+          display: block;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .graph-caption {
+          text-align: center;
+          font-style: italic;
+          color: #666;
+          margin-top: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        .comparison-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 2rem 0;
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+          background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+          color: white;
+          padding: 1rem;
+          text-align: left;
+          font-weight: 600;
+        }
+
+        .comparison-table td {
+          padding: 1rem;
+          border-bottom: 1px solid #e0e0e0;
+          color: #2c3e50;
+        }
+
+        .comparison-table tr:last-child td {
+          border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+          background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+          .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .comparison-table {
+            font-size: 0.9rem;
+          }
+
+          .comparison-table th,
+          .comparison-table td {
+            padding: 0.75rem 0.5rem;
+          }
+        }
       `}</style>
 
       <Breadcrumbs items={breadcrumbItems} />
@@ -282,6 +384,38 @@ function Cs330AlgorithmPage() {
           <p>
             <strong>Real-World Performance:</strong> For small datasets (10-100 riders/drivers), this approach works fine and completes in milliseconds. However, for production-scale systems with thousands of drivers and riders, this becomes impractical. With 1,000 riders and 1,000 drivers, we perform 1 million distance calculations.
           </p>
+
+          <h3>Experimental Results</h3>
+          <div className="performance-results">
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Average D1:</span>
+                <span className="metric-value">1046.91 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Average D2:</span>
+                <span className="metric-value">-309.38 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Matching Time:</span>
+                <span className="metric-value">3.61 s</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Pathfinding Time:</span>
+                <span className="metric-value">5.73 s</span>
+              </div>
+            </div>
+
+            <img
+              src="/projects/cs330/images/t1_d1_d2_plot.png"
+              alt="T1 Brute Force D1 and D2 metrics over time from actual simulation run"
+              className="performance-graph"
+            />
+
+            <p className="graph-caption">
+              D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted over the simulation period.
+            </p>
+          </div>
         </section>
 
         {/* T2: Sorted Distance Optimization Section */}
@@ -335,6 +469,38 @@ function Cs330AlgorithmPage() {
           <p>
             <strong>Real-World Performance:</strong> For uniformly distributed drivers, this provides a 2-3× speedup over brute force. However, the improvement depends heavily on data distribution and the threshold choice. If drivers are clustered, performance gains are minimal.
           </p>
+
+          <h3>Experimental Results</h3>
+          <div className="performance-results">
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Average D1:</span>
+                <span className="metric-value">584.40 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Average D2:</span>
+                <span className="metric-value">134.69 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Matching Time:</span>
+                <span className="metric-value">3.78 s</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Pathfinding Time:</span>
+                <span className="metric-value">3.16 s</span>
+              </div>
+            </div>
+
+            <img
+              src="/projects/cs330/images/t2_d1_d2_plot.png"
+              alt="T2 Sorted Distance D1 and D2 metrics over time from actual simulation run"
+              className="performance-graph"
+            />
+
+            <p className="graph-caption">
+              Sorted distance optimization shows improved D1 metric (44% reduction from T1) through faster matching. D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted.
+            </p>
+          </div>
         </section>
 
         {/* T3: Grid-Based Spatial Partitioning Section */}
@@ -408,6 +574,23 @@ function Cs330AlgorithmPage() {
           <p>
             <strong>Grid Granularity Tradeoff:</strong> Too large (coarse grid) → many drivers per cell, slower search. Too small (fine grid) → many empty cells, more cells to check. Optimal grid size depends on driver density and distribution.
           </p>
+
+          <h3>Experimental Results</h3>
+          <div className="performance-results">
+            <p style={{ color: '#666', fontStyle: 'italic' }}>
+              Note: Complete performance metrics for T3 are pending. Partial visualization data is available showing the D1/D2 evolution pattern.
+            </p>
+
+            <img
+              src="/projects/cs330/images/t3_d1_d2_plot.png"
+              alt="T3 Grid-Based D1 and D2 metrics over time (partial data)"
+              className="performance-graph"
+            />
+
+            <p className="graph-caption">
+              Grid-based spatial partitioning performance visualization (partial run).
+            </p>
+          </div>
         </section>
 
         {/* T4: KD-Tree Nearest Neighbor Section */}
@@ -460,6 +643,23 @@ function Cs330AlgorithmPage() {
           <p>
             <strong>Learn More:</strong> See the <Link to="/projects/cs330/docs/kdtree" style={{ color: '#2E7D32', fontWeight: 600 }}>KD-Tree Documentation</Link> for detailed implementation, balancing strategies, and performance benchmarks.
           </p>
+
+          <h3>Experimental Results</h3>
+          <div className="performance-results">
+            <p style={{ color: '#666', fontStyle: 'italic' }}>
+              Note: Complete performance metrics for T4 are pending. Partial visualization data is available showing the D1/D2 evolution pattern.
+            </p>
+
+            <img
+              src="/projects/cs330/images/t4_d1_d2_plot.png"
+              alt="T4 KD-Tree D1 and D2 metrics over time (partial data)"
+              className="performance-graph"
+            />
+
+            <p className="graph-caption">
+              KD-Tree nearest neighbor performance visualization (partial run).
+            </p>
+          </div>
         </section>
 
         {/* T5: KD-Tree + Dijkstra Road Network Section */}
@@ -539,6 +739,103 @@ function Cs330AlgorithmPage() {
           <p>
             <strong>Learn More:</strong> See the <Link to="/projects/cs330/docs/pathfinding" style={{ color: '#2E7D32', fontWeight: 600 }}>Pathfinding Documentation</Link> for details on Dijkstra's algorithm, graph representation, and optimization techniques.
           </p>
+
+          <h3>Experimental Results</h3>
+          <div className="performance-results">
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Average D1:</span>
+                <span className="metric-value">571.21 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Average D2:</span>
+                <span className="metric-value">141.19 km</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Matching Time:</span>
+                <span className="metric-value">0.21 s</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Pathfinding Time:</span>
+                <span className="metric-value">8.17 s</span>
+              </div>
+            </div>
+
+            <img
+              src="/projects/cs330/images/t5_d1_d2_plot.png"
+              alt="T5 KD-Tree + Dijkstra D1 and D2 metrics over time from actual simulation run"
+              className="performance-graph"
+            />
+
+            <p className="graph-caption">
+              KD-Tree + Dijkstra road network optimization achieves the best D1 metric (45% reduction from T1) using real road distances. D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted.
+            </p>
+          </div>
+        </section>
+
+        {/* Performance Comparison Section */}
+        <section className="section">
+          <h2>Performance Comparison</h2>
+          <p>
+            The following table compares real-world performance metrics across all five algorithm implementations, showing the progression from brute-force to optimized spatial data structures and road network integration.
+          </p>
+
+          <table className="comparison-table">
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Complexity</th>
+                <th>Avg D1 (km)</th>
+                <th>Avg D2 (km)</th>
+                <th>Matching (s)</th>
+                <th>Pathfinding (s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>T1: Brute Force</strong></td>
+                <td>O(n × m)</td>
+                <td>1046.91</td>
+                <td>-309.38</td>
+                <td>3.61</td>
+                <td>5.73</td>
+              </tr>
+              <tr>
+                <td><strong>T2: Sorted Distance</strong></td>
+                <td>O(n × m/k) avg</td>
+                <td>584.40</td>
+                <td>134.69</td>
+                <td>3.78</td>
+                <td>3.16</td>
+              </tr>
+              <tr>
+                <td><strong>T3: Grid-Based</strong></td>
+                <td>O(n × k)</td>
+                <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic', color: '#666' }}>Pending complete analysis</td>
+              </tr>
+              <tr>
+                <td><strong>T4: KD-Tree</strong></td>
+                <td>O(n × log m)</td>
+                <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic', color: '#666' }}>Pending complete analysis</td>
+              </tr>
+              <tr>
+                <td><strong>T5: KD-Tree + Dijkstra</strong></td>
+                <td>O(n × (log m + E log V))</td>
+                <td>571.21</td>
+                <td>141.19</td>
+                <td>0.21</td>
+                <td>8.17</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Key Insights</h3>
+          <ul>
+            <li><strong>D1 Improvement:</strong> T2 and T5 both achieve ~45% reduction in passenger wait time (D1) compared to T1, demonstrating the value of optimization.</li>
+            <li><strong>Matching Speed:</strong> T5's KD-Tree matching is 17× faster than brute-force (0.21s vs 3.61s), critical for real-time applications.</li>
+            <li><strong>Road Network Accuracy:</strong> T5 uses real road distances via Dijkstra, providing more accurate matching at the cost of increased pathfinding time (8.17s).</li>
+            <li><strong>Trade-offs:</strong> T2 offers a good balance with fast pathfinding (3.16s) and significant D1 improvement, while T5 prioritizes accuracy with slightly longer total time.</li>
+          </ul>
         </section>
 
         {/* Explore Further Section */}
