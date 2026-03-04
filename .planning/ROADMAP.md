@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Graphics Engine** - Phases 1-8 (shipped 2026-02-11)
 - ✅ **v1.1 CPU Simulator** - Phases 9-15 (shipped 2026-02-16)
-- 🚧 **v1.2 CS330 Case Study** - Phases 16-20 (in progress)
+- ✅ **v1.2 Uber Algorithmic System** - Phases 16-20 (shipped 2026-03-03)
 
 ## Phases
 
@@ -248,19 +248,21 @@ Plans:
 - [x] 19-01: Create UberBonusPage.jsx, run B1-B4 simulations, generate performance graphs, add comprehensive result analysis
 
 #### Phase 20: Portfolio Integration
-**Goal**: CS330 project integrated into portfolio homepage with complete navigation and GitHub links
+**Goal**: Uber Algorithmic System project integrated into portfolio homepage with complete navigation and GitHub links
 **Depends on**: Phase 19
 **Requirements**: INT-01, INT-02, INT-03, INT-05, DOC-02
+**Status**: ✅ Complete
+**Completed**: 2026-03-03
 **Success Criteria** (what must be TRUE):
-  1. CS330 project card appears on portfolio homepage linking to documentation
-  2. All CS330 pages use forest green design system (#2E7D32) matching portfolio
-  3. Breadcrumb navigation appears on all pages (Home > CS330 > Documentation > [Topic])
-  4. All CS330 pages link to GitHub repo (https://github.com/AaronDiefes/cs330-case-study)
-  5. Landing page explains the ride-sharing matching problem and links to all documentation pages
-**Plans**: TBD
+  1. ✅ Uber project card appears on portfolio homepage linking to documentation
+  2. ✅ All Uber pages use forest green design system (#2E7D32) matching portfolio
+  3. ✅ Breadcrumb navigation appears on all pages (Home > Uber Algorithmic System > Documentation > [Topic])
+  4. ✅ All Uber pages link to GitHub repo (https://github.com/AaronDiefes/cs330-case-study)
+  5. ✅ Landing page explains the ride-sharing matching problem and links to all documentation pages
+**Plans**: 1 plan complete
 
 Plans:
-- [ ] 20-01: [To be planned]
+- [x] 20-01: Standardize GitHub repo links across all Uber pages (completed during Phase 18 integration + Phase 20 cleanup)
 
 ## Progress
 

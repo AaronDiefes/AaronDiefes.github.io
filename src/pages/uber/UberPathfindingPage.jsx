@@ -530,7 +530,7 @@ function UberPathfindingPage() {
             <Link to="/projects/uber/docs/algorithm" className="quick-link">Algorithm Evolution →</Link>
             <Link to="/projects/uber/docs/kdtree" className="quick-link">KD-Tree Implementation →</Link>
             <a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.dijkstra_path.html" target="_blank" rel="noopener noreferrer" className="quick-link">NetworkX Dijkstra Docs →</a>
-            <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
+            <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/projects/uber/docs" className="quick-link">Back to CS330 Documentation →</Link>
           </div>
         </section>
@@ -563,7 +563,7 @@ function UberPathfindingPage() {
               <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Resources</h3>
               <ul style={'{ listStyle: "none", padding: 0 }'}>
                 <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>GitHub Profile</a></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Uber Algorithmic System Repo</a></li>
+                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Uber Algorithmic System Repo</a></li>
                 <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Portfolio Repo</a></li>
               </ul>
             </div>

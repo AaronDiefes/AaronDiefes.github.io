@@ -432,7 +432,7 @@ function UberKdtreePage() {
             <Link to="/projects/uber/docs/algorithm" className="quick-link">Algorithm Evolution (T1-T5) →</Link>
             <Link to="/projects/uber/docs/pathfinding" className="quick-link">Pathfinding with Dijkstra →</Link>
             <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html" target="_blank" rel="noopener noreferrer" className="quick-link">SciPy KDTree Reference →</a>
-            <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
+            <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/projects/uber/docs" className="quick-link">Back to CS330 Documentation →</Link>
           </div>
         </section>
@@ -465,7 +465,7 @@ function UberKdtreePage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber Algorithmic System Repo</a></li>
+                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber Algorithmic System Repo</a></li>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repo</a></li>
               </ul>
             </div>

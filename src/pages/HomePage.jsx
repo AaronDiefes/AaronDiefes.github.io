@@ -393,7 +393,7 @@ export default function HomePage() {
               </ul>
 
               <Link to="/projects/uber/docs" className="btn">View Documentation</Link>
-              <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="btn secondary">GitHub Repo</a>
+              <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="btn secondary">GitHub Repo</a>
             </div>
           </div>
         </section>
