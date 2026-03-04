@@ -319,7 +319,7 @@ export default function HomePage() {
           <h2>Projects</h2>
           <div className="project-grid">
             <div className="project-card">
-              <h3>2D Graphics Engine 🚀</h3>
+              <h3>2D Graphics Engine</h3>
               <p>A custom-built 2D graphics engine written in C++ and compiled to WebAssembly - running real C++ code in your browser at near-native speed! Explore the implementation details in the comprehensive documentation with algorithm explanations and interactive demos.</p>
 
               <div className="tech-tags">
@@ -345,7 +345,7 @@ export default function HomePage() {
             </div>
 
             <div className="project-card">
-              <h3>32-bit CPU 💻</h3>
+              <h3>32-bit CPU</h3>
               <p>A 32-bit RISC processor built from scratch in Verilog HDL with an interactive JavaScript visualization. Features a complete 5-stage pipeline with hazard detection, data forwarding, and step-by-step animations showing instruction execution through the pipeline stages.</p>
 
               <div className="tech-tags">
@@ -369,21 +369,35 @@ export default function HomePage() {
               <Link to="/projects/cpu/demo" className="btn">CPU Simulator →</Link>
               <Link to="/projects/cpu/docs" className="btn">View Documentation</Link>
             </div>
-          </div>
-        </section>
 
-        <section className="section">
-          <div className="github-repos">
-            <h2>Other Projects</h2>
-            <div className="repo-list">
-              <div className="repo-item">
-                <h4>CS330 Case Study</h4>
-                <p>Academic project demonstrating software engineering principles.</p>
-                <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer">View on GitHub →</a>
+            <div className="project-card">
+              <h3>Uber Algorithmic System</h3>
+              <p>Ride-sharing platform algorithm analysis inspired by Uber's matching system. Demonstrates progressive algorithm evolution from brute-force (T1) to optimized spatial indexing (T5) with KD-trees and Dijkstra's pathfinding, including comprehensive performance analysis on 10,000 passenger datasets.</p>
+
+              <div className="tech-tags">
+                <span className="tech-tag">Python</span>
+                <span className="tech-tag">Algorithm Design</span>
+                <span className="tech-tag">KD-Trees</span>
+                <span className="tech-tag">Dijkstra's Algorithm</span>
+                <span className="tech-tag">Multiprocessing</span>
               </div>
+
+              <strong style={{display: 'block', marginBottom: '0.5rem'}}>Key Features:</strong>
+              <ul style={{marginLeft: '1.5rem', marginBottom: '1.5rem'}}>
+                <li>Progressive algorithm evolution (T1-T5 iterations)</li>
+                <li>KD-tree spatial indexing for O(log n) queries</li>
+                <li>Dijkstra's algorithm for road network pathfinding</li>
+                <li>Performance analysis with D1/D2 metrics</li>
+                <li>Fork-based multiprocessing (5-7× speedup)</li>
+                <li>Interactive visualizations and comparison graphs</li>
+              </ul>
+
+              <Link to="/projects/uber/docs" className="btn">View Documentation</Link>
+              <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="btn secondary">GitHub Repo</a>
             </div>
           </div>
         </section>
+
       </div>
 
       <footer>

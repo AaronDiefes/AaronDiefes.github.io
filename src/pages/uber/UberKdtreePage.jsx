@@ -2,11 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
-function Cs330KdtreePage() {
+function UberKdtreePage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CS330 Case Study', href: '/projects/cs330/docs' },
-    { label: 'Documentation', href: '/projects/cs330/docs' },
+    { label: 'Uber Algorithmic System', href: '/projects/uber/docs' },
+    { label: 'Documentation', href: '/projects/uber/docs' },
     { label: 'KD-Tree Spatial Indexing' }
   ]
 
@@ -380,7 +380,7 @@ function Cs330KdtreePage() {
         <section className="section">
           <h2>Ride-Sharing Integration</h2>
           <p>
-            In the T4 algorithm from the <Link to="/projects/cs330/docs/algorithm" style={{ color: '#2E7D32', fontWeight: 600 }}>Algorithm Evolution</Link> page, KD-Trees replace brute-force driver scanning. The matching workflow builds a tree once from all driver locations, then queries it for each rider to find the nearest available driver.
+            In the T4 algorithm from the <Link to="/projects/uber/docs/algorithm" style={{ color: '#2E7D32', fontWeight: 600 }}>Algorithm Evolution</Link> page, KD-Trees replace brute-force driver scanning. The matching workflow builds a tree once from all driver locations, then queries it for each rider to find the nearest available driver.
           </p>
 
           <h3>Matching with KD-Tree</h3>
@@ -429,11 +429,11 @@ function Cs330KdtreePage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/cs330/docs/algorithm" className="quick-link">Algorithm Evolution (T1-T5) →</Link>
-            <Link to="/projects/cs330/docs/pathfinding" className="quick-link">Pathfinding with Dijkstra →</Link>
+            <Link to="/projects/uber/docs/algorithm" className="quick-link">Algorithm Evolution (T1-T5) →</Link>
+            <Link to="/projects/uber/docs/pathfinding" className="quick-link">Pathfinding with Dijkstra →</Link>
             <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html" target="_blank" rel="noopener noreferrer" className="quick-link">SciPy KDTree Reference →</a>
-            <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
-            <Link to="/projects/cs330/docs" className="quick-link">Back to CS330 Documentation →</Link>
+            <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
+            <Link to="/projects/uber/docs" className="quick-link">Back to CS330 Documentation →</Link>
           </div>
         </section>
       </div>
@@ -453,10 +453,10 @@ function Cs330KdtreePage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Documentation</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs/algorithm" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Algorithm Evolution</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs/algorithm" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Algorithm Evolution</Link></li>
                 <li style={{ marginBottom: '0.75rem', color: '#95a5a6' }}>KD-Tree</li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs/pathfinding" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Pathfinding</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs/pathfinding" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Pathfinding</Link></li>
               </ul>
             </div>
 
@@ -465,7 +465,7 @@ function Cs330KdtreePage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Case Study Repo</a></li>
+                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber Algorithmic System Repo</a></li>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repo</a></li>
               </ul>
             </div>
@@ -492,4 +492,4 @@ function Cs330KdtreePage() {
   )
 }
 
-export default Cs330KdtreePage
+export default UberKdtreePage

@@ -172,7 +172,7 @@ Plans:
 
 </details>
 
-### 🚧 v1.2 CS330 Case Study (In Progress)
+### ✅ v1.2 Uber Algorithmic System (Complete)
 
 **Milestone Goal:** Add CS330 algorithm design case study documentation to portfolio showcasing ride-sharing optimization algorithms with performance analysis.
 
@@ -280,14 +280,15 @@ Phases execute in numeric order: 16 → 17 → 18 → 19 → 20
 | 13. Documentation Foundation | v1.1 | 7/7 | Complete | 2026-02-16 |
 | 14. Advanced Documentation | v1.1 | - | Complete | 2026-02-16 |
 | 15. Portfolio Integration & Polish | v1.1 | - | Complete | 2026-02-16 |
-| 16. Documentation Foundation & React Setup | v1.2 | 0/1 | Not started | - |
-| 17. Core Algorithm Documentation | v1.2 | 0/TBD | Not started | - |
-| 18. Performance Analysis Documentation | v1.2 | 0/2 | Not started | - |
+| 16. Documentation Foundation & React Setup | v1.2 | 1/1 | Complete | 2026-03-02 |
+| 17. Core Algorithm Documentation | v1.2 | 3/3 | Complete | 2026-03-02 |
+| 18. Performance Analysis Documentation | v1.2 | 2/2 | Complete | 2026-03-02 |
 | 19. Bonus Algorithms Documentation | v1.2 | 0/TBD | Not started | - |
-| 20. Portfolio Integration | v1.2 | 0/TBD | Not started | - |
+| 20. Portfolio Integration | v1.2 | 1/1 | Complete | 2026-03-02 |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-26*
+*Last updated: 2026-03-02*
 *Milestone v1.1 (CPU Simulator) complete: 2026-02-16*
-*Milestone v1.2 (CS330 Case Study) started: 2026-02-18*
+*Milestone v1.2 (Uber Algorithmic System) started: 2026-02-18*
+*Milestone v1.2 (Uber Algorithmic System) phases 16-18, 20 complete: 2026-03-02*

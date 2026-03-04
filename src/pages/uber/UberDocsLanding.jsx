@@ -2,10 +2,10 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
-function Cs330DocsLanding() {
+function UberDocsLanding() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CS330 Case Study', href: '/projects/cs330/docs' },
+    { label: 'Uber Algorithmic System', href: '/projects/uber/docs' },
     { label: 'Documentation' }
   ]
 
@@ -207,7 +207,7 @@ function Cs330DocsLanding() {
       <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
-        <h1>CS330 Case Study</h1>
+        <h1>Uber Algorithmic System</h1>
         <p>Ride-Sharing Matching Algorithm Design</p>
       </header>
 
@@ -218,7 +218,7 @@ function Cs330DocsLanding() {
 
           <h3>What is this?</h3>
           <p>
-            This is an <strong>algorithm design case study</strong> from CS330 - Design and Analysis of Algorithms. The project explores the design, implementation, and optimization of algorithms for a ride-sharing platform that matches riders with nearby drivers efficiently.
+            This is an <strong>algorithm design case study</strong> from Stanford CS330. The project explores the design, implementation, and optimization of algorithms for a ride-sharing platform that matches riders with nearby drivers efficiently.
           </p>
 
           <h3>The Problem</h3>
@@ -251,27 +251,27 @@ function Cs330DocsLanding() {
           </p>
 
           <div className="doc-cards">
-            <Link to="/projects/cs330/docs/algorithm" className="doc-card">
+            <Link to="/projects/uber/docs/algorithm" className="doc-card">
               <h3>Algorithm Evolution</h3>
               <p>T1-T5 progressive optimization from brute force to spatial indexing</p>
             </Link>
 
-            <Link to="/projects/cs330/docs/kdtree" className="doc-card">
+            <Link to="/projects/uber/docs/kdtree" className="doc-card">
               <h3>KD-Tree Spatial Indexing</h3>
               <p>Efficient nearest-neighbor search with balanced tree partitioning</p>
             </Link>
 
-            <Link to="/projects/cs330/docs/pathfinding" className="doc-card">
+            <Link to="/projects/uber/docs/pathfinding" className="doc-card">
               <h3>Pathfinding</h3>
               <p>Dijkstra's algorithm on weighted road networks</p>
             </Link>
 
-            <Link to="/projects/cs330/docs/performance" className="doc-card">
+            <Link to="/projects/uber/docs/performance" className="doc-card">
               <h3>Performance Analysis</h3>
               <p>D1/D2 metrics, comparison graphs, and algorithm benchmarks</p>
             </Link>
 
-            <Link to="/projects/cs330/docs/bonus" className="doc-card">
+            <Link to="/projects/uber/docs/bonus" className="doc-card">
               <h3>Bonus Algorithms</h3>
               <p>Load balancing, traffic-aware routing, predictive caching</p>
             </Link>
@@ -282,7 +282,7 @@ function Cs330DocsLanding() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
+            <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
             <Link to="/" className="quick-link">Back to Portfolio →</Link>
           </div>
         </section>
@@ -303,7 +303,7 @@ function Cs330DocsLanding() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber System Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
               </ul>
             </div>
@@ -313,7 +313,7 @@ function Cs330DocsLanding() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Case Study Repo</a></li>
+                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber Algorithmic System Repo</a></li>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repo</a></li>
               </ul>
             </div>
@@ -340,4 +340,4 @@ function Cs330DocsLanding() {
   )
 }
 
-export default Cs330DocsLanding
+export default UberDocsLanding

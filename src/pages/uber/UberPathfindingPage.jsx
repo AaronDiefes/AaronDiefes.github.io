@@ -2,11 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
-function Cs330PathfindingPage() {
+function UberPathfindingPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CS330 Case Study', href: '/projects/cs330/docs' },
-    { label: 'Documentation', href: '/projects/cs330/docs' },
+    { label: 'Uber Algorithmic System', href: '/projects/uber/docs' },
+    { label: 'Documentation', href: '/projects/uber/docs' },
     { label: 'Pathfinding' }
   ]
 
@@ -341,7 +341,7 @@ function Cs330PathfindingPage() {
             <br/>
             <span className="keyword">def</span> <span className="signal">dijkstra_shortest_path</span>(<span className="signal">graph</span>, <span className="signal">source</span>, <span className="signal">target</span>):<br/>
             &nbsp;&nbsp;<span className="comment"># Initialize distances: source = 0, all others = infinity</span><br/>
-            &nbsp;&nbsp;<span className="signal">distances</span> <span className="operator">=</span> {'{'}node: <span className="keyword">float</span>(<span className="string">'inf'</span>) <span className="keyword">for</span> <span className="signal">node</span> <span className="keyword">in</span> <span className="signal">graph</span>.<span className="signal">nodes</span>()<span className="operator">}</span><br/>
+            &nbsp;&nbsp;<span className="signal">distances</span> <span className="operator">=</span> {'{'}node: <span className="keyword">float</span>(<span className="string">'inf'</span>) <span className="keyword">for</span> <span className="signal">node</span> <span className="keyword">in</span> <span className="signal">graph</span>.<span className="signal">nodes</span>()<span className="operator">{'}'}</span><br/>
             &nbsp;&nbsp;<span className="signal">distances</span>[<span className="signal">source</span>] <span className="operator">=</span> <span className="number">0</span><br/>
             <br/>
             &nbsp;&nbsp;<span className="comment"># Track predecessors for path reconstruction</span><br/>
@@ -443,12 +443,12 @@ function Cs330PathfindingPage() {
         <section className="section">
           <h2>Ride-Sharing Integration</h2>
           <p>
-            In the <Link to="/projects/cs330/docs/algorithm" style={'{ color: "#2E7D32", fontWeight: 600 }'}>Algorithm Evolution</Link> documentation, we introduced <strong>T5: KD-Tree + Dijkstra</strong> - a hybrid approach that combines spatial indexing with road network pathfinding. This section shows how Dijkstra integrates into the matching pipeline.
+            In the <Link to="/projects/uber/docs/algorithm" style={'{ color: "#2E7D32", fontWeight: 600 }'}>Algorithm Evolution</Link> documentation, we introduced <strong>T5: KD-Tree + Dijkstra</strong> - a hybrid approach that combines spatial indexing with road network pathfinding. This section shows how Dijkstra integrates into the matching pipeline.
           </p>
 
           <h3>Two-Phase Matching Strategy</h3>
           <ul>
-            <li><strong>Phase 1 - Spatial Filtering (KD-Tree):</strong> Use the <Link to="/projects/cs330/docs/kdtree" style={'{ color: "#2E7D32", fontWeight: 600 }'}>KD-Tree</Link> to find k nearest drivers by Euclidean distance (typically k=5-10). This narrows the search space from thousands of drivers to a handful of candidates.</li>
+            <li><strong>Phase 1 - Spatial Filtering (KD-Tree):</strong> Use the <Link to="/projects/uber/docs/kdtree" style={'{ color: "#2E7D32", fontWeight: 600 }'}>KD-Tree</Link> to find k nearest drivers by Euclidean distance (typically k=5-10). This narrows the search space from thousands of drivers to a handful of candidates.</li>
             <li><strong>Phase 2 - Road Distance Refinement (Dijkstra):</strong> For each candidate driver, compute the actual shortest road path distance using Dijkstra. Select the driver with the minimum road distance.</li>
           </ul>
 
@@ -527,11 +527,11 @@ function Cs330PathfindingPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/cs330/docs/algorithm" className="quick-link">Algorithm Evolution →</Link>
-            <Link to="/projects/cs330/docs/kdtree" className="quick-link">KD-Tree Implementation →</Link>
+            <Link to="/projects/uber/docs/algorithm" className="quick-link">Algorithm Evolution →</Link>
+            <Link to="/projects/uber/docs/kdtree" className="quick-link">KD-Tree Implementation →</Link>
             <a href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.dijkstra_path.html" target="_blank" rel="noopener noreferrer" className="quick-link">NetworkX Dijkstra Docs →</a>
-            <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
-            <Link to="/projects/cs330/docs" className="quick-link">Back to CS330 Documentation →</Link>
+            <a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
+            <Link to="/projects/uber/docs" className="quick-link">Back to CS330 Documentation →</Link>
           </div>
         </section>
       </div>
@@ -551,9 +551,9 @@ function Cs330PathfindingPage() {
               <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Navigation</h3>
               <ul style={'{ listStyle: "none", padding: 0 }'}>
                 <li style={'{ marginBottom: "0.75rem" }'}><Link to="/" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>← Portfolio Home</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/cs330/docs" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>CS330 Documentation</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/cs330/docs/algorithm" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Algorithm Evolution</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/cs330/docs/kdtree" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>KD-Tree</Link></li>
+                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>CS330 Documentation</Link></li>
+                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs/algorithm" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Algorithm Evolution</Link></li>
+                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs/kdtree" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>KD-Tree</Link></li>
                 <li style={'{ marginBottom: "0.75rem", color: "#95a5a6" }'}>Pathfinding</li>
               </ul>
             </div>
@@ -563,7 +563,7 @@ function Cs330PathfindingPage() {
               <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Resources</h3>
               <ul style={'{ listStyle: "none", padding: 0 }'}>
                 <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>GitHub Profile</a></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>CS330 Case Study Repo</a></li>
+                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/uber-algorithmic-system" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Uber Algorithmic System Repo</a></li>
                 <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Portfolio Repo</a></li>
               </ul>
             </div>
@@ -590,4 +590,4 @@ function Cs330PathfindingPage() {
   )
 }
 
-export default Cs330PathfindingPage
+export default UberPathfindingPage

@@ -26,11 +26,12 @@ import CpuHazardsPage from './pages/cpu/CpuHazardsPage'
 import CpuInstructionsPage from './pages/cpu/CpuInstructionsPage'
 import CpuMemoryPage from './pages/cpu/CpuMemoryPage'
 
-// CS330 Case Study pages
-import Cs330DocsLanding from './pages/cs330/Cs330DocsLanding'
-import Cs330AlgorithmPage from './pages/cs330/Cs330AlgorithmPage'
-import Cs330KdtreePage from './pages/cs330/Cs330KdtreePage'
-import Cs330PathfindingPage from './pages/cs330/Cs330PathfindingPage'
+// Uber Algorithmic System pages
+import UberDocsLanding from './pages/uber/UberDocsLanding'
+import UberAlgorithmPage from './pages/uber/UberAlgorithmPage'
+import UberKdtreePage from './pages/uber/UberKdtreePage'
+import UberPathfindingPage from './pages/uber/UberPathfindingPage'
+import UberBonusPage from './pages/uber/UberBonusPage'
 
 function AppContent() {
   const location = useLocation()
@@ -44,7 +45,7 @@ function AppContent() {
       'home-page',
       'cpu-page',
       'graphics-page',
-      'cs330-page',
+      'uber-page',
       'docs-page',
       'admin-page'
     )
@@ -56,8 +57,8 @@ function AppContent() {
       document.body.classList.add('cpu-page')
     } else if (location.pathname.startsWith('/projects/graphics-engine/')) {
       document.body.classList.add('graphics-page')
-    } else if (location.pathname.startsWith('/projects/cs330/')) {
-      document.body.classList.add('cs330-page')
+    } else if (location.pathname.startsWith('/projects/uber/')) {
+      document.body.classList.add('uber-page')
     } else if (location.pathname === '/admin') {
       document.body.classList.add('admin-page')
     }
@@ -89,11 +90,12 @@ function AppContent() {
       <Route path="/projects/graphics-engine/docs/final-features" element={<GraphicsFinalFeaturesPage />} />
       <Route path="/projects/graphics-engine/docs/optimization-performance" element={<GraphicsOptimizationPage />} />
 
-      {/* CS330 Case Study Project */}
-      <Route path="/projects/cs330/docs" element={<Cs330DocsLanding />} />
-      <Route path="/projects/cs330/docs/algorithm" element={<Cs330AlgorithmPage />} />
-      <Route path="/projects/cs330/docs/kdtree" element={<Cs330KdtreePage />} />
-      <Route path="/projects/cs330/docs/pathfinding" element={<Cs330PathfindingPage />} />
+      {/* Uber Algorithmic System Project */}
+      <Route path="/projects/uber/docs" element={<UberDocsLanding />} />
+      <Route path="/projects/uber/docs/algorithm" element={<UberAlgorithmPage />} />
+      <Route path="/projects/uber/docs/kdtree" element={<UberKdtreePage />} />
+      <Route path="/projects/uber/docs/pathfinding" element={<UberPathfindingPage />} />
+      <Route path="/projects/uber/docs/bonus" element={<UberBonusPage />} />
     </Routes>
   )
 }

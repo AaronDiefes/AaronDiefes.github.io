@@ -2,11 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
-function Cs330AlgorithmPage() {
+function UberAlgorithmPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'CS330 Case Study', href: '/projects/cs330/docs' },
-    { label: 'Documentation', href: '/projects/cs330/docs' },
+    { label: 'Uber Algorithmic System', href: '/projects/uber/docs' },
+    { label: 'Documentation', href: '/projects/uber/docs' },
     { label: 'Algorithm Evolution' }
   ]
 
@@ -316,11 +316,11 @@ function Cs330AlgorithmPage() {
             The <strong>ride-sharing matching problem</strong> is at the heart of platforms like Uber and Lyft: given a set of riders requesting rides and a set of available drivers, find the optimal rider-driver matches that minimize travel distance while ensuring fairness and efficiency.
           </p>
           <p>
-            <strong>Two Key Metrics:</strong>
+            <strong>Performance Metrics (both in minutes):</strong>
           </p>
           <ul>
-            <li><strong>D1 (Average Match Distance):</strong> The mean distance across all rider-driver matches. Lower D1 indicates better overall efficiency.</li>
-            <li><strong>D2 (Maximum Match Distance):</strong> The longest distance any rider has to their matched driver. Lower D2 indicates better fairness (no rider is unfairly matched far away).</li>
+            <li><strong>D1 (Cumulative Passenger Time):</strong> Total time from passenger request to arrival. Formula: <code>(arrival_time - request_time).total_seconds() / 60</code>. Lower is better.</li>
+            <li><strong>D2 (Driver Productivity):</strong> Difference between paid trip time and unpaid pickup time. Formula: <code>(trip_time - pickup_time) × 60</code>. Positive D2 = more paid time than unpaid (good). Negative D2 = more unpaid than paid (poor matching).</li>
           </ul>
           <p>
             This documentation follows a <strong>progressive optimization approach</strong>, evolving from a naive brute-force solution (T1) through increasingly sophisticated algorithms (T2-T5). Each iteration improves upon the previous in terms of time complexity, scalability, or accuracy.
@@ -334,6 +334,58 @@ function Cs330AlgorithmPage() {
             <li><strong>T4 - KD-Tree:</strong> Balanced tree for nearest-neighbor queries <span className="complexity-badge">O(n × log m)</span></li>
             <li><strong>T5 - KD-Tree + Dijkstra:</strong> Combine spatial indexing with road-network distance <span className="complexity-badge">O(n × (log m + E log V))</span></li>
           </ul>
+        </section>
+
+        {/* Dataset Description Section */}
+        <section className="section" style={{ background: '#f0f8ff', border: '2px solid #2196F3' }}>
+          <h2>Synthetic Dataset</h2>
+          <p>
+            All algorithms (T1-T5) are evaluated on a <strong>synthetic Manhattan ride-sharing dataset</strong> generated to simulate realistic taxi operations in NYC. The dataset provides consistent, reproducible performance benchmarks across all algorithms.
+          </p>
+
+          <h3>Dataset Specifications</h3>
+          <div className="metrics-grid">
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Passengers:</span>
+              <span className="metric-value">10,000</span>
+            </div>
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Drivers:</span>
+              <span className="metric-value">4,000</span>
+            </div>
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Road Network:</span>
+              <span className="metric-value">600 nodes</span>
+            </div>
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Time Period:</span>
+              <span className="metric-value">7 days</span>
+            </div>
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Geographic Area:</span>
+              <span className="metric-value">Manhattan</span>
+            </div>
+            <div className="metric-card" style={{ background: 'white' }}>
+              <span className="metric-label">Date Range:</span>
+              <span className="metric-value">Jan 15-21, 2024</span>
+            </div>
+          </div>
+
+          <h3>Dataset Generation</h3>
+          <p>
+            The dataset was synthetically generated to model realistic ride-sharing patterns in Manhattan:
+          </p>
+          <ul>
+            <li><strong>Road Network:</strong> Manhattan grid structure (40.700-40.880°N, -74.020--73.970°W) with 600 intersection nodes connected by road segments. Note: The small graph size (600 nodes) makes pathfinding very fast (~0.5ms per call), which explains why algorithmic optimizations like A* vs Dijkstra show minimal practical difference.</li>
+            <li><strong>Time-Varying Speeds:</strong> Edge weights vary by hour of day to simulate traffic patterns (rush hour: 10-20 mph, night: 30-40 mph)</li>
+            <li><strong>Passenger Distribution:</strong> Concentrated during rush hours (7-9 AM: 30%, 5-7 PM: 30%) with realistic pickup/dropoff locations matching Manhattan taxi patterns</li>
+            <li><strong>Driver Availability:</strong> Staggered entry times with 60% concentrated in midtown, 20% downtown, 20% uptown</li>
+            <li><strong>Trip Distances:</strong> 40% short trips (&lt;2 km), 45% medium (2-5 km), 15% long (&gt;5 km)</li>
+          </ul>
+
+          <p>
+            <strong>Why Synthetic Data?</strong> Synthetic data ensures reproducible benchmarks, avoids privacy concerns with real rider data, and allows controlled testing of edge cases. The dataset is large enough (10K passengers, 4K drivers) to demonstrate algorithmic differences while remaining computationally tractable.
+          </p>
         </section>
 
         {/* T1: Brute Force Section */}
@@ -382,7 +434,7 @@ function Cs330AlgorithmPage() {
             <strong>Space Complexity:</strong> O(m) for the list of available drivers.
           </p>
           <p>
-            <strong>Real-World Performance:</strong> For small datasets (10-100 riders/drivers), this approach works fine and completes in milliseconds. However, for production-scale systems with thousands of drivers and riders, this becomes impractical. With 1,000 riders and 1,000 drivers, we perform 1 million distance calculations.
+            <strong>Scalability:</strong> For small datasets, this approach works fine and completes in milliseconds. However, for production-scale systems with thousands of drivers and riders, the quadratic growth becomes impractical. The number of distance calculations grows as n × m, making this infeasible for real-time matching at scale.
           </p>
 
           <h3>Experimental Results</h3>
@@ -390,30 +442,26 @@ function Cs330AlgorithmPage() {
             <div className="metrics-grid">
               <div className="metric-card">
                 <span className="metric-label">Average D1:</span>
-                <span className="metric-value">1046.91 km</span>
+                <span className="metric-value">1,051.85 min/ride</span>
               </div>
               <div className="metric-card">
                 <span className="metric-label">Average D2:</span>
-                <span className="metric-value">-309.38 km</span>
+                <span className="metric-value">-314.32 min</span>
               </div>
               <div className="metric-card">
-                <span className="metric-label">Matching Time:</span>
-                <span className="metric-value">3.61 s</span>
-              </div>
-              <div className="metric-card">
-                <span className="metric-label">Pathfinding Time:</span>
-                <span className="metric-value">5.73 s</span>
+                <span className="metric-label">Runtime:</span>
+                <span className="metric-value">10.8 s</span>
               </div>
             </div>
 
             <img
-              src="/projects/cs330/images/t1_d1_d2_plot.png"
+              src="/projects/uber/images/t1_d1_d2_plot.png"
               alt="T1 Brute Force D1 and D2 metrics over time from actual simulation run"
               className="performance-graph"
             />
 
             <p className="graph-caption">
-              D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted over the simulation period.
+              T1 brute-force matching results in negative D2 (drivers spend more time on unpaid pickups than paid trips). D1 (blue) = cumulative passenger time, D2 (orange) = driver productivity metric.
             </p>
           </div>
         </section>
@@ -475,31 +523,34 @@ function Cs330AlgorithmPage() {
             <div className="metrics-grid">
               <div className="metric-card">
                 <span className="metric-label">Average D1:</span>
-                <span className="metric-value">584.40 km</span>
+                <span className="metric-value">584.43 min/ride</span>
               </div>
               <div className="metric-card">
                 <span className="metric-label">Average D2:</span>
-                <span className="metric-value">134.69 km</span>
+                <span className="metric-value">134.66 min</span>
               </div>
               <div className="metric-card">
-                <span className="metric-label">Matching Time:</span>
-                <span className="metric-value">3.78 s</span>
-              </div>
-              <div className="metric-card">
-                <span className="metric-label">Pathfinding Time:</span>
-                <span className="metric-value">3.16 s</span>
+                <span className="metric-label">Runtime:</span>
+                <span className="metric-value">10.9 s</span>
               </div>
             </div>
 
             <img
-              src="/projects/cs330/images/t2_d1_d2_plot.png"
+              src="/projects/uber/images/t2_d1_d2_plot.png"
               alt="T2 Sorted Distance D1 and D2 metrics over time from actual simulation run"
               className="performance-graph"
             />
 
             <p className="graph-caption">
-              Sorted distance optimization shows improved D1 metric (44% reduction from T1) through faster matching. D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted.
+              D1 (blue) = cumulative passenger time, D2 (orange) = driver productivity metric.
             </p>
+
+            <h3>Improvement vs T1</h3>
+            <ul>
+              <li><strong>D1:</strong> 1,051.85 → 584.43 min/ride = <strong>-44% improvement</strong></li>
+              <li><strong>D2:</strong> -314.32 → +134.66 min = <strong>Negative to positive (huge fix!)</strong></li>
+              <li><strong>Runtime:</strong> 10.8s → 10.9s = <strong>+0.9% (essentially same)</strong></li>
+            </ul>
           </div>
         </section>
 
@@ -508,6 +559,9 @@ function Cs330AlgorithmPage() {
           <h2>T3: Grid-Based Spatial Partitioning<span className="complexity-badge">O(n × k)</span></h2>
           <p>
             Instead of searching through all drivers (or a sorted subset), T3 uses <strong>spatial partitioning</strong> to dramatically reduce the search space. The idea: divide the geographic area into a grid of cells, assign each driver to a cell based on their coordinates, and for each rider, search only the nearby cells (3×3 neighborhood around the rider's cell).
+          </p>
+          <p style={{ background: '#fff3cd', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #ffc107', fontSize: '0.95rem' }}>
+            <strong>Note:</strong> The current implementation evaluates all available drivers (not grid-filtered) using Dijkstra pathfinding, making it functionally similar to brute-force with accurate distance calculation. True grid partitioning would limit evaluation to nearby cells only.
           </p>
           <p>
             <strong>Grid Cell Formula:</strong> For a coordinate (lat, lon) and grid granularity g, the cell index is:
@@ -577,18 +631,39 @@ function Cs330AlgorithmPage() {
 
           <h3>Experimental Results</h3>
           <div className="performance-results">
-            <p style={{ color: '#666', fontStyle: 'italic' }}>
-              Note: Complete performance metrics for T3 are pending. Partial visualization data is available showing the D1/D2 evolution pattern.
-            </p>
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Average D1:</span>
+                <span className="metric-value">536.21 min/ride</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Average D2:</span>
+                <span className="metric-value">177.16 min</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Runtime:</span>
+                <span className="metric-value">20.6 min</span>
+              </div>
+            </div>
 
             <img
-              src="/projects/cs330/images/t3_d1_d2_plot.png"
-              alt="T3 Grid-Based D1 and D2 metrics over time (partial data)"
+              src="/projects/uber/images/t3_d1_d2_plot.png"
+              alt="T3 Grid-Based D1 and D2 metrics over time from actual simulation run"
               className="performance-graph"
             />
 
             <p className="graph-caption">
-              Grid-based spatial partitioning performance visualization (partial run).
+              D1 (blue) = cumulative passenger time, D2 (orange) = driver productivity metric.
+            </p>
+
+            <h3>Improvement vs T2</h3>
+            <ul>
+              <li><strong>D1:</strong> 584.43 → 536.21 min/ride = <strong>-8% improvement</strong></li>
+              <li><strong>D2:</strong> 134.66 → 177.16 min = <strong>+32% improvement</strong> (higher = more paid time vs unpaid)</li>
+              <li><strong>Runtime:</strong> 10.9s → 20.6 min = <strong>113× slower</strong></li>
+            </ul>
+            <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+              <strong>Why is T3 so much slower?</strong> T2 uses Euclidean distance for matching (~2000 fast comparisons), then runs Dijkstra only 2× for the selected driver (pickup + trip). T3 runs Dijkstra for EVERY available driver during matching (~2000 pathfinding calls per passenger) to find the driver with the shortest pickup time. This results in ~1000× more Dijkstra computations. Even with 8-core multiprocessing, T3 is 113× slower than T2. The trade-off: T3's road network matching achieves better D1/D2 metrics through more accurate distance calculations.
             </p>
           </div>
         </section>
@@ -641,23 +716,44 @@ function Cs330AlgorithmPage() {
             <strong>Real-World Performance:</strong> For 1,000 riders and 1,000 drivers, KD-Tree reduces query time from milliseconds (grid) to microseconds per rider. This is the go-to approach for production systems handling spatial queries at scale.
           </p>
           <p>
-            <strong>Learn More:</strong> See the <Link to="/projects/cs330/docs/kdtree" style={{ color: '#2E7D32', fontWeight: 600 }}>KD-Tree Documentation</Link> for detailed implementation, balancing strategies, and performance benchmarks.
+            <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/kdtree" style={{ color: '#2E7D32', fontWeight: 600 }}>KD-Tree Documentation</Link> for detailed implementation, balancing strategies, and performance benchmarks.
           </p>
 
           <h3>Experimental Results</h3>
           <div className="performance-results">
-            <p style={{ color: '#666', fontStyle: 'italic' }}>
-              Note: Complete performance metrics for T4 are pending. Partial visualization data is available showing the D1/D2 evolution pattern.
-            </p>
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Average D1:</span>
+                <span className="metric-value">527.26 min/ride</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Average D2:</span>
+                <span className="metric-value">177.58 min</span>
+              </div>
+              <div className="metric-card">
+                <span className="metric-label">Runtime:</span>
+                <span className="metric-value">20.5 min</span>
+              </div>
+            </div>
 
             <img
-              src="/projects/cs330/images/t4_d1_d2_plot.png"
-              alt="T4 KD-Tree D1 and D2 metrics over time (partial data)"
+              src="/projects/uber/images/t4_d1_d2_plot.png"
+              alt="T4 KD-Tree D1 and D2 metrics over time from actual simulation run"
               className="performance-graph"
             />
 
             <p className="graph-caption">
-              KD-Tree nearest neighbor performance visualization (partial run).
+              D1 (blue) = cumulative passenger time, D2 (orange) = driver productivity metric.
+            </p>
+
+            <h3>Improvement vs T3</h3>
+            <ul>
+              <li><strong>D1:</strong> 536.21 → 527.26 min/ride = <strong>-2% improvement</strong></li>
+              <li><strong>D2:</strong> 177.16 → 177.58 min = <strong>+0.2% (essentially same)</strong></li>
+              <li><strong>Runtime:</strong> 20.6 min → 20.5 min = <strong>-0.5% (essentially same)</strong></li>
+            </ul>
+            <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+              <strong>T4 vs T3:</strong> Both algorithms evaluate all available drivers (~2000 per passenger). T3 uses Dijkstra, while T4 uses A* with Euclidean heuristic. Theoretically, A* should be ~30% faster than Dijkstra, which over 20M calls should save ~6 minutes. However, actual runtime is nearly identical (20.5 vs 20.6 min). This is because on small, dense Manhattan grids (600 nodes), both algorithms explore similar nodes and complete in ~0.5ms per call, making the heuristic advantage negligible. The similarity demonstrates that Big O constant factors don't always translate to practical improvements on small graphs.
             </p>
           </div>
         </section>
@@ -737,7 +833,7 @@ function Cs330AlgorithmPage() {
             <strong>Real-World Impact:</strong> In urban environments with rivers, highways, and one-way streets, road distance can differ from Euclidean distance by 2-3×. This leads to significantly better D1/D2 metrics and user satisfaction.
           </p>
           <p>
-            <strong>Learn More:</strong> See the <Link to="/projects/cs330/docs/pathfinding" style={{ color: '#2E7D32', fontWeight: 600 }}>Pathfinding Documentation</Link> for details on Dijkstra's algorithm, graph representation, and optimization techniques.
+            <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/pathfinding" style={{ color: '#2E7D32', fontWeight: 600 }}>Pathfinding Documentation</Link> for details on Dijkstra's algorithm, graph representation, and optimization techniques.
           </p>
 
           <h3>Experimental Results</h3>
@@ -745,31 +841,140 @@ function Cs330AlgorithmPage() {
             <div className="metrics-grid">
               <div className="metric-card">
                 <span className="metric-label">Average D1:</span>
-                <span className="metric-value">571.21 km</span>
+                <span className="metric-value">669.95 min/ride</span>
               </div>
               <div className="metric-card">
                 <span className="metric-label">Average D2:</span>
-                <span className="metric-value">141.19 km</span>
+                <span className="metric-value">35.70 min</span>
               </div>
               <div className="metric-card">
-                <span className="metric-label">Matching Time:</span>
-                <span className="metric-value">0.21 s</span>
-              </div>
-              <div className="metric-card">
-                <span className="metric-label">Pathfinding Time:</span>
-                <span className="metric-value">8.17 s</span>
+                <span className="metric-label">Runtime:</span>
+                <span className="metric-value">1.2 min</span>
               </div>
             </div>
 
             <img
-              src="/projects/cs330/images/t5_d1_d2_plot.png"
+              src="/projects/uber/images/t5_d1_d2_plot.png"
               alt="T5 KD-Tree + Dijkstra D1 and D2 metrics over time from actual simulation run"
               className="performance-graph"
             />
 
             <p className="graph-caption">
-              KD-Tree + Dijkstra road network optimization achieves the best D1 metric (45% reduction from T1) using real road distances. D1 (blue) shows cumulative passenger time wasted, D2 (orange) shows cumulative driver time wasted.
+              D1 (blue) = cumulative passenger time, D2 (orange) = driver productivity metric.
             </p>
+
+            <h3>Improvement vs T4</h3>
+            <ul>
+              <li><strong>D1:</strong> 527.26 → 669.95 min/ride = <strong>+27% worse</strong></li>
+              <li><strong>D2:</strong> 177.58 → 35.70 min = <strong>-80% worse</strong></li>
+              <li><strong>Runtime:</strong> 20.5 min → 1.2 min = <strong>-94% faster (17× speedup!)</strong></li>
+            </ul>
+            <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+              <strong>T5's Speed-Accuracy Trade-off:</strong> Unlike T3/T4 which evaluate all available drivers, T5 implements aggressive filtering by pruning to only the 10 closest candidates (by Euclidean distance) before computing pickup times. This reduces matching quality (worse D1/D2) but achieves dramatic speedup — 74.8 seconds vs 20.5 minutes, making it 17× faster than T4. The early termination when finding a driver within 6 minutes further improves performance. T5 demonstrates that for real-time systems prioritizing response time over perfect matching, candidate pruning is essential.
+            </p>
+          </div>
+        </section>
+
+        {/* Multiprocessing Optimization Section */}
+        <section className="section" style={{ background: '#f8f9fa', border: '2px solid #2E7D32' }}>
+          <h2>Multiprocessing Optimization</h2>
+
+          <h3>The Performance Problem</h3>
+          <p>
+            After implementing T3-T5 algorithms, a critical performance bottleneck emerged: <strong>Dijkstra's pathfinding was too slow for large datasets</strong>. With 10,000 passengers and 4,000 available drivers, T3-T5 required computing road network distances for thousands of driver-passenger pairs, causing execution times to exceed <strong>100+ minutes per algorithm</strong>.
+          </p>
+
+          <div style={{ background: '#fff3cd', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #ffc107' }}>
+            <strong>Original Bottleneck (per passenger):</strong>
+            <ul style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+              <li>~2,000 available drivers to evaluate</li>
+              <li>Each evaluation: 1 Dijkstra pathfinding call (~100ms)</li>
+              <li>Total time per passenger: 2,000 × 100ms = <strong>200 seconds</strong></li>
+              <li>For 10,000 passengers: ~23 days of sequential execution! ❌</li>
+            </ul>
+          </div>
+
+          <h3>The Solution: Fork-Based Multiprocessing</h3>
+          <p>
+            To address this bottleneck, <strong>fork-based multiprocessing</strong> was implemented to parallelize Dijkstra pathfinding across multiple CPU cores. This optimization <strong>only parallelized the computation</strong> — the algorithms themselves (T3, T4, T5) remained unchanged.
+          </p>
+
+          <h3>Implementation Details</h3>
+          <pre className="code-block">
+            <span className="keyword">import</span> <span className="signal">multiprocessing</span> <span className="keyword">as</span> <span className="signal">mp</span><br/>
+            <span className="signal">mp</span>.<span className="signal">set_start_method</span>(<span className="string">'fork'</span>, <span className="signal">force</span>=<span className="keyword">True</span>)  <span className="comment"># Use fork method</span><br/>
+            <br/>
+            <span className="keyword">def</span> <span className="signal">compute_driver_pickup_time</span>(<span className="signal">args</span>):<br/>
+            &nbsp;&nbsp;<span className="signal">driver_idx</span>, <span className="signal">driver_data</span>, <span className="signal">passenger_node</span>, <span className="signal">hour</span> = <span className="signal">args</span><br/>
+            &nbsp;&nbsp;<span className="comment"># Get driver's closest road network node</span><br/>
+            &nbsp;&nbsp;<span className="signal">driver_node</span> = <span className="signal">get_closest_node</span>(<span className="signal">driver_data</span>)<br/>
+            &nbsp;&nbsp;<span className="comment"># Run Dijkstra's algorithm to compute pickup time</span><br/>
+            &nbsp;&nbsp;<span className="signal">pickup_time</span> = <span className="signal">map</span>.<span className="signal">get_time</span>(<span className="signal">driver_node</span>, <span className="signal">passenger_node</span>, <span className="signal">hour</span>)<br/>
+            &nbsp;&nbsp;<span className="keyword">return</span> (<span className="signal">driver_idx</span>, <span className="signal">pickup_time</span>, <span className="signal">driver_node</span>)<br/>
+            <br/>
+            <span className="comment"># Parallelize driver evaluations for each passenger</span><br/>
+            <span className="keyword">with</span> <span className="signal">mp</span>.<span className="signal">Pool</span>(<span className="signal">processes</span>=<span className="number">8</span>) <span className="keyword">as</span> <span className="signal">pool</span>:<br/>
+            &nbsp;&nbsp;<span className="signal">results</span> = <span className="signal">pool</span>.<span className="signal">map</span>(<span className="signal">compute_driver_pickup_time</span>, <span className="signal">driver_jobs</span>)<br/>
+            &nbsp;&nbsp;<span className="comment"># Select best driver from parallel results</span><br/>
+            &nbsp;&nbsp;<span className="signal">best_driver</span> = <span className="keyword">min</span>(<span className="signal">results</span>, <span className="signal">key</span>=<span className="keyword">lambda</span> <span className="signal">x</span>: <span className="signal">x</span>[<span className="number">1</span>])
+          </pre>
+
+          <h3>Why Fork Method?</h3>
+          <p>
+            Python's <code>multiprocessing</code> module supports three start methods: <strong>spawn</strong>, <strong>fork</strong>, and <strong>forkserver</strong>. On macOS (used for development), the default is <code>spawn</code>, which requires pickling (serializing) all shared data. However, the road network graph uses complex data structures (<code>defaultdict</code> with lambda functions) that cannot be pickled.
+          </p>
+          <p>
+            <strong>Fork method</strong> solves this by copying the parent process's memory space to child processes, allowing workers to directly access the shared graph data without serialization. This enables seamless parallelization without code refactoring.
+          </p>
+
+          <h3>Performance Results</h3>
+          <div className="metrics-grid">
+            <div className="metric-card" style={{ background: '#d4edda', border: '1px solid #28a745' }}>
+              <span className="metric-label">T3 Speedup:</span>
+              <span className="metric-value">5.4× faster</span>
+              <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>111 min → 20.6 min</span>
+            </div>
+            <div className="metric-card" style={{ background: '#d4edda', border: '1px solid #28a745' }}>
+              <span className="metric-label">T4 Speedup:</span>
+              <span className="metric-value">~5× faster</span>
+              <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>~100 min → 20.5 min</span>
+            </div>
+            <div className="metric-card" style={{ background: '#d1ecf1', border: '1px solid #17a2b8' }}>
+              <span className="metric-label">Hardware:</span>
+              <span className="metric-value">M1 Pro (8 cores)</span>
+              <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>Python 3.13</span>
+            </div>
+          </div>
+          <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>
+            Note: T5 doesn't require multiprocessing - its 10-candidate pruning makes it naturally fast (1.2 minutes without parallelization).
+          </p>
+          <div className="metrics-grid">
+          </div>
+
+          <h3>What Changed vs. What Didn't</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
+            <div style={{ background: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745' }}>
+              <h4 style={{ color: '#155724', marginTop: 0 }}>What Changed (Computation Only)</h4>
+              <ul style={{ color: '#155724', lineHeight: 1.8 }}>
+                <li>Dijkstra pathfinding parallelized across 8 cores</li>
+                <li>Driver evaluation jobs distributed to worker processes</li>
+                <li>Results merged in parallel before final selection</li>
+                <li>Execution time reduced by 5-7× due to parallelism</li>
+              </ul>
+            </div>
+            <div style={{ background: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107' }}>
+              <h4 style={{ color: '#856404', marginTop: 0 }}>What Didn't Change (Algorithms Unchanged)</h4>
+              <ul style={{ color: '#856404', lineHeight: 1.8 }}>
+                <li>T3 grid partitioning logic identical</li>
+                <li>T4 KD-Tree structure and queries identical</li>
+                <li>T5 hybrid KD-Tree + Dijkstra logic identical</li>
+                <li>D1/D2 metrics remain the same (no algorithmic improvements)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ background: '#e7f3ff', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #2196F3' }}>
+            <strong>Key Takeaway:</strong> Multiprocessing is a <em>computational optimization</em>, not an <em>algorithmic optimization</em>. T3 and T4 produce identical results with or without multiprocessing — they just run faster with parallel execution. The 5× speedup comes from parallelizing 20 million pathfinding calls (not cache hits - the base implementation populates but doesn't retrieve cached paths). T5 doesn't require multiprocessing because its candidate pruning (10 drivers vs 2000) makes it naturally fast (1.2 minutes). The D1 and D2 metrics reflect the algorithm's matching quality, not the implementation's execution speed.
           </div>
         </section>
 
@@ -785,56 +990,73 @@ function Cs330AlgorithmPage() {
               <tr>
                 <th>Algorithm</th>
                 <th>Complexity</th>
-                <th>Avg D1 (km)</th>
-                <th>Avg D2 (km)</th>
-                <th>Matching (s)</th>
-                <th>Pathfinding (s)</th>
+                <th>Avg D1 (min)</th>
+                <th>Avg D2 (min)</th>
+                <th>Runtime</th>
+                <th>Dataset</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>T1: Brute Force</strong></td>
                 <td>O(n × m)</td>
-                <td>1046.91</td>
-                <td>-309.38</td>
-                <td>3.61</td>
-                <td>5.73</td>
+                <td>1,051.85</td>
+                <td>-314.32</td>
+                <td>10.8 s</td>
+                <td>10K riders</td>
               </tr>
               <tr>
                 <td><strong>T2: Sorted Distance</strong></td>
                 <td>O(n × m/k) avg</td>
-                <td>584.40</td>
-                <td>134.69</td>
-                <td>3.78</td>
-                <td>3.16</td>
+                <td>584.43</td>
+                <td>134.66</td>
+                <td>10.9 s</td>
+                <td>10K riders</td>
               </tr>
               <tr>
                 <td><strong>T3: Grid-Based</strong></td>
                 <td>O(n × k)</td>
-                <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic', color: '#666' }}>Pending complete analysis</td>
+                <td>536.21</td>
+                <td>177.16</td>
+                <td>20.6 min*</td>
+                <td>10K riders</td>
               </tr>
               <tr>
                 <td><strong>T4: KD-Tree</strong></td>
-                <td>O(n × log m)</td>
-                <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic', color: '#666' }}>Pending complete analysis</td>
+                <td>O(n × m)</td>
+                <td>527.26</td>
+                <td>177.58</td>
+                <td>20.5 min*</td>
+                <td>10K riders</td>
               </tr>
               <tr>
-                <td><strong>T5: KD-Tree + Dijkstra</strong></td>
-                <td>O(n × (log m + E log V))</td>
-                <td>571.21</td>
-                <td>141.19</td>
-                <td>0.21</td>
-                <td>8.17</td>
+                <td><strong>T5: KD-Tree + Pruning</strong></td>
+                <td>O(n × k) k=10</td>
+                <td>669.95</td>
+                <td>35.70</td>
+                <td>1.2 min</td>
+                <td>10K riders</td>
               </tr>
             </tbody>
           </table>
+          <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>
+            * T3-T4 runtimes use fork-based multiprocessing optimization (see Multiprocessing Optimization section below). T5 uses candidate pruning and doesn't require multiprocessing.
+          </p>
 
           <h3>Key Insights</h3>
           <ul>
-            <li><strong>D1 Improvement:</strong> T2 and T5 both achieve ~45% reduction in passenger wait time (D1) compared to T1, demonstrating the value of optimization.</li>
-            <li><strong>Matching Speed:</strong> T5's KD-Tree matching is 17× faster than brute-force (0.21s vs 3.61s), critical for real-time applications.</li>
-            <li><strong>Road Network Accuracy:</strong> T5 uses real road distances via Dijkstra, providing more accurate matching at the cost of increased pathfinding time (8.17s).</li>
-            <li><strong>Trade-offs:</strong> T2 offers a good balance with fast pathfinding (3.16s) and significant D1 improvement, while T5 prioritizes accuracy with slightly longer total time.</li>
+            <li><strong>Algorithm Quality (D1/D2):</strong>
+              <ul style={{ marginLeft: '2rem', marginTop: '0.5rem' }}>
+                <li>T1 (brute force): Worst quality — negative D2 means drivers waste more time on pickups than paid trips</li>
+                <li>T2 (sorted): 44% D1 reduction vs T1, positive D2 (better driver productivity)</li>
+                <li>T3-T4 (all drivers evaluated): Best quality — 49-50% D1 reduction vs T1, strong positive D2</li>
+                <li>T5 (10-candidate pruning): Faster but worse quality — 36% worse D1 than T4, 80% worse D2</li>
+              </ul>
+            </li>
+            <li><strong>Execution Time Trade-offs:</strong> T1-T2 run in ~11 seconds. T3-T4 require ~20 minutes with multiprocessing (evaluate all drivers). T5 runs in just 1.2 minutes by pruning to 10 candidates, sacrificing matching quality for speed.</li>
+            <li><strong>The T5 Design Choice:</strong> T5 demonstrates that evaluating all drivers (T3, T4) produces better matches but is computationally expensive. T5's candidate pruning achieves 17× speedup over T4 at the cost of 27% worse D1 — a worthwhile trade-off for real-time systems prioritizing response time.</li>
+            <li><strong>Multiprocessing Impact:</strong> Fork-based parallelization reduces T3-T4 execution time by 5× but doesn't change D1/D2 metrics. T5 doesn't need multiprocessing due to candidate pruning (already fast).</li>
+            <li><strong>Practical Lesson:</strong> Perfect matching (evaluating all drivers) is too slow for real-time systems. Smart filtering (T5's approach) enables sub-second response times while maintaining acceptable match quality.</li>
           </ul>
         </section>
 
@@ -842,11 +1064,11 @@ function Cs330AlgorithmPage() {
         <section className="section">
           <h2>Explore Further</h2>
           <div className="quick-links">
-            <Link to="/projects/cs330/docs/kdtree" className="quick-link">KD-Tree Implementation →</Link>
-            <Link to="/projects/cs330/docs/pathfinding" className="quick-link">Pathfinding with Dijkstra →</Link>
-            <Link to="/projects/cs330/docs/performance" className="quick-link">Performance Analysis →</Link>
+            <Link to="/projects/uber/docs/kdtree" className="quick-link">KD-Tree Implementation →</Link>
+            <Link to="/projects/uber/docs/pathfinding" className="quick-link">Pathfinding with Dijkstra →</Link>
+            <Link to="/projects/uber/docs/performance" className="quick-link">Performance Analysis →</Link>
             <a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
-            <Link to="/projects/cs330/docs" className="quick-link">Back to CS330 Documentation →</Link>
+            <Link to="/projects/uber/docs" className="quick-link">Back to CS330 Documentation →</Link>
           </div>
         </section>
       </div>
@@ -866,10 +1088,10 @@ function Cs330AlgorithmPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Documentation</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Documentation</Link></li>
                 <li style={{ marginBottom: '0.75rem', color: '#95a5a6' }}>Algorithm Evolution</li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs/kdtree" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>KD-Tree</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cs330/docs/pathfinding" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Pathfinding</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs/kdtree" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>KD-Tree</Link></li>
+                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/uber/docs/pathfinding" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Pathfinding</Link></li>
               </ul>
             </div>
 
@@ -878,7 +1100,7 @@ function Cs330AlgorithmPage() {
               <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CS330 Case Study Repo</a></li>
+                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Uber Algorithmic System Repo</a></li>
                 <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repo</a></li>
               </ul>
             </div>
@@ -905,4 +1127,4 @@ function Cs330AlgorithmPage() {
   )
 }
 
-export default Cs330AlgorithmPage
+export default UberAlgorithmPage
