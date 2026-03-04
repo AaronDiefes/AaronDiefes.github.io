@@ -342,6 +342,7 @@ export default function HomePage() {
 
               <Link to="/projects/graphics-engine/demo" className="btn">Try Real C++ Engine →</Link>
               <Link to="/projects/graphics-engine/docs" className="btn">View Documentation</Link>
+              <a href="https://github.com/AaronDiefes/graphics-engine-2d" target="_blank" rel="noopener noreferrer" className="btn secondary">GitHub Repo</a>
             </div>
 
             <div className="project-card">
@@ -368,6 +369,7 @@ export default function HomePage() {
 
               <Link to="/projects/cpu/demo" className="btn">CPU Simulator →</Link>
               <Link to="/projects/cpu/docs" className="btn">View Documentation</Link>
+              <a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" className="btn secondary">GitHub Repo</a>
             </div>
 
             <div className="project-card">
