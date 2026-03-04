@@ -231,15 +231,24 @@ function UberDocsLanding() {
             The case study demonstrates <strong>progressive algorithm evolution</strong>, starting with a naive brute-force approach (T1) and evolving through five iterations (T1-T5) to reach an optimized solution using spatial indexing and graph-based pathfinding. Each iteration analyzes performance using D1 (average distance) and D2 (maximum distance) metrics.
           </p>
 
+          <h3>The Nine Algorithms</h3>
           <p>
-            <strong>Key Highlights:</strong>
+            The project implements and analyzes <strong>nine distinct matching algorithms</strong>, each building on insights from previous iterations:
           </p>
+          <p style={{ marginTop: '1rem', marginBottom: '0.5rem' }}><strong>Core Algorithm Progression (T1-T5):</strong></p>
+          <ul style={{ lineHeight: 1.8, color: '#555', marginBottom: '1.5rem' }}>
+            <li><strong>T1: Brute Force</strong> - Exhaustive driver evaluation for each passenger</li>
+            <li><strong>T2: Sorted Distance</strong> - Pre-sorting with early termination optimization</li>
+            <li><strong>T3: Grid-Based Partitioning</strong> - Spatial grid cells for localized search</li>
+            <li><strong>T4: KD-Tree Nearest Neighbor</strong> - Balanced tree structure for O(log n) queries</li>
+            <li><strong>T5: KD-Tree + Road Network</strong> - Spatial indexing with Dijkstra pathfinding</li>
+          </ul>
+          <p style={{ marginBottom: '0.5rem' }}><strong>Bonus Optimizations (B1-B4):</strong></p>
           <ul style={{ lineHeight: 1.8, color: '#555' }}>
-            <li><strong>Algorithm Evolution:</strong> T1-T5 progressive optimization from brute force to spatial indexing</li>
-            <li><strong>KD-Tree Spatial Indexing:</strong> O(log n) nearest-neighbor queries with balanced tree partitioning</li>
-            <li><strong>Dijkstra's Algorithm:</strong> Road network pathfinding with weighted edges</li>
-            <li><strong>Performance Analysis:</strong> D1/D2 metrics, comparison graphs, and algorithm benchmarks</li>
-            <li><strong>Bonus Optimizations:</strong> Load balancing, traffic modeling, and predictive caching</li>
+            <li><strong>B1: Manhattan Routing</strong> - Grid-optimized distance metric for urban areas</li>
+            <li><strong>B2: Workload Balancing</strong> - Exponential penalty for driver fairness</li>
+            <li><strong>B3: Traffic-Aware Routing</strong> - Dynamic congestion modeling and adaptation</li>
+            <li><strong>B4: Hybrid Caching</strong> - Aggressive path caching with binary search</li>
           </ul>
         </section>
 
@@ -253,27 +262,12 @@ function UberDocsLanding() {
           <div className="doc-cards">
             <Link to="/projects/uber/docs/algorithm" className="doc-card">
               <h3>Algorithm Evolution</h3>
-              <p>T1-T5 progressive optimization from brute force to spatial indexing</p>
-            </Link>
-
-            <Link to="/projects/uber/docs/kdtree" className="doc-card">
-              <h3>KD-Tree Spatial Indexing</h3>
-              <p>Efficient nearest-neighbor search with balanced tree partitioning</p>
-            </Link>
-
-            <Link to="/projects/uber/docs/pathfinding" className="doc-card">
-              <h3>Pathfinding</h3>
-              <p>Dijkstra's algorithm on weighted road networks</p>
-            </Link>
-
-            <Link to="/projects/uber/docs/performance" className="doc-card">
-              <h3>Performance Analysis</h3>
-              <p>D1/D2 metrics, comparison graphs, and algorithm benchmarks</p>
+              <p>T1-T5 progressive optimization from brute force to spatial indexing with KD-trees and Dijkstra's pathfinding. Includes performance analysis with D1/D2 metrics and comparison graphs.</p>
             </Link>
 
             <Link to="/projects/uber/docs/bonus" className="doc-card">
               <h3>Bonus Algorithms</h3>
-              <p>Load balancing, traffic-aware routing, predictive caching</p>
+              <p>B1-B4 advanced optimizations exploring workload balancing, traffic-aware routing, and path caching strategies with real simulation results.</p>
             </Link>
           </div>
         </section>
