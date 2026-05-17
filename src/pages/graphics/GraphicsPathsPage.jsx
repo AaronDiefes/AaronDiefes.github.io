@@ -1,86 +1,52 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import DocsLayout from '../../components/docs/DocsLayout'
+import DocsSection from '../../components/docs/DocsSection'
 
 function GraphicsPathsPage() {
   const [activeTab, setActiveTab] = useState('construction')
 
   return (
-    <div>
+    <DocsLayout
+      project="graphics"
+      currentSlug="paths-gradients"
+      title="Paths & Gradients"
+      subtitle="Vector Paths, Winding Fill, and Color Gradients"
+      tocMode="none"
+    >
       <style>{`
-        /* Landing page specific styles */
-        .landing-header {
-            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-            color: white;
-            padding: 4rem 2rem 3rem;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .landing-header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .landing-header p {
-            font-size: 1.3rem;
-            opacity: 0.95;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-
-        .section {
-            background: white;
-            padding: 3rem;
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .section h2 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-size: 2rem;
-            border-bottom: 3px solid #2E7D32;
-            padding-bottom: 0.5rem;
-        }
-
-        .section h3 {
+        /* Page-specific content styles only — layout chrome comes from docs-layout.css */
+        .docs-layout .docs-content h3 {
             color: #2c3e50;
             margin-top: 2rem;
             margin-bottom: 1rem;
             font-size: 1.5rem;
         }
 
-        .section h4 {
+        .docs-layout .docs-content h4 {
             color: #2c3e50;
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
         }
 
-        .section p {
+        .docs-layout .docs-content p {
             margin-bottom: 1rem;
             line-height: 1.8;
             color: #555;
         }
 
-        .section ul {
+        .docs-layout .docs-content ul {
             margin-bottom: 1rem;
             line-height: 1.8;
             color: #555;
             padding-left: 2rem;
         }
 
-        .section li {
+        .docs-layout .docs-content li {
             margin-bottom: 0.5rem;
         }
 
-        .section code {
+        .docs-layout .docs-content code {
             background: #f5f5f5;
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
@@ -89,7 +55,7 @@ function GraphicsPathsPage() {
             color: #c7254e;
         }
 
-        .code-block {
+        .docs-layout .docs-content .code-block {
             background: #1e1e1e;
             color: #d4d4d4;
             padding: 1.5rem;
@@ -102,35 +68,14 @@ function GraphicsPathsPage() {
             white-space: pre;
         }
 
-        .code-block .keyword {
-            color: #569cd6;
-        }
+        .docs-layout .docs-content .code-block .keyword { color: #569cd6; }
+        .docs-layout .docs-content .code-block .comment { color: #6a9955; }
+        .docs-layout .docs-content .code-block .signal { color: #9cdcfe; }
+        .docs-layout .docs-content .code-block .operator { color: #d4d4d4; }
+        .docs-layout .docs-content .code-block .number { color: #b5cea8; }
+        .docs-layout .docs-content .code-block .string { color: #ce9178; }
 
-        .code-block .comment {
-
-        .code-block .signal {
-            color: #9cdcfe;
-        }
-
-        .code-block .operator {
-            color: #d4d4d4;
-        }
-
-        .code-block .number {
-            color: #b5cea8;
-        }
-            color: #6a9955;
-        }
-
-        .code-block .string {
-            color: #ce9178;
-        }
-
-        .code-block .number {
-            color: #b5cea8;
-        }
-
-        .note {
+        .docs-layout .docs-content .note {
             background: #f0f7ff;
             border-left: 4px solid #2E7D32;
             padding: 1rem 1.5rem;
@@ -138,11 +83,11 @@ function GraphicsPathsPage() {
             border-radius: 4px;
         }
 
-        .note strong {
+        .docs-layout .docs-content .note strong {
             color: #2E7D32;
         }
 
-        .tabs-container {
+        .docs-layout .docs-content .tabs-container {
             background: white;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -150,7 +95,7 @@ function GraphicsPathsPage() {
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .tabs-header {
+        .docs-layout .docs-content .tabs-header {
             display: flex;
             gap: 0.5rem;
             border-bottom: 2px solid #e0e0e0;
@@ -158,7 +103,7 @@ function GraphicsPathsPage() {
             flex-wrap: wrap;
         }
 
-        .tab-button {
+        .docs-layout .docs-content .tab-button {
             padding: 0.75rem 1.5rem;
             background: transparent;
             border: none;
@@ -171,22 +116,22 @@ function GraphicsPathsPage() {
             margin-bottom: -2px;
         }
 
-        .tab-button:hover {
+        .docs-layout .docs-content .tab-button:hover {
             color: #2E7D32;
             background: #f5f5f5;
         }
 
-        .tab-button.active {
+        .docs-layout .docs-content .tab-button.active {
             color: #2E7D32;
             border-bottom-color: #2E7D32;
             background: transparent;
         }
 
-        .tab-panel {
+        .docs-layout .docs-content .tab-panel {
             display: none;
         }
 
-        .tab-panel.active {
+        .docs-layout .docs-content .tab-panel.active {
             display: block;
             animation: fadeIn 0.3s;
         }
@@ -196,115 +141,37 @@ function GraphicsPathsPage() {
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .quick-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .quick-link {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: white;
-            color: #2E7D32;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: background 0.3s, color 0.3s;
-            border: 2px solid #2E7D32;
-        }
-
-        .quick-link:hover {
-            background: #2E7D32;
-            color: white;
-        }
-
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
-
-        footer p {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
         @media (max-width: 768px) {
-            .landing-header h1 {
-                font-size: 2rem;
-            }
-
-            .landing-header p {
-                font-size: 1.1rem;
-            }
-
-            .section {
-                padding: 2rem;
-            }
-
-            .tabs-header {
+            .docs-layout .docs-content .tabs-header {
                 flex-direction: column;
             }
 
-            .tab-button {
+            .docs-layout .docs-content .tab-button {
                 width: 100%;
                 text-align: left;
             }
         }
-
-        @media (max-width: 480px) {
-            .landing-header {
-                padding: 3rem 1rem 2rem;
-            }
-
-            .container {
-                padding: 2rem 1rem;
-            }
-
-            .section {
-                padding: 1.5rem;
-            }
-
-            .quick-links {
-                flex-direction: column;
-            }
-
-            .quick-link {
-                text-align: center;
-            }
-        }
       `}</style>
 
-      <header className="landing-header">
-        <h1>Paths & Gradients</h1>
-        <p>Vector Paths, Winding Fill, and Color Gradients</p>
-      </header>
+      <DocsSection id="vector-graphics-and-gradient-shading" title="Vector Graphics and Gradient Shading">
+        <p>
+          This section introduces two fundamental computer graphics concepts: <strong>vector paths</strong> and <strong>gradient shaders</strong>.
+          These capabilities move beyond simple rectangles and solid colors, enabling complex shapes and smooth color transitions.
+        </p>
+        <p>
+          The <code>GPath</code> class constructs general vector shapes from commands like <code>moveTo</code>, <code>lineTo</code>, and <code>quadTo</code>.
+          The <strong>winding fill rule</strong> determines which pixels fall "inside" the path—essential for handling self-intersecting
+          and nested shapes correctly.
+        </p>
+        <p>
+          Gradient shaders compute pixel colors based on spatial position. <strong>Linear gradients</strong> project each pixel onto
+          a gradient vector to determine its color. <strong>Radial gradients</strong> calculate distance from a center point, creating
+          concentric circles of color.
+        </p>
+      </DocsSection>
 
-      <div className="container">
-        {/* Introduction Section */}
-        <section className="section">
-          <h2>Vector Graphics and Gradient Shading</h2>
-          <p>
-            This section introduces two fundamental computer graphics concepts: <strong>vector paths</strong> and <strong>gradient shaders</strong>.
-            These capabilities move beyond simple rectangles and solid colors, enabling complex shapes and smooth color transitions.
-          </p>
-          <p>
-            The <code>GPath</code> class constructs general vector shapes from commands like <code>moveTo</code>, <code>lineTo</code>, and <code>quadTo</code>.
-            The <strong>winding fill rule</strong> determines which pixels fall "inside" the path—essential for handling self-intersecting
-            and nested shapes correctly.
-          </p>
-          <p>
-            Gradient shaders compute pixel colors based on spatial position. <strong>Linear gradients</strong> project each pixel onto
-            a gradient vector to determine its color. <strong>Radial gradients</strong> calculate distance from a center point, creating
-            concentric circles of color.
-          </p>
-        </section>
-
-        {/* Tabs Container */}
-        <div className="tabs-container">
+      {/* Tabs container — wrapped in <section className="section"> manually since tabs have no h2 of their own. */}
+      <section className="section tabs-container">
           <div className="tabs-header">
             <button
               className={`tab-button ${activeTab === 'construction' ? 'active' : ''}`}
@@ -719,22 +586,8 @@ function GraphicsPathsPage() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Explore Further Section */}
-        <section className="section">
-          <h2>Explore Further</h2>
-          <div className="quick-links">
-            <a href="https://github.com/AaronDiefes/graphics-engine-2d" target="_blank" rel="noopener noreferrer" className="quick-link">View Source on GitHub →</a>
-            <Link to="/projects/graphics-engine/docs" className="quick-link">Back to Graphics Documentation →</Link>
-          </div>
         </section>
-      </div>
-
-      <footer>
-        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
-      </footer>
-    </div>
+    </DocsLayout>
   )
 }
 
