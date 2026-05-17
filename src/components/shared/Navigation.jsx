@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import ProjectsDropdown from './ProjectsDropdown'
 
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -45,9 +46,8 @@ function Navigation() {
     }
   }, [location])
 
-  const isActive = (path) => {
-    return location.pathname === path
-  }
+  const isActive = (path) => location.pathname === path
+  const isAboutActive = location.pathname === '/' && location.hash === '#about'
 
   return (
     <nav className="site-nav" aria-label="Main navigation">
@@ -71,39 +71,25 @@ function Navigation() {
         <li>
           <Link
             to="/"
-            className={isActive('/') ? 'active' : ''}
-            aria-current={isActive('/') ? 'page' : undefined}
+            className={isActive('/') && !location.hash ? 'active' : ''}
+            aria-current={isActive('/') && !location.hash ? 'page' : undefined}
           >
             Home
           </Link>
         </li>
+
+        <ProjectsDropdown onNavigate={() => setIsMenuOpen(false)} />
+
         <li>
           <Link
-            to="/projects/cpu/demo"
-            className={isActive('/projects/cpu/demo') ? 'active' : ''}
-            aria-current={isActive('/projects/cpu/demo') ? 'page' : undefined}
+            to="/#about"
+            className={isAboutActive ? 'active' : ''}
+            aria-current={isAboutActive ? 'page' : undefined}
           >
-            CPU Simulator
+            About
           </Link>
         </li>
-        <li>
-          <Link
-            to="/projects/graphics-engine/demo"
-            className={isActive('/projects/graphics-engine/demo') ? 'active' : ''}
-            aria-current={isActive('/projects/graphics-engine/demo') ? 'page' : undefined}
-          >
-            Graphics Engine
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/projects/graphics-engine/docs"
-            className={isActive('/docs') ? 'active' : ''}
-            aria-current={isActive('/docs') ? 'page' : undefined}
-          >
-            Documentation
-          </Link>
-        </li>
+
         <li>
           <a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer">
             GitHub

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { DOCS_NAV } from '../../lib/docs-nav'
 
 function CpuDocsLanding() {
   return (
@@ -355,40 +356,12 @@ function CpuDocsLanding() {
           </p>
 
           <div className="doc-cards">
-            <Link to="/projects/cpu/docs/alu" className="doc-card">
-              <h3>ALU Design</h3>
-              <p>Carry-Lookahead adder, arithmetic and logic operations</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/regfile" className="doc-card">
-              <h3>Register File</h3>
-              <p>32 registers, dual read ports, $0 hardwired to zero</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/multdiv" className="doc-card">
-              <h3>Multiplication & Division</h3>
-              <p>Booth's algorithm, 2-layer implementation</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/pipeline" className="doc-card">
-              <h3>Pipeline Architecture</h3>
-              <p>5-stage pipeline, datapath design</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/hazards" className="doc-card">
-              <h3>Hazards & Forwarding</h3>
-              <p>Data hazards, forwarding paths, stall logic</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/instructions" className="doc-card">
-              <h3>Instruction Set</h3>
-              <p>Complete instruction reference with encoding formats</p>
-            </Link>
-
-            <Link to="/projects/cpu/docs/memory" className="doc-card">
-              <h3>Memory System</h3>
-              <p>RAM, ROM, instruction and data memory</p>
-            </Link>
+            {DOCS_NAV.cpu.pages.map((page) => (
+              <Link key={page.slug} to={page.href} className="doc-card">
+                <h3>{page.label}</h3>
+                <p>{page.description}</p>
+              </Link>
+            ))}
           </div>
         </section>
 

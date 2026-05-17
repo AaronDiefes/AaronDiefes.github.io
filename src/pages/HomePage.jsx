@@ -1,7 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import Navigation from '../components/shared/Navigation';
 
 export default function HomePage() {
+  const location = useLocation();
+
+  // Scroll to a hash target after the homepage renders. The element may not be
+  // in the DOM on the very first paint when arriving from another route, so
+  // retry on the next animation frame once.
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const tryScroll = (retries = 1) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (retries > 0) {
+        requestAnimationFrame(() => tryScroll(retries - 1));
+      }
+    };
+    tryScroll();
+  }, [location.hash]);
+
   return (
     <>
       <style>{`
@@ -274,19 +294,7 @@ export default function HomePage() {
         }
       `}</style>
 
-      <nav className="site-nav" aria-label="Main navigation">
-        <a href="#" className="nav-brand">Aaron Diefes</a>
-        <button className="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
-          <span className="sr-only">Toggle menu</span>
-          <span className="hamburger-icon"></span>
-        </button>
-        <ul id="nav-menu" className="nav-links" hidden>
-          <li><Link to="/">Home</Link></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-        </ul>
-      </nav>
+      <Navigation />
 
       <header>
         <h1>Aaron Diefes</h1>

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 // Top-level pages
 import HomePage from './pages/HomePage'
 import AdminPage from './pages/AdminPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 // Graphics Engine pages
 import GraphicsWasmPage from './pages/graphics/GraphicsWasmPage'
@@ -96,6 +97,8 @@ function AppContent() {
       <Route path="/projects/uber/docs/kdtree" element={<UberKdtreePage />} />
       <Route path="/projects/uber/docs/pathfinding" element={<UberPathfindingPage />} />
       <Route path="/projects/uber/docs/bonus" element={<UberBonusPage />} />
+
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

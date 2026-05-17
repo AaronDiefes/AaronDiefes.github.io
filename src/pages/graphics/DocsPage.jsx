@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { DOCS_NAV } from '../../lib/docs-nav'
 
 function DocsPage() {
   return (
@@ -431,35 +432,12 @@ function DocsPage() {
           </p>
 
           <div className="doc-cards">
-            <Link to="/projects/graphics-engine/docs/core-rendering" className="doc-card">
-              <h3>Core Rendering</h3>
-              <p>Edge rasterization, shape drawing, Porter-Duff blend modes, polygon clipping</p>
-            </Link>
-
-            <Link to="/projects/graphics-engine/docs/transforms-textures" className="doc-card">
-              <h3>Transformations & Textures</h3>
-              <p>Matrix math, CTM stack, bitmap shader with tile modes</p>
-            </Link>
-
-            <Link to="/projects/graphics-engine/docs/paths-gradients" className="doc-card">
-              <h3>Paths & Gradients</h3>
-              <p>GPath construction, winding fill, linear and radial gradients</p>
-            </Link>
-
-            <Link to="/projects/graphics-engine/docs/advanced-geometry" className="doc-card">
-              <h3>Advanced Geometry</h3>
-              <p>Bezier curves, triangle meshes, quad rendering, shader composition</p>
-            </Link>
-
-            <Link to="/projects/graphics-engine/docs/final-features" className="doc-card">
-              <h3>Advanced Features</h3>
-              <p>Sweep gradient, color matrix, stroke polygon, Coons patches</p>
-            </Link>
-
-            <Link to="/projects/graphics-engine/docs/optimization-performance" className="doc-card">
-              <h3>Optimization & Performance</h3>
-              <p>Fixed-point division, blend fast paths, static dispatch, memory access patterns</p>
-            </Link>
+            {DOCS_NAV.graphics.pages.map((page) => (
+              <Link key={page.slug} to={page.href} className="doc-card">
+                <h3>{page.label}</h3>
+                <p>{page.description}</p>
+              </Link>
+            ))}
           </div>
         </section>
 

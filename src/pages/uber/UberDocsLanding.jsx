@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { DOCS_NAV } from '../../lib/docs-nav'
 
 function UberDocsLanding() {
   return (
@@ -251,15 +252,12 @@ function UberDocsLanding() {
           </p>
 
           <div className="doc-cards">
-            <Link to="/projects/uber/docs/algorithm" className="doc-card">
-              <h3>Algorithm Evolution</h3>
-              <p>T1-T5 progressive optimization from brute force to spatial indexing with KD-trees and Dijkstra's pathfinding. Includes performance analysis with D1/D2 metrics and comparison graphs.</p>
-            </Link>
-
-            <Link to="/projects/uber/docs/bonus" className="doc-card">
-              <h3>Bonus Algorithms</h3>
-              <p>B1-B4 advanced optimizations exploring workload balancing, traffic-aware routing, and path caching strategies with real simulation results.</p>
-            </Link>
+            {DOCS_NAV.uber.pages.map((page) => (
+              <Link key={page.slug} to={page.href} className="doc-card">
+                <h3>{page.label}</h3>
+                <p>{page.description}</p>
+              </Link>
+            ))}
           </div>
         </section>
 
