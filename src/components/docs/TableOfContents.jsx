@@ -40,10 +40,9 @@ function TableOfContents({ items }) {
     }
   }, [items])
 
-  const handleClick = (e, id) => {
+  const handleClick = (e, item) => {
     e.preventDefault()
-    const el = document.getElementById(id)
-    if (!el) return
+    const { id, onClick } = item
 
     // Suppress the observer while smooth-scroll is animating so the active
     // highlight doesn't flicker through intermediate sections.
@@ -54,7 +53,13 @@ function TableOfContents({ items }) {
       suppressObserverRef.current = false
     }, 700)
 
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (onClick) {
+      // Page-supplied handler (e.g. tab pages: switch tab + scroll on next frame).
+      onClick()
+    } else {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
 
     // Reflect the hash without re-triggering a full route render.
     if (window.history && window.history.replaceState) {
@@ -66,17 +71,17 @@ function TableOfContents({ items }) {
 
   const list = (
     <ul className="docs-toc-list">
-      {items.map(({ id, label, level }) => (
+      {items.map((item) => (
         <li
-          key={id}
-          className={`docs-toc-item level-${level || 2} ${activeId === id ? 'active' : ''}`}
+          key={item.id}
+          className={`docs-toc-item level-${item.level || 2} ${activeId === item.id ? 'active' : ''}`}
         >
           <a
-            href={`#${id}`}
-            onClick={(e) => handleClick(e, id)}
-            aria-current={activeId === id ? 'true' : undefined}
+            href={`#${item.id}`}
+            onClick={(e) => handleClick(e, item)}
+            aria-current={activeId === item.id ? 'true' : undefined}
           >
-            {label}
+            {item.label}
           </a>
         </li>
       ))}

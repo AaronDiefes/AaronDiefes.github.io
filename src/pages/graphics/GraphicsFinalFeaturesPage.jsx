@@ -5,13 +5,50 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsFinalFeaturesPage() {
   const [activeTab, setActiveTab] = useState('sweep')
 
+  const tocItems = [
+    { id: 'introduction', label: 'Introduction', level: 2 },
+    {
+      id: 'sweep',
+      label: 'Sweep Gradient',
+      level: 2,
+      onClick: () => {
+        setActiveTab('sweep')
+        requestAnimationFrame(() => {
+          document.getElementById('sweep')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'position',
+      label: 'Position-Based Gradient',
+      level: 2,
+      onClick: () => {
+        setActiveTab('position')
+        requestAnimationFrame(() => {
+          document.getElementById('position')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'coons',
+      label: 'Coons Patches',
+      level: 2,
+      onClick: () => {
+        setActiveTab('coons')
+        requestAnimationFrame(() => {
+          document.getElementById('coons')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="final-features"
       title="Advanced Features"
       subtitle="Sweep Gradients, Position-Controlled Gradients, and Coons Patches"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -197,7 +234,7 @@ function GraphicsFinalFeaturesPage() {
 
           <div className="tabs-content">
             {/* Tab 1: Sweep Gradient */}
-            <div className={`tab-panel ${activeTab === 'sweep' ? 'active' : ''}`}>
+            <div id="sweep" className={`tab-panel ${activeTab === 'sweep' ? 'active' : ''}`}>
               <h3>Sweep Gradient (Angle-Based)</h3>
 
               <h4>What is a Sweep Gradient?</h4>
@@ -290,7 +327,7 @@ function GraphicsFinalFeaturesPage() {
             </div>
 
             {/* Tab 2: Position-Based Gradient */}
-            <div className={`tab-panel ${activeTab === 'position' ? 'active' : ''}`}>
+            <div id="position" className={`tab-panel ${activeTab === 'position' ? 'active' : ''}`}>
               <h3>Position-Controlled Linear Gradient</h3>
 
               <h4>What is Position-Based Control?</h4>
@@ -405,7 +442,7 @@ function GraphicsFinalFeaturesPage() {
             </div>
 
             {/* Tab 3: Coons Patches */}
-            <div className={`tab-panel ${activeTab === 'coons' ? 'active' : ''}`}>
+            <div id="coons" className={`tab-panel ${activeTab === 'coons' ? 'active' : ''}`}>
               <h3>Quadratic Coons Patches</h3>
 
               <h4>What is a Coons Patch?</h4>

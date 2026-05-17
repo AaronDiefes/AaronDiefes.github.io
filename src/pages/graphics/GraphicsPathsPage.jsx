@@ -5,13 +5,61 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsPathsPage() {
   const [activeTab, setActiveTab] = useState('construction')
 
+  const tocItems = [
+    { id: 'vector-graphics-and-gradient-shading', label: 'Vector Graphics and Gradient Shading', level: 2 },
+    {
+      id: 'construction',
+      label: 'Path Construction',
+      level: 2,
+      onClick: () => {
+        setActiveTab('construction')
+        requestAnimationFrame(() => {
+          document.getElementById('construction')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'winding',
+      label: 'Winding Fill Rule',
+      level: 2,
+      onClick: () => {
+        setActiveTab('winding')
+        requestAnimationFrame(() => {
+          document.getElementById('winding')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'linear',
+      label: 'Linear Gradient',
+      level: 2,
+      onClick: () => {
+        setActiveTab('linear')
+        requestAnimationFrame(() => {
+          document.getElementById('linear')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'radial',
+      label: 'Radial Gradient',
+      level: 2,
+      onClick: () => {
+        setActiveTab('radial')
+        requestAnimationFrame(() => {
+          document.getElementById('radial')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="paths-gradients"
       title="Paths & Gradients"
       subtitle="Vector Paths, Winding Fill, and Color Gradients"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -201,7 +249,7 @@ function GraphicsPathsPage() {
 
           <div className="tabs-content">
             {/* Tab 1: Path Construction */}
-            <div className={`tab-panel ${activeTab === 'construction' ? 'active' : ''}`}>
+            <div id="construction" className={`tab-panel ${activeTab === 'construction' ? 'active' : ''}`}>
               <h3>GPath: Command-Based Path Construction</h3>
               <p>
                 The <code>GPath</code> class represents complex vector shapes as a sequence of drawing commands.
@@ -313,7 +361,7 @@ function GraphicsPathsPage() {
             </div>
 
             {/* Tab 2: Winding Fill Rule */}
-            <div className={`tab-panel ${activeTab === 'winding' ? 'active' : ''}`}>
+            <div id="winding" className={`tab-panel ${activeTab === 'winding' ? 'active' : ''}`}>
               <h3>The Winding Number Fill Rule</h3>
               <p>
                 Given a complex path, how do we determine which pixels are "inside" the shape? The <strong>winding number
@@ -395,7 +443,7 @@ function GraphicsPathsPage() {
             </div>
 
             {/* Tab 3: Linear Gradient */}
-            <div className={`tab-panel ${activeTab === 'linear' ? 'active' : ''}`}>
+            <div id="linear" className={`tab-panel ${activeTab === 'linear' ? 'active' : ''}`}>
               <h3>Linear Gradient Shader</h3>
               <p>
                 A <strong>linear gradient</strong> interpolates colors along a line defined by two points. Each pixel's
@@ -488,7 +536,7 @@ function GraphicsPathsPage() {
             </div>
 
             {/* Tab 4: Radial Gradient */}
-            <div className={`tab-panel ${activeTab === 'radial' ? 'active' : ''}`}>
+            <div id="radial" className={`tab-panel ${activeTab === 'radial' ? 'active' : ''}`}>
               <h3>Radial Gradient Shader</h3>
               <p>
                 A <strong>radial gradient</strong> creates concentric circles of color radiating from a center point.

@@ -5,13 +5,61 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsAdvancedGeometryPage() {
   const [activeTab, setActiveTab] = useState('bezier')
 
+  const tocItems = [
+    { id: 'introduction', label: 'Introduction', level: 2 },
+    {
+      id: 'bezier',
+      label: 'Bezier Curves',
+      level: 2,
+      onClick: () => {
+        setActiveTab('bezier')
+        requestAnimationFrame(() => {
+          document.getElementById('bezier')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'mesh',
+      label: 'Triangle Meshes',
+      level: 2,
+      onClick: () => {
+        setActiveTab('mesh')
+        requestAnimationFrame(() => {
+          document.getElementById('mesh')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'quad',
+      label: 'Quad Rendering',
+      level: 2,
+      onClick: () => {
+        setActiveTab('quad')
+        requestAnimationFrame(() => {
+          document.getElementById('quad')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'shader',
+      label: 'Shader Composition',
+      level: 2,
+      onClick: () => {
+        setActiveTab('shader')
+        requestAnimationFrame(() => {
+          document.getElementById('shader')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="advanced-geometry"
       title="Advanced Geometry"
       subtitle="Bezier Curves, Triangle Meshes, and Shader Composition"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -201,7 +249,7 @@ function GraphicsAdvancedGeometryPage() {
 
           <div className="tabs-content">
             {/* Tab Panel 1: Bezier Curves */}
-            <div className={`tab-panel ${activeTab === 'bezier' ? 'active' : ''}`}>
+            <div id="bezier" className={`tab-panel ${activeTab === 'bezier' ? 'active' : ''}`}>
               <h3>Bezier Curves and Tessellation</h3>
 
               <h4>Algorithm Overview</h4>
@@ -320,7 +368,7 @@ function GraphicsAdvancedGeometryPage() {
             </div>
 
             {/* Tab Panel 2: Triangle Meshes */}
-            <div className={`tab-panel ${activeTab === 'mesh' ? 'active' : ''}`}>
+            <div id="mesh" className={`tab-panel ${activeTab === 'mesh' ? 'active' : ''}`}>
               <h3>Triangle Mesh Rendering</h3>
 
               <h4>Algorithm Overview</h4>
@@ -426,7 +474,7 @@ function GraphicsAdvancedGeometryPage() {
             </div>
 
             {/* Tab Panel 3: Quad Rendering */}
-            <div className={`tab-panel ${activeTab === 'quad' ? 'active' : ''}`}>
+            <div id="quad" className={`tab-panel ${activeTab === 'quad' ? 'active' : ''}`}>
               <h3>Quad Patch Rendering</h3>
 
               <h4>Algorithm Overview</h4>
@@ -566,7 +614,7 @@ function GraphicsAdvancedGeometryPage() {
             </div>
 
             {/* Tab Panel 4: Shader Composition */}
-            <div className={`tab-panel ${activeTab === 'shader' ? 'active' : ''}`}>
+            <div id="shader" className={`tab-panel ${activeTab === 'shader' ? 'active' : ''}`}>
               <h3>Shader Composition Patterns</h3>
 
               <h4>Algorithm Overview</h4>

@@ -5,13 +5,61 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsOptimizationPage() {
   const [activeTab, setActiveTab] = useState('fixed-point')
 
+  const tocItems = [
+    { id: 'performance-engineering-in-software-rendering', label: 'Performance Engineering in Software Rendering', level: 2 },
+    {
+      id: 'fixed-point',
+      label: 'Fixed-Point Division',
+      level: 2,
+      onClick: () => {
+        setActiveTab('fixed-point')
+        requestAnimationFrame(() => {
+          document.getElementById('fixed-point')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'fast-paths',
+      label: 'Blend Fast Paths',
+      level: 2,
+      onClick: () => {
+        setActiveTab('fast-paths')
+        requestAnimationFrame(() => {
+          document.getElementById('fast-paths')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'dispatch',
+      label: 'Static Dispatch',
+      level: 2,
+      onClick: () => {
+        setActiveTab('dispatch')
+        requestAnimationFrame(() => {
+          document.getElementById('dispatch')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'memory',
+      label: 'Memory Access Patterns',
+      level: 2,
+      onClick: () => {
+        setActiveTab('memory')
+        requestAnimationFrame(() => {
+          document.getElementById('memory')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="optimization-performance"
       title="Optimization & Performance"
       subtitle="Fast Paths, Fixed-Point Math, and Dispatch Strategies"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -223,7 +271,7 @@ function GraphicsOptimizationPage() {
 
           <div className="tabs-content">
             {/* Tab 1: Fixed-Point Division */}
-            <div className={`tab-panel ${activeTab === 'fixed-point' ? 'active' : ''}`}>
+            <div id="fixed-point" className={`tab-panel ${activeTab === 'fixed-point' ? 'active' : ''}`}>
               <h3>Fixed-Point Division by 255</h3>
 
               <div className="content-block">
@@ -296,7 +344,7 @@ function GraphicsOptimizationPage() {
             </div>
 
             {/* Tab 2: Blend Fast Paths */}
-            <div className={`tab-panel ${activeTab === 'fast-paths' ? 'active' : ''}`}>
+            <div id="fast-paths" className={`tab-panel ${activeTab === 'fast-paths' ? 'active' : ''}`}>
               <h3>Blend Mode Fast Paths</h3>
 
               <div className="content-block">
@@ -392,7 +440,7 @@ function GraphicsOptimizationPage() {
             </div>
 
             {/* Tab 3: Static Dispatch */}
-            <div className={`tab-panel ${activeTab === 'dispatch' ? 'active' : ''}`}>
+            <div id="dispatch" className={`tab-panel ${activeTab === 'dispatch' ? 'active' : ''}`}>
               <h3>Static Dispatch for Blend Functions</h3>
 
               <div className="content-block">
@@ -495,7 +543,7 @@ function GraphicsOptimizationPage() {
             </div>
 
             {/* Tab 4: Memory Access Patterns */}
-            <div className={`tab-panel ${activeTab === 'memory' ? 'active' : ''}`}>
+            <div id="memory" className={`tab-panel ${activeTab === 'memory' ? 'active' : ''}`}>
               <h3>Memory Access Patterns</h3>
 
               <div className="content-block">

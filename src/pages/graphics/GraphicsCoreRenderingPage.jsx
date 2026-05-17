@@ -5,13 +5,61 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsCoreRenderingPage() {
   const [activeTab, setActiveTab] = useState('edge')
 
+  const tocItems = [
+    { id: 'introduction', label: 'Introduction', level: 2 },
+    {
+      id: 'edge',
+      label: 'Edge Rasterization',
+      level: 2,
+      onClick: () => {
+        setActiveTab('edge')
+        requestAnimationFrame(() => {
+          document.getElementById('edge')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'rect',
+      label: 'Rectangle Drawing',
+      level: 2,
+      onClick: () => {
+        setActiveTab('rect')
+        requestAnimationFrame(() => {
+          document.getElementById('rect')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'blend',
+      label: 'Porter-Duff Blending',
+      level: 2,
+      onClick: () => {
+        setActiveTab('blend')
+        requestAnimationFrame(() => {
+          document.getElementById('blend')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'clip',
+      label: 'Polygon Clipping',
+      level: 2,
+      onClick: () => {
+        setActiveTab('clip')
+        requestAnimationFrame(() => {
+          document.getElementById('clip')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="core-rendering"
       title="Core Rendering"
       subtitle="Edge Rasterization, Shape Drawing, and Blend Modes"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -184,7 +232,7 @@ function GraphicsCoreRenderingPage() {
 
         <div className="tabs-content">
           {/* Tab 1: Edge Rasterization */}
-          <div className={`tab-panel ${activeTab === 'edge' ? 'active' : ''}`}>
+          <div id="edge" className={`tab-panel ${activeTab === 'edge' ? 'active' : ''}`}>
             <h3>Edge-Based Rendering</h3>
             <p>
               The graphics engine uses an edge-based scanline algorithm for all shape rendering. Every shape—rectangle, triangle, polygon, path—is first converted into a list of edges. Each edge represents one side of the shape, storing the top and bottom Y coordinates, the X position, and the slope (how X changes as Y increments).
@@ -246,7 +294,7 @@ function GraphicsCoreRenderingPage() {
           </div>
 
           {/* Tab 2: Rectangle Drawing */}
-          <div className={`tab-panel ${activeTab === 'rect' ? 'active' : ''}`}>
+          <div id="rect" className={`tab-panel ${activeTab === 'rect' ? 'active' : ''}`}>
             <h3>Rectangle Rendering</h3>
             <p>
               Rectangles are the simplest renderable shape, but they demonstrate the core rendering pipeline. A rectangle is defined by four corner points, which are converted into four edges, then passed through the same scanline algorithm used for all shapes.
@@ -315,7 +363,7 @@ function GraphicsCoreRenderingPage() {
           </div>
 
           {/* Tab 3: Porter-Duff Blending */}
-          <div className={`tab-panel ${activeTab === 'blend' ? 'active' : ''}`}>
+          <div id="blend" className={`tab-panel ${activeTab === 'blend' ? 'active' : ''}`}>
             <h3>Alpha Compositing with Porter-Duff</h3>
             <p>
               The graphics engine implements the complete Porter-Duff compositing model with 12 blend modes. Porter-Duff blending defines how source pixels (S) combine with destination pixels (D) based on their alpha values, using the formula: <code>result = S_coef * S + D_coef * D</code>.
@@ -423,7 +471,7 @@ function GraphicsCoreRenderingPage() {
           </div>
 
           {/* Tab 4: Polygon Clipping */}
-          <div className={`tab-panel ${activeTab === 'clip' ? 'active' : ''}`}>
+          <div id="clip" className={`tab-panel ${activeTab === 'clip' ? 'active' : ''}`}>
             <h3>Viewport Clipping</h3>
             <p>
               Clipping ensures that shapes extending outside the viewport boundaries are properly trimmed before rasterization. Without clipping, edge calculations could produce invalid memory accesses or visual artifacts. The engine clips each edge of a polygon against the viewport's four boundaries: top, bottom, left, and right.

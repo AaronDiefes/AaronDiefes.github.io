@@ -5,13 +5,50 @@ import DocsSection from '../../components/docs/DocsSection'
 function GraphicsTransformsPage() {
   const [activeTab, setActiveTab] = useState('matrix')
 
+  const tocItems = [
+    { id: 'introduction', label: 'Introduction', level: 2 },
+    {
+      id: 'matrix',
+      label: 'Matrix Fundamentals',
+      level: 2,
+      onClick: () => {
+        setActiveTab('matrix')
+        requestAnimationFrame(() => {
+          document.getElementById('matrix')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'ctm',
+      label: 'CTM Stack',
+      level: 2,
+      onClick: () => {
+        setActiveTab('ctm')
+        requestAnimationFrame(() => {
+          document.getElementById('ctm')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+    {
+      id: 'bitmap',
+      label: 'Bitmap Shader',
+      level: 2,
+      onClick: () => {
+        setActiveTab('bitmap')
+        requestAnimationFrame(() => {
+          document.getElementById('bitmap')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      },
+    },
+  ]
+
   return (
     <DocsLayout
       project="graphics"
       currentSlug="transforms-textures"
       title="Transformations & Textures"
       subtitle="Matrix Transformations, CTM Stack, and Bitmap Shaders"
-      tocMode="none"
+      tocItems={tocItems}
     >
       <style>{`
         /* Page-specific content styles only — layout chrome comes from docs-layout.css */
@@ -182,7 +219,7 @@ function GraphicsTransformsPage() {
 
           <div className="tabs-content">
             {/* Tab 1: Matrix Fundamentals */}
-            <div className={`tab-panel ${activeTab === 'matrix' ? 'active' : ''}`}>
+            <div id="matrix" className={`tab-panel ${activeTab === 'matrix' ? 'active' : ''}`}>
               <h3>Matrix Fundamentals</h3>
 
               <h4>2D Affine Transformation Matrices</h4>
@@ -274,7 +311,7 @@ function GraphicsTransformsPage() {
             </div>
 
             {/* Tab 2: CTM Stack */}
-            <div className={`tab-panel ${activeTab === 'ctm' ? 'active' : ''}`}>
+            <div id="ctm" className={`tab-panel ${activeTab === 'ctm' ? 'active' : ''}`}>
               <h3>Current Transform Matrix (CTM) Stack</h3>
 
               <h4>The Transformation Stack Concept</h4>
@@ -347,7 +384,7 @@ function GraphicsTransformsPage() {
             </div>
 
             {/* Tab 3: Bitmap Shader */}
-            <div className={`tab-panel ${activeTab === 'bitmap' ? 'active' : ''}`}>
+            <div id="bitmap" className={`tab-panel ${activeTab === 'bitmap' ? 'active' : ''}`}>
               <h3>Bitmap Shader & Tile Modes</h3>
 
               <h4>Texture Mapping Concept</h4>
