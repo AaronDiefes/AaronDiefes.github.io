@@ -83,43 +83,43 @@
 
 /* Component-specific active colors (match pipeline stage colors) */
 .instruction-memory.active rect {
-  fill: #E8F5E9;  /* Light green - IF stage */
+  fill: var(--stage-if-tint);
   stroke: var(--stage-if-color);
 }
 
 .register-file.active rect,
 .sign-extend.active rect {
-  fill: #E3F2FD;  /* Light blue - ID stage */
+  fill: var(--stage-id-tint);
   stroke: var(--stage-id-color);
 }
 
 .alu.active rect {
-  fill: #FFF3E0;  /* Light orange - EX stage */
+  fill: var(--stage-ex-tint);
   stroke: var(--stage-ex-color);
 }
 
 .data-memory.active rect {
-  fill: #F3E5F5;  /* Light purple - MEM stage */
+  fill: var(--stage-mem-tint);
   stroke: var(--stage-mem-color);
 }
 
 .pc.active rect,
 .adder.active rect {
-  fill: #E8F5E9;  /* Light green - IF stage */
+  fill: var(--stage-if-tint);
   stroke: var(--stage-if-color);
 }
 
 /* Pipeline register styles (red vertical bars) */
 .pipeline-register rect {
-  fill: #EF5350;
-  stroke: #C62828;
+  fill: var(--color-pipeline-fill);
+  stroke: var(--color-pipeline-stroke);
   stroke-width: 1;
 }
 
 .pipeline-label {
   font-size: 12px;
   font-weight: bold;
-  fill: #C62828;
+  fill: var(--color-pipeline-stroke);
 }
 
 .pipeline-instruction {
@@ -130,8 +130,8 @@
 
 /* Multiplexer styles (blue triangles) */
 .multiplexer polygon {
-  fill: #2196F3;
-  stroke: #1976D2;
+  fill: var(--stage-id-color);
+  stroke: var(--color-mux-stroke);
   stroke-width: 1;
   opacity: 0.8;
   transition: opacity 0.3s ease, stroke-width 0.3s ease;
@@ -256,7 +256,7 @@
   position: sticky;
   top: 0;
   background: var(--color-surface-alt);
-  z-index: 1;
+  z-index: var(--z-sticky);
 }
 
 .memory-table thead th {

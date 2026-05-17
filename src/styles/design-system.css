@@ -89,7 +89,46 @@
   --easing-standard: ease;    /* General purpose */
   --easing-enter: ease-out;   /* Entering elements */
   --easing-exit: ease-in;     /* Exiting elements */
+
+  /* ============================================
+   * Z-INDEX SCALE
+   * ============================================ */
+
+  --z-sticky: 1;        /* Sticky elements (table headers, etc.) */
+  --z-dropdown: 100;    /* Dropdown menus, mobile nav menu */
+  --z-overlay: 101;     /* Above dropdowns (e.g., toggle button) */
+  --z-modal: 110;       /* Modals, popovers */
+
+  /* ============================================
+   * PIPELINE VISUALIZATION TINTS
+   * Light fills for the active state of CPU stage components.
+   * Stage stroke colors live in visualization.css (--stage-*-color).
+   * ============================================ */
+
+  --stage-if-tint: #E8F5E9;      /* Light green - IF/PC */
+  --stage-id-tint: #E3F2FD;      /* Light blue - ID/RegFile */
+  --stage-ex-tint: #FFF3E0;      /* Light orange - EX/ALU */
+  --stage-mem-tint: #F3E5F5;     /* Light purple - MEM */
+
+  /* Pipeline register (red vertical bars between stages) */
+  --color-pipeline-fill: #EF5350;
+  --color-pipeline-stroke: #C62828;
+
+  /* Multiplexer (blue triangles) — fill reuses --stage-id-color */
+  --color-mux-stroke: #1976D2;
 }
+
+/* ============================================
+ * RESPONSIVE BREAKPOINT SCALE
+ * Canonical scale used across the stylesheets:
+ *   480px  — small / phone
+ *   768px  — tablet
+ *   1024px — desktop
+ * Note: graphics-demo.css uses a 900px breakpoint because the
+ * 800×600 WASM canvas needs the full-width single-column layout
+ * before the standard 1024 threshold. That one is an intentional
+ * exception, not a drift — leave it.
+ * ============================================ */
 
 /* ============================================
  * ACCESSIBILITY - Respect User Preferences

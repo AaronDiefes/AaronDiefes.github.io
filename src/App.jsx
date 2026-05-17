@@ -47,7 +47,6 @@ function AppContent() {
       'cpu-page',
       'graphics-page',
       'uber-page',
-      'docs-page',
       'admin-page'
     )
 
