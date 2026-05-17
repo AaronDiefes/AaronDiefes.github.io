@@ -234,7 +234,7 @@
 }
 
 .memory-view h3 {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   margin-bottom: 12px;
   color: var(--color-text-heading);
 }
@@ -308,7 +308,7 @@
 }
 
 .instruction-view h3 {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   margin-bottom: 12px;
   color: var(--color-text-heading);
 }
@@ -389,7 +389,7 @@
 }
 
 .instruction-list-container h3 {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   margin-bottom: 12px;
   color: var(--color-text-heading);
 }
