@@ -1,14 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function DocsPage() {
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Graphics Engine', href: '/projects/graphics-engine/demo' },
-    { label: 'Documentation' }
-  ]
-
   return (
     <div>
       <style>{`
@@ -290,8 +283,6 @@ function DocsPage() {
             }
         }
       `}</style>
-
-      <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
         <h1>Graphics Engine Documentation</h1>
@@ -576,54 +567,8 @@ function DocsPage() {
         </section>
       </div>
 
-      <footer style={{ background: '#2c3e50', color: '#ecf0f1', padding: '3rem 2rem 2rem', marginTop: '4rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem', marginBottom: '2rem' }}>
-            {/* About Section */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Aaron Diefes</h3>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8, marginBottom: '1rem' }}>Software Engineer passionate about graphics programming and systems development.</p>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8 }}>Transforming C++ into interactive web experiences with WebAssembly.</p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/demo" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Interactive Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/admin" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Source Code Viewer</Link></li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/graphics-engine" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Graphics Engine Repo</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repo</a></li>
-              </ul>
-            </div>
-
-            {/* Tech Stack */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Built With</h3>
-              <ul style={{ listStyle: 'none', padding: 0, color: '#bdc3c7' }}>
-                <li style={{ marginBottom: '0.75rem' }}>• C++ Graphics Engine</li>
-                <li style={{ marginBottom: '0.75rem' }}>• WebAssembly (Emscripten)</li>
-                <li style={{ marginBottom: '0.75rem' }}>• HTML5 Canvas API</li>
-                <li style={{ marginBottom: '0.75rem' }}>• Vanilla JavaScript</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div style={{ borderTop: '1px solid #34495e', paddingTop: '2rem', textAlign: 'center', color: '#95a5a6' }}>
-            <p>© 2026 Aaron Diefes. All rights reserved.</p>
-          </div>
-        </div>
+      <footer>
+        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
       </footer>
     </div>
   )

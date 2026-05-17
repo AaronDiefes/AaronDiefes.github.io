@@ -1,15 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function CpuPipelinePage() {
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
-    { label: 'Documentation', href: '/projects/cpu/docs' },
-    { label: 'Pipeline Architecture' }
-  ]
-
   return (
     <div>
       <style>{`
@@ -346,8 +338,6 @@ function CpuPipelinePage() {
             }
         }
       `}</style>
-
-      <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
         <h1>Pipeline Architecture</h1>
@@ -805,55 +795,8 @@ function CpuPipelinePage() {
         </section>
       </div>
 
-      <footer style={{ background: '#2c3e50', color: '#ecf0f1', padding: '3rem 2rem 2rem', marginTop: '4rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem', marginBottom: '2rem' }}>
-            {/* About Section */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Aaron Diefes</h3>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8, marginBottom: '1rem' }}>Computer Engineering student passionate about processor design and hardware architecture.</p>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8 }}>Building a 5-stage pipelined RISC processor with hazard detection and forwarding.</p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/demo" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Simulator Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>CPU Documentation</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/CPU" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Repository</a></li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/alu" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>ALU Design</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/regfile" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Register File</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/multdiv" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Multiplication & Division</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/cpu/docs/hazards" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Hazards & Forwarding</Link></li>
-              </ul>
-            </div>
-
-            {/* Tech Stack */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Built With</h3>
-              <ul style={{ listStyle: 'none', padding: 0, color: '#bdc3c7' }}>
-                <li style={{ marginBottom: '0.75rem' }}>• Verilog HDL</li>
-                <li style={{ marginBottom: '0.75rem' }}>• ModelSim Simulation</li>
-                <li style={{ marginBottom: '0.75rem' }}>• Quartus Synthesis</li>
-                <li style={{ marginBottom: '0.75rem' }}>• JavaScript Visualization</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div style={{ borderTop: '1px solid #34495e', paddingTop: '2rem', textAlign: 'center', color: '#95a5a6' }}>
-            <p>© 2026 Aaron Diefes. All rights reserved.</p>
-          </div>
-        </div>
+      <footer>
+        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
       </footer>
     </div>
   )

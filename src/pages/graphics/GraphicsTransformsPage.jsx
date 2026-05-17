@@ -1,16 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function GraphicsTransformsPage() {
   const [activeTab, setActiveTab] = useState('matrix')
-
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Graphics Engine', href: '/projects/graphics-engine/wasm' },
-    { label: 'Documentation', href: '/projects/graphics-engine/docs' },
-    { label: 'Transforms & Textures' }
-  ]
 
   return (
     <div>
@@ -273,8 +265,6 @@ function GraphicsTransformsPage() {
             }
         }
       `}</style>
-
-      <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
         <h1>Transformations & Textures</h1>
@@ -641,53 +631,8 @@ function GraphicsTransformsPage() {
         </section>
       </div>
 
-      <footer style={{ background: '#2c3e50', color: '#ecf0f1', padding: '3rem 2rem 2rem', marginTop: '4rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem', marginBottom: '2rem' }}>
-            {/* About Section */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Aaron Diefes</h3>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8, marginBottom: '1rem' }}>Computer Engineering student at Duke University.</p>
-              <p style={{ color: '#bdc3c7', lineHeight: 1.8 }}>Building a 2D graphics engine from scratch.</p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Navigation</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>← Portfolio Home</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/wasm" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Graphics Engine Demo</Link></li>
-                <li style={{ marginBottom: '0.75rem' }}><Link to="/projects/graphics-engine/docs" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Documentation</Link></li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Resources</h3>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>GitHub Profile</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/graphics-engine-2d" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Graphics Engine Repository</a></li>
-                <li style={{ marginBottom: '0.75rem' }}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={{ color: '#ecf0f1', textDecoration: 'none', transition: 'color 0.15s' }}>Portfolio Repository</a></li>
-              </ul>
-            </div>
-
-            {/* Tech Stack */}
-            <div>
-              <h3 style={{ color: '#2E7D32', marginBottom: '1rem', fontSize: '1.2rem' }}>Built With</h3>
-              <ul style={{ listStyle: 'none', padding: 0, color: '#bdc3c7' }}>
-                <li style={{ marginBottom: '0.75rem' }}>• C++ Graphics Engine</li>
-                <li style={{ marginBottom: '0.75rem' }}>• Emscripten (WebAssembly)</li>
-                <li style={{ marginBottom: '0.75rem' }}>• HTML5 Canvas</li>
-                <li style={{ marginBottom: '0.75rem' }}>• React Visualization</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div style={{ borderTop: '1px solid #34495e', paddingTop: '2rem', textAlign: 'center', color: '#95a5a6' }}>
-            <p>© 2026 Aaron Diefes. All rights reserved.</p>
-          </div>
-        </div>
+      <footer>
+        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
       </footer>
     </div>
   )

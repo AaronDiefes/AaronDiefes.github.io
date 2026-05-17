@@ -1,15 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function CpuInstructionsPage() {
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'CPU Simulator', href: '/projects/cpu/demo' },
-    { label: 'Documentation', href: '/projects/cpu/docs' },
-    { label: 'Instruction Set' }
-  ]
-
   return (
     <div>
       <style>{`
@@ -248,8 +240,6 @@ function CpuInstructionsPage() {
             }
         }
       `}</style>
-
-      <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
         <h1>Instruction Set</h1>
@@ -688,7 +678,7 @@ function CpuInstructionsPage() {
       </div>
 
       <footer>
-        <p>&copy; 2024 Aaron Diefes. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
       </footer>
     </div>
   )

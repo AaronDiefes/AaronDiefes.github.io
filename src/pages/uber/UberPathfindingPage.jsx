@@ -1,15 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Breadcrumbs from '../../components/shared/Breadcrumbs'
 
 function UberPathfindingPage() {
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Uber Algorithmic System', href: '/projects/uber/docs' },
-    { label: 'Documentation', href: '/projects/uber/docs' },
-    { label: 'Pathfinding' }
-  ]
-
   return (
     <div>
       <style>{`
@@ -198,8 +190,6 @@ function UberPathfindingPage() {
             }
         }
       `}</style>
-
-      <Breadcrumbs items={breadcrumbItems} />
 
       <header className="landing-header">
         <h1>Pathfinding</h1>
@@ -443,12 +433,12 @@ function UberPathfindingPage() {
         <section className="section">
           <h2>Ride-Sharing Integration</h2>
           <p>
-            In the <Link to="/projects/uber/docs/algorithm" style={'{ color: "#2E7D32", fontWeight: 600 }'}>Algorithm Evolution</Link> documentation, we introduced <strong>T5: KD-Tree + Dijkstra</strong> - a hybrid approach that combines spatial indexing with road network pathfinding. This section shows how Dijkstra integrates into the matching pipeline.
+            In the <Link to="/projects/uber/docs/algorithm" style={{ color: "#2E7D32", fontWeight: 600 }}>Algorithm Evolution</Link> documentation, we introduced <strong>T5: KD-Tree + Dijkstra</strong> - a hybrid approach that combines spatial indexing with road network pathfinding. This section shows how Dijkstra integrates into the matching pipeline.
           </p>
 
           <h3>Two-Phase Matching Strategy</h3>
           <ul>
-            <li><strong>Phase 1 - Spatial Filtering (KD-Tree):</strong> Use the <Link to="/projects/uber/docs/kdtree" style={'{ color: "#2E7D32", fontWeight: 600 }'}>KD-Tree</Link> to find k nearest drivers by Euclidean distance (typically k=5-10). This narrows the search space from thousands of drivers to a handful of candidates.</li>
+            <li><strong>Phase 1 - Spatial Filtering (KD-Tree):</strong> Use the <Link to="/projects/uber/docs/kdtree" style={{ color: "#2E7D32", fontWeight: 600 }}>KD-Tree</Link> to find k nearest drivers by Euclidean distance (typically k=5-10). This narrows the search space from thousands of drivers to a handful of candidates.</li>
             <li><strong>Phase 2 - Road Distance Refinement (Dijkstra):</strong> For each candidate driver, compute the actual shortest road path distance using Dijkstra. Select the driver with the minimum road distance.</li>
           </ul>
 
@@ -536,55 +526,8 @@ function UberPathfindingPage() {
         </section>
       </div>
 
-      <footer style={'{ background: "#2c3e50", color: "#ecf0f1", padding: "3rem 2rem 2rem", marginTop: "4rem" }'}>
-        <div style={'{ maxWidth: "1200px", margin: "0 auto" }'}>
-          <div style={'{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "3rem", marginBottom: "2rem" }'}>
-            {/* About Section */}
-            <div>
-              <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Aaron Diefes</h3>
-              <p style={'{ color: "#bdc3c7", lineHeight: 1.8, marginBottom: "1rem" }'}>Software Engineer passionate about algorithm design and efficient data structures.</p>
-              <p style={'{ color: "#bdc3c7", lineHeight: 1.8 }'}>Building solutions that balance performance, scalability, and code clarity.</p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Navigation</h3>
-              <ul style={'{ listStyle: "none", padding: 0 }'}>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>← Portfolio Home</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>CS330 Documentation</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs/algorithm" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Algorithm Evolution</Link></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><Link to="/projects/uber/docs/kdtree" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>KD-Tree</Link></li>
-                <li style={'{ marginBottom: "0.75rem", color: "#95a5a6" }'}>Pathfinding</li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div>
-              <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Resources</h3>
-              <ul style={'{ listStyle: "none", padding: 0 }'}>
-                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>GitHub Profile</a></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/cs330-case-study" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Uber Algorithmic System Repo</a></li>
-                <li style={'{ marginBottom: "0.75rem" }'}><a href="https://github.com/AaronDiefes/AaronDiefes.github.io" target="_blank" rel="noopener noreferrer" style={'{ color: "#ecf0f1", textDecoration: "none", transition: "color 0.15s" }'}>Portfolio Repo</a></li>
-              </ul>
-            </div>
-
-            {/* Tech Stack */}
-            <div>
-              <h3 style={'{ color: "#2E7D32", marginBottom: "1rem", fontSize: "1.2rem" }'}>Built With</h3>
-              <ul style={'{ listStyle: "none", padding: 0, color: "#bdc3c7" }'}>
-                <li style={'{ marginBottom: "0.75rem" }'}>• Python</li>
-                <li style={'{ marginBottom: "0.75rem" }'}>• NetworkX</li>
-                <li style={'{ marginBottom: "0.75rem" }'}>• KD-Trees</li>
-                <li style={'{ marginBottom: "0.75rem" }'}>• Matplotlib</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div style={'{ borderTop: "1px solid #34495e", paddingTop: "2rem", textAlign: "center", color: "#95a5a6" }'}>
-            <p>© 2026 Aaron Diefes. All rights reserved.</p>
-          </div>
-        </div>
+      <footer>
+        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
       </footer>
     </div>
   )
