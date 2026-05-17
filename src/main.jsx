@@ -8,6 +8,9 @@ import './styles/breadcrumbs.css'
 import './styles/visualization.css'
 import './styles/global.css'
 import './styles/docs-layout.css'
+import './styles/demo-layout.css'
+import './styles/cpu-demo.css'
+import './styles/graphics-demo.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
