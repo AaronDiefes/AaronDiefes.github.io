@@ -123,60 +123,6 @@ function GraphicsOptimizationPage() {
         .docs-layout .docs-content .code-block .number { color: #b5cea8; }
         .docs-layout .docs-content .code-block .string { color: #ce9178; }
 
-        .docs-layout .docs-content .tabs-container {
-            background: white;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .docs-layout .docs-content .tabs-header {
-            display: flex;
-            gap: 0.5rem;
-            border-bottom: 2px solid #e0e0e0;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .docs-layout .docs-content .tab-button {
-            padding: 0.75rem 1.5rem;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: #555;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: -2px;
-        }
-
-        .docs-layout .docs-content .tab-button:hover {
-            color: #2E7D32;
-            background: #f5f5f5;
-        }
-
-        .docs-layout .docs-content .tab-button.active {
-            color: #2E7D32;
-            border-bottom-color: #2E7D32;
-            background: transparent;
-        }
-
-        .docs-layout .docs-content .tab-panel {
-            display: none;
-        }
-
-        .docs-layout .docs-content .tab-panel.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .docs-layout .docs-content .content-block {
             margin-bottom: 2rem;
         }
@@ -219,16 +165,6 @@ function GraphicsOptimizationPage() {
             background: #f8f9fa;
         }
 
-        @media (max-width: 768px) {
-            .docs-layout .docs-content .tabs-header {
-                flex-direction: column;
-            }
-
-            .docs-layout .docs-content .tab-button {
-                width: 100%;
-                text-align: left;
-            }
-        }
       `}</style>
 
       <DocsSection id="performance-engineering-in-software-rendering" title="Performance Engineering in Software Rendering">
