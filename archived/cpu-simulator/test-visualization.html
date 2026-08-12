@@ -343,10 +343,10 @@
           const container = document.createElement('div');
           const view = new BlockDiagramView(container);
 
-          assert(container.querySelector('[data-pipeline-reg="FD"]'), 'F/D register exists');
-          assert(container.querySelector('[data-pipeline-reg="DX"]'), 'D/X register exists');
-          assert(container.querySelector('[data-pipeline-reg="XM"]'), 'X/M register exists');
-          assert(container.querySelector('[data-pipeline-reg="MW"]'), 'M/W register exists');
+          assert(container.querySelector('[data-pipeline-reg="FD"]'), 'IF/ID register exists');
+          assert(container.querySelector('[data-pipeline-reg="DX"]'), 'ID/EX register exists');
+          assert(container.querySelector('[data-pipeline-reg="XM"]'), 'EX/MEM register exists');
+          assert(container.querySelector('[data-pipeline-reg="MW"]'), 'MEM/WB register exists');
         });
 
         test('BlockDiagramView renders multiplexers', function() {
@@ -381,8 +381,8 @@
           view.render(state);
 
           const fdDisplay = container.querySelector('[data-instruction-display="FD"]');
-          assert(fdDisplay.textContent !== 'NOP', 'F/D register should show instruction (not NOP)');
-          assert(fdDisplay.textContent.includes('ADDI'), 'F/D register should show ADDI instruction');
+          assert(fdDisplay.textContent !== 'NOP', 'IF/ID register should show instruction (not NOP)');
+          assert(fdDisplay.textContent.includes('ADDI'), 'IF/ID register should show ADDI instruction');
         });
 
         test('BlockDiagramView shows NOP when stage is inactive', function() {

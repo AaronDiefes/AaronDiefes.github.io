@@ -57,52 +57,136 @@
         class: 'cpu-block-diagram'
       });
 
-      // Add stage labels (background layer)
-      this.svg.appendChild(this._createStageLabels());
+      // Add stage bands (background tints + headers — drawn first, behind everything)
+      this.svg.appendChild(this._createStageBands());
 
       // Add data path wires (background layer)
       this.svg.appendChild(this._createDataPaths());
 
       // Add hardware components (middle layer)
+      // Pipeline-register labels match the CPU docs (CpuPipelinePage.jsx):
+      // IF/ID, ID/EX, EX/MEM, MEM/WB. Internal data-attribute codes (FD/DX/XM/MW)
+      // stay as-is since they're not user-facing.
       this.svg.appendChild(this._createIFStage());
-      this.svg.appendChild(this._createPipelineRegister('FD', 235, 'F/D', 'Fetch/Decode Register - Holds instruction between IF and ID stages'));
+      this.svg.appendChild(this._createPipelineRegister('FD', 235, 'IF/ID', 'IF/ID Register - Holds the fetched instruction and PC+1 value'));
       this.svg.appendChild(this._createIDStage());
-      this.svg.appendChild(this._createPipelineRegister('DX', 415, 'D/X', 'Decode/Execute Register - Holds decoded instruction and operands'));
+      this.svg.appendChild(this._createPipelineRegister('DX', 415, 'ID/EX', 'ID/EX Register - Holds decoded values, register data, and sign-extended immediate'));
       this.svg.appendChild(this._createEXStage());
-      this.svg.appendChild(this._createPipelineRegister('XM', 575, 'X/M', 'Execute/Memory Register - Holds ALU result and write data'));
+      this.svg.appendChild(this._createPipelineRegister('XM', 575, 'EX/MEM', 'EX/MEM Register - Holds ALU result, memory write data, and destination register'));
       this.svg.appendChild(this._createMEMStage());
-      this.svg.appendChild(this._createPipelineRegister('MW', 735, 'M/W', 'Memory/Writeback Register - Holds data for register write'));
+      this.svg.appendChild(this._createPipelineRegister('MW', 735, 'MEM/WB', 'MEM/WB Register - Holds final data to write back to the register file'));
       this.svg.appendChild(this._createWBStage());
+
+      // Pipeline token (top layer) — animated chip that follows the active stage.
+      this.svg.appendChild(this._createPipelineToken());
 
       // Append to container
       this.container.appendChild(this.svg);
     }
 
     /**
-     * Creates stage labels above each pipeline stage
-     * @returns {SVGGElement} Group containing stage labels
+     * Creates the five stage bands — tinted background rects + prominent
+     * stage headers. Each band spans the full diagram height and brackets the
+     * components that belong to its stage. The bands are drawn first, so they
+     * sit behind everything else; the .stage-band.active class (added by render())
+     * raises their opacity for the currently-active stage.
+     * @returns {SVGGElement}
      * @private
      */
-    _createStageLabels() {
-      const g = this._svg('g', { class: 'stage-labels' });
+    _createStageBands() {
+      const g = this._svg('g', { class: 'stage-bands' });
 
-      const stages = [
-        { label: 'IF', x: 85 },
-        { label: 'ID', x: 315 },
-        { label: 'EX', x: 490 },
-        { label: 'MEM', x: 665 },
-        { label: 'WB', x: 820 }
+      // Band geometry — chosen so each rect brackets the components for that
+      // stage without overlapping the pipeline-register channels.
+      // x0/x1 are inclusive; pipeline-register bars live in the gaps.
+      const bands = [
+        { stage: 'IF',  name: 'INSTRUCTION FETCH',  short: 'IF',  x: 0,   width: 230 },
+        { stage: 'ID',  name: 'INSTRUCTION DECODE', short: 'ID',  x: 250, width: 165 },
+        { stage: 'EX',  name: 'EXECUTE',            short: 'EX',  x: 430, width: 145 },
+        { stage: 'MEM', name: 'MEMORY ACCESS',      short: 'MEM', x: 590, width: 145 },
+        { stage: 'WB',  name: 'WRITE BACK',         short: 'WB',  x: 750, width: 150 },
       ];
 
-      stages.forEach(({ label, x }) => {
-        const text = this._svg('text', {
-          x: x,
-          y: 30,
-          class: 'stage-label-text'
+      const bandTop = 50;
+      const bandHeight = 380;
+
+      bands.forEach(({ stage, name, short, x, width }) => {
+        const bandGroup = this._svg('g', {
+          class: `stage-band stage-${stage.toLowerCase()}`,
+          'data-stage': stage,
         });
-        text.textContent = label;
-        g.appendChild(text);
+
+        // Background tint rectangle
+        bandGroup.appendChild(this._svg('rect', {
+          x: x,
+          y: bandTop,
+          width: width,
+          height: bandHeight,
+          rx: 6,
+          class: 'stage-band-bg',
+        }));
+
+        // Full-name header (top of band)
+        const header = this._svg('text', {
+          x: x + width / 2,
+          y: 22,
+          'text-anchor': 'middle',
+          class: 'stage-band-header',
+        });
+        header.textContent = name;
+        bandGroup.appendChild(header);
+
+        // Abbreviation underneath the header
+        const abbrev = this._svg('text', {
+          x: x + width / 2,
+          y: 40,
+          'text-anchor': 'middle',
+          class: 'stage-band-abbrev',
+        });
+        abbrev.textContent = `(${short})`;
+        bandGroup.appendChild(abbrev);
+
+        g.appendChild(bandGroup);
       });
+
+      return g;
+    }
+
+    /**
+     * Creates the pipeline token — an animated chip that slides to the center
+     * of the active stage band on each render. The token carries the active
+     * instruction's mnemonic so the viewer can track a single instruction's
+     * progress through the pipeline at a glance.
+     * @returns {SVGGElement}
+     * @private
+     */
+    _createPipelineToken() {
+      const g = this._svg('g', {
+        class: 'pipeline-token',
+        'data-pipeline-token': '',
+      });
+
+      // The pill is positioned at x=0; we translate it on each render.
+      const pillWidth = 90;
+      const pillHeight = 22;
+      g.appendChild(this._svg('rect', {
+        x: -pillWidth / 2,
+        y: -pillHeight / 2,
+        width: pillWidth,
+        height: pillHeight,
+        rx: 11,
+        class: 'pipeline-token-pill',
+      }));
+
+      const text = this._svg('text', {
+        x: 0,
+        y: 0,
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+        class: 'pipeline-token-text',
+      });
+      text.textContent = '';
+      g.appendChild(text);
 
       return g;
     }
@@ -121,37 +205,37 @@
         class: 'data-path'
       }));
 
-      // Instruction Memory to F/D register
+      // Instruction Memory to IF/ID register
       g.appendChild(this._svg('line', {
         x1: 220, y1: 240, x2: 235, y2: 240,
         class: 'data-path'
       }));
 
-      // F/D to Register File (instruction decode)
+      // IF/ID to Register File (instruction decode)
       g.appendChild(this._svg('line', {
         x1: 243, y1: 200, x2: 270, y2: 200,
         class: 'data-path'
       }));
 
-      // F/D to Sign Extend
+      // IF/ID to Sign Extend
       g.appendChild(this._svg('line', {
         x1: 243, y1: 397, x2: 290, y2: 397,
         class: 'data-path'
       }));
 
-      // Register File to D/X register (read data)
+      // Register File to ID/EX register (read data)
       g.appendChild(this._svg('line', {
         x1: 390, y1: 220, x2: 415, y2: 220,
         class: 'data-path'
       }));
 
-      // Sign Extend to D/X register
+      // Sign Extend to ID/EX register
       g.appendChild(this._svg('line', {
         x1: 370, y1: 397, x2: 415, y2: 397,
         class: 'data-path'
       }));
 
-      // D/X to ALU Src Mux
+      // ID/EX to ALU Src Mux
       g.appendChild(this._svg('line', {
         x1: 423, y1: 230, x2: 445, y2: 230,
         class: 'data-path'
@@ -163,31 +247,31 @@
         class: 'data-path'
       }));
 
-      // ALU to X/M register
+      // ALU to EX/MEM register
       g.appendChild(this._svg('line', {
         x1: 560, y1: 230, x2: 575, y2: 230,
         class: 'data-path'
       }));
 
-      // X/M to Data Memory (address)
+      // EX/MEM to Data Memory (address)
       g.appendChild(this._svg('line', {
         x1: 583, y1: 220, x2: 610, y2: 220,
         class: 'data-path'
       }));
 
-      // X/M to Data Memory (write data)
+      // EX/MEM to Data Memory (write data)
       g.appendChild(this._svg('line', {
         x1: 583, y1: 250, x2: 610, y2: 250,
         class: 'data-path'
       }));
 
-      // Data Memory to M/W register
+      // Data Memory to MEM/WB register
       g.appendChild(this._svg('line', {
         x1: 730, y1: 240, x2: 735, y2: 240,
         class: 'data-path'
       }));
 
-      // M/W to WB Mux
+      // MEM/WB to WB Mux
       g.appendChild(this._svg('line', {
         x1: 743, y1: 240, x2: 780, y2: 240,
         class: 'data-path'
@@ -434,7 +518,7 @@
      * Creates a pipeline register (red vertical bar with labels)
      * @param {string} regName - Register name for data attributes (FD, DX, XM, MW)
      * @param {number} x - X coordinate (left edge)
-     * @param {string} label - Display label (F/D, D/X, X/M, M/W)
+     * @param {string} label - Display label (IF/ID, ID/EX, EX/MEM, MEM/WB)
      * @param {string} tooltip - Tooltip description
      * @returns {SVGGElement} Pipeline register group
      * @private
@@ -491,23 +575,26 @@
      */
     render(state) {
       // Clear all active states
-      this.svg.querySelectorAll('.component.active, .multiplexer.active')
+      this.svg.querySelectorAll('.component.active, .multiplexer.active, .stage-band.active')
         .forEach(el => el.classList.remove('active'));
 
-      // Highlight active components based on pipeline stage
+      // Highlight active components AND their stage band
       if (state.pipeline.IF.active) {
         this.componentMap.get('IMEM')?.classList.add('active');
         this.componentMap.get('PC')?.classList.add('active');
+        this.svg.querySelector('.stage-band[data-stage="IF"]')?.classList.add('active');
       }
 
       if (state.pipeline.ID.active) {
         this.componentMap.get('REGFILE')?.classList.add('active');
         this.componentMap.get('SIGNEXT')?.classList.add('active');
+        this.svg.querySelector('.stage-band[data-stage="ID"]')?.classList.add('active');
       }
 
       if (state.pipeline.EX.active) {
         this.componentMap.get('ALU')?.classList.add('active');
         this.componentMap.get('ALU_SRC')?.classList.add('active');
+        this.svg.querySelector('.stage-band[data-stage="EX"]')?.classList.add('active');
       }
 
       if (state.pipeline.MEM.active) {
@@ -515,14 +602,72 @@
         if (state.pipeline.MEM.memRead || state.pipeline.MEM.memWrite) {
           this.componentMap.get('DMEM')?.classList.add('active');
         }
+        this.svg.querySelector('.stage-band[data-stage="MEM"]')?.classList.add('active');
       }
 
       if (state.pipeline.WB.active) {
         this.componentMap.get('WB_SRC')?.classList.add('active');
+        this.svg.querySelector('.stage-band[data-stage="WB"]')?.classList.add('active');
       }
 
       // Update pipeline register instruction displays
       this._updatePipelineInstructions(state);
+
+      // Move the pipeline token to the active stage band
+      this._updatePipelineToken(state);
+    }
+
+    /**
+     * Positions the pipeline token at the center of the currently active stage
+     * band and updates its label. The token is hidden when no stage is active.
+     * Stage band centers (must match _createStageBands geometry):
+     *   IF=115, ID=332.5, EX=502.5, MEM=662.5, WB=825
+     * Y position sits just below the band abbreviation row (y=40), at y=62.
+     * @param {CPUState} state
+     * @private
+     */
+    _updatePipelineToken(state) {
+      const tokenGroup = this.svg.querySelector('[data-pipeline-token]');
+      if (!tokenGroup) return;
+
+      const stageCenters = {
+        IF: 115,
+        ID: 332.5,
+        EX: 502.5,
+        MEM: 662.5,
+        WB: 825,
+      };
+      const tokenY = 62;
+
+      // Find which stage is active. In this non-pipelined sim only one is
+      // active per frame; if multiple ever are, the latest in execution order
+      // wins (so the chip tracks the leading edge).
+      const order = ['IF', 'ID', 'EX', 'MEM', 'WB'];
+      let activeStage = null;
+      for (const s of order) {
+        if (state.pipeline[s]?.active) activeStage = s;
+      }
+
+      const textEl = tokenGroup.querySelector('.pipeline-token-text');
+
+      if (!activeStage) {
+        tokenGroup.classList.remove('is-visible');
+        if (textEl) textEl.textContent = '';
+        return;
+      }
+
+      const x = stageCenters[activeStage];
+      tokenGroup.setAttribute('transform', `translate(${x}, ${tokenY})`);
+      tokenGroup.classList.add('is-visible');
+      tokenGroup.setAttribute('data-active-stage', activeStage);
+
+      // Label the chip with the in-flight instruction's mnemonic.
+      const instruction = state.pipeline.IF.instruction;
+      if (textEl && instruction && instruction.mnemonic !== 'NOP') {
+        textEl.textContent = instruction.mnemonic;
+      } else if (textEl) {
+        textEl.textContent = '—';
+      }
     }
 
     /**
@@ -533,10 +678,10 @@
     _updatePipelineInstructions(state) {
       // Map pipeline registers to their corresponding stages
       const pipelineMap = {
-        'FD': 'IF',   // F/D shows what IF stage has
-        'DX': 'ID',   // D/X shows what ID stage has
-        'XM': 'EX',   // X/M shows what EX stage has
-        'MW': 'MEM'   // M/W shows what MEM stage has
+        'FD': 'IF',   // IF/ID register shows what IF stage has
+        'DX': 'ID',   // ID/EX register shows what ID stage has
+        'XM': 'EX',   // EX/MEM register shows what EX stage has
+        'MW': 'MEM'   // MEM/WB register shows what MEM stage has
       };
 
       Object.entries(pipelineMap).forEach(([regName, stageName]) => {

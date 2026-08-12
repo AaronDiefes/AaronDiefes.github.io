@@ -124,8 +124,9 @@
 
 .pipeline-instruction {
   font-family: var(--font-mono);
-  font-size: 11px;
-  fill: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  fill: var(--color-text-heading);
 }
 
 /* Multiplexer styles (blue triangles) */
@@ -149,13 +150,122 @@
   fill: none;
 }
 
-/* Stage labels above diagram */
-.stage-label-text {
-  font-size: 11px;
-  fill: var(--color-text-muted);
-  text-anchor: middle;
-  font-weight: bold;
+/* Stage bands — tinted background rectangles that group each stage's components.
+ * Always visible at low opacity so the architecture stays legible when paused;
+ * raise opacity (.active) when the stage is the current pipeline stage. */
+.stage-band-bg {
+  fill: var(--color-surface-dim);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.stage-band.stage-if .stage-band-bg  { fill: var(--stage-if-tint); }
+.stage-band.stage-id .stage-band-bg  { fill: var(--stage-id-tint); }
+.stage-band.stage-ex .stage-band-bg  { fill: var(--stage-ex-tint); }
+.stage-band.stage-mem .stage-band-bg { fill: var(--stage-mem-tint); }
+.stage-band.stage-wb .stage-band-bg  { fill: var(--stage-wb-tint); }
+
+.stage-band.active .stage-band-bg {
+  opacity: 1;
+}
+
+.stage-band-header {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  fill: var(--color-text-heading);
   text-transform: uppercase;
+}
+
+.stage-band-abbrev {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--color-text-muted);
+}
+
+.stage-band.stage-if  .stage-band-abbrev { fill: var(--stage-if-color); }
+.stage-band.stage-id  .stage-band-abbrev { fill: var(--stage-id-color); }
+.stage-band.stage-ex  .stage-band-abbrev { fill: var(--stage-ex-color); }
+.stage-band.stage-mem .stage-band-abbrev { fill: var(--stage-mem-color); }
+.stage-band.stage-wb  .stage-band-abbrev { fill: var(--stage-wb-color); }
+
+/* Pipeline token — animated chip that slides into the active stage band on
+ * each cycle. Pill carries the in-flight instruction's mnemonic. Color shifts
+ * to the active stage's stroke color so the chip ties into stage grammar. */
+.pipeline-token {
+  opacity: 0;
+  transition: transform 450ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 200ms ease;
+  pointer-events: none;
+}
+
+.pipeline-token.is-visible {
+  opacity: 1;
+}
+
+.pipeline-token-pill {
+  fill: var(--color-text-heading);
+  stroke: var(--color-surface);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
+}
+
+.pipeline-token-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-surface);
+}
+
+.pipeline-token[data-active-stage="IF"]  .pipeline-token-pill { fill: var(--stage-if-color); }
+.pipeline-token[data-active-stage="ID"]  .pipeline-token-pill { fill: var(--stage-id-color); }
+.pipeline-token[data-active-stage="EX"]  .pipeline-token-pill { fill: var(--stage-ex-color); }
+.pipeline-token[data-active-stage="MEM"] .pipeline-token-pill { fill: var(--stage-mem-color); }
+.pipeline-token[data-active-stage="WB"]  .pipeline-token-pill { fill: var(--stage-wb-color); }
+
+/* Per-cycle narration strip below the block diagram. */
+.cpu-caption {
+  margin-top: 1rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-text-muted);
+  border-radius: 6px;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text-heading);
+  transition: border-left-color 200ms ease;
+}
+
+.cpu-caption[data-active-stage="IF"]  { border-left-color: var(--stage-if-color); }
+.cpu-caption[data-active-stage="ID"]  { border-left-color: var(--stage-id-color); }
+.cpu-caption[data-active-stage="EX"]  { border-left-color: var(--stage-ex-color); }
+.cpu-caption[data-active-stage="MEM"] { border-left-color: var(--stage-mem-color); }
+.cpu-caption[data-active-stage="WB"]  { border-left-color: var(--stage-wb-color); }
+
+.cpu-caption .cpu-caption-stage {
+  font-weight: 700;
+  margin-right: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  color: var(--color-surface);
+  background: var(--color-text-muted);
+}
+
+.cpu-caption[data-active-stage="IF"]  .cpu-caption-stage { background: var(--stage-if-color); }
+.cpu-caption[data-active-stage="ID"]  .cpu-caption-stage { background: var(--stage-id-color); }
+.cpu-caption[data-active-stage="EX"]  .cpu-caption-stage { background: var(--stage-ex-color); }
+.cpu-caption[data-active-stage="MEM"] .cpu-caption-stage { background: var(--stage-mem-color); }
+.cpu-caption[data-active-stage="WB"]  .cpu-caption-stage { background: var(--stage-wb-color); }
+
+.cpu-caption code {
+  background: var(--color-surface-alt);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
 }
 
 /* Accessibility: reduced motion support */

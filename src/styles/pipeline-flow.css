@@ -1,0 +1,392 @@
+/* Schematic-style React Flow diagram for the CPU pipeline.
+ *
+ * Each "IC" node renders as a chip with a coloured header and explicit input
+ * ports down the left edge / output ports down the right edge. Handle ids
+ * match the Verilog port names so edges can target the right port.
+ */
+
+.rf-cpu-wrapper {
+  height: 1020px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+/* ---------- Stage band ---------- */
+
+.rf-stage-band {
+  border-radius: 8px;
+  opacity: 0.4;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.5rem;
+}
+
+.rf-stage-band.active {
+  opacity: 0.85;
+}
+
+.rf-stage-band.stage-if  { background: var(--stage-if-tint); }
+.rf-stage-band.stage-id  { background: var(--stage-id-tint); }
+.rf-stage-band.stage-ex  { background: var(--stage-ex-tint); }
+.rf-stage-band.stage-mem { background: var(--stage-mem-tint); }
+.rf-stage-band.stage-wb  { background: var(--stage-wb-tint); }
+
+.rf-stage-band-header {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-text-heading);
+}
+
+.rf-stage-band-abbrev {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.rf-stage-band.stage-if  .rf-stage-band-abbrev { color: var(--stage-if-color); }
+.rf-stage-band.stage-id  .rf-stage-band-abbrev { color: var(--stage-id-color); }
+.rf-stage-band.stage-ex  .rf-stage-band-abbrev { color: var(--stage-ex-color); }
+.rf-stage-band.stage-mem .rf-stage-band-abbrev { color: var(--stage-mem-color); }
+.rf-stage-band.stage-wb  .rf-stage-band-abbrev { color: var(--stage-wb-color); }
+
+/* ---------- IC chip (labeled-port node) ---------- */
+
+.rf-ic {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-text-heading);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.rf-ic.active {
+  border-width: 2.5px;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.25), 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.rf-ic-header {
+  background: var(--color-text-heading);
+  color: var(--color-surface);
+  padding: 0.45rem 0.6rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+
+.rf-ic-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.rf-ic-subtitle {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.75;
+  font-family: var(--font-mono);
+}
+
+.rf-ic-port-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  padding: 1px 4px;
+  white-space: nowrap;
+  line-height: 1;
+  z-index: 2;
+}
+
+.rf-ic-port-label-in  { left: 10px; }
+.rf-ic-port-label-out { right: 10px; }
+
+/* Stage-color headers for components inside each stage */
+.rf-ic.stage-if  .rf-ic-header { background: var(--stage-if-color); }
+.rf-ic.stage-if  { border-color: var(--stage-if-color); }
+.rf-ic.stage-id  .rf-ic-header { background: var(--stage-id-color); }
+.rf-ic.stage-id  { border-color: var(--stage-id-color); }
+.rf-ic.stage-ex  .rf-ic-header { background: var(--stage-ex-color); }
+.rf-ic.stage-ex  { border-color: var(--stage-ex-color); }
+.rf-ic.stage-mem .rf-ic-header { background: var(--stage-mem-color); }
+.rf-ic.stage-mem { border-color: var(--stage-mem-color); }
+.rf-ic.stage-wb  .rf-ic-header { background: var(--stage-wb-color); }
+.rf-ic.stage-wb  { border-color: var(--stage-wb-color); }
+
+/* Variant accents — distinguish kinds of chip at a glance */
+.rf-ic.variant-mux .rf-ic-header,
+.rf-ic.variant-logic .rf-ic-header {
+  background: var(--color-text-muted);
+}
+.rf-ic.variant-mux, .rf-ic.variant-logic {
+  border-color: var(--color-text-muted);
+  border-style: dashed;
+}
+
+.rf-ic.variant-external {
+  border-style: dotted;
+  border-width: 2px;
+}
+.rf-ic.variant-external::after {
+  content: '(external)';
+  position: absolute;
+  bottom: 2px; right: 4px;
+  font-size: 8px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-family: var(--font-body);
+}
+
+.rf-ic.variant-multdiv {
+  border-color: var(--stage-ex-color);
+}
+.rf-ic.variant-multdiv .rf-ic-header {
+  background: var(--stage-ex-color);
+}
+
+/* Handle dots — small, subtle, sit flush with the chip's border */
+.rf-ic .react-flow__handle {
+  width: 7px;
+  height: 7px;
+  background: var(--color-text-heading);
+  border: 1.5px solid var(--color-surface);
+}
+.rf-ic.stage-if  .react-flow__handle { background: var(--stage-if-color); }
+.rf-ic.stage-id  .react-flow__handle { background: var(--stage-id-color); }
+.rf-ic.stage-ex  .react-flow__handle { background: var(--stage-ex-color); }
+.rf-ic.stage-mem .react-flow__handle { background: var(--stage-mem-color); }
+.rf-ic.stage-wb  .react-flow__handle { background: var(--stage-wb-color); }
+
+/* ---------- Classic trapezoidal MUX ---------- */
+
+.rf-classic-mux {
+  position: relative;
+  font-family: var(--font-body);
+}
+
+.rf-classic-mux-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.rf-classic-mux-polygon {
+  fill: var(--color-surface);
+  stroke: var(--color-text-heading);
+  stroke-width: 2;
+  transition: fill 200ms ease, stroke-width 200ms ease;
+}
+
+.rf-classic-mux-glyph {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--color-text-heading);
+}
+
+.rf-classic-mux-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  fill: var(--color-text-heading);
+  text-transform: uppercase;
+}
+
+.rf-classic-mux.stage-if  .rf-classic-mux-polygon { stroke: var(--stage-if-color); }
+.rf-classic-mux.stage-if  .rf-classic-mux-glyph   { fill: var(--stage-if-color); }
+.rf-classic-mux.stage-id  .rf-classic-mux-polygon { stroke: var(--stage-id-color); }
+.rf-classic-mux.stage-id  .rf-classic-mux-glyph   { fill: var(--stage-id-color); }
+.rf-classic-mux.stage-ex  .rf-classic-mux-polygon { stroke: var(--stage-ex-color); }
+.rf-classic-mux.stage-ex  .rf-classic-mux-glyph   { fill: var(--stage-ex-color); }
+.rf-classic-mux.stage-mem .rf-classic-mux-polygon { stroke: var(--stage-mem-color); }
+.rf-classic-mux.stage-mem .rf-classic-mux-glyph   { fill: var(--stage-mem-color); }
+.rf-classic-mux.stage-wb  .rf-classic-mux-polygon { stroke: var(--stage-wb-color); }
+.rf-classic-mux.stage-wb  .rf-classic-mux-glyph   { fill: var(--stage-wb-color); }
+
+.rf-classic-mux.active .rf-classic-mux-polygon {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(46, 125, 50, 0.3));
+}
+
+.rf-classic-mux-in-label,
+.rf-classic-mux-out-label,
+.rf-classic-mux-sel-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  padding: 1px 2px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.rf-classic-mux-in-label {
+  left: 4px;
+  text-align: right;
+}
+
+.rf-classic-mux-sel-label {
+  font-size: 9.5px;
+  color: var(--color-text-muted);
+}
+
+.rf-classic-mux .react-flow__handle {
+  width: 7px;
+  height: 7px;
+  background: var(--color-text-heading);
+  border: 1.5px solid var(--color-surface);
+}
+
+.rf-classic-mux.stage-if  .react-flow__handle { background: var(--stage-if-color); }
+.rf-classic-mux.stage-id  .react-flow__handle { background: var(--stage-id-color); }
+.rf-classic-mux.stage-ex  .react-flow__handle { background: var(--stage-ex-color); }
+.rf-classic-mux.stage-mem .react-flow__handle { background: var(--stage-mem-color); }
+.rf-classic-mux.stage-wb  .react-flow__handle { background: var(--stage-wb-color); }
+
+/* ---------- Pipeline register ---------- */
+
+.rf-pipereg {
+  background: var(--color-pipeline-fill);
+  color: var(--color-surface);
+  border: 1.5px solid var(--color-pipeline-stroke);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+.rf-pipereg.active {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.3), 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.rf-pipereg-header {
+  padding: 0.4rem 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.rf-pipereg-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.rf-pipereg-instr {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+  word-break: break-all;
+  line-height: 1.2;
+}
+
+.rf-pipereg-ports {
+  position: relative;
+  flex: 1;
+  min-height: 30px;
+}
+
+.rf-pipereg-port {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  font-size: 8.5px;
+  line-height: 1;
+}
+
+.rf-pipereg-port-in {
+  left: 4px;
+  justify-content: flex-start;
+}
+
+.rf-pipereg-port-out {
+  right: 4px;
+  justify-content: flex-end;
+}
+
+.rf-pipereg-port-label {
+  white-space: nowrap;
+  background: var(--color-pipeline-fill);
+  padding: 1px 2px;
+  font-family: var(--font-mono);
+}
+
+.rf-pipereg .react-flow__handle {
+  background: var(--color-pipeline-stroke);
+  border: 1.5px solid var(--color-surface);
+  width: 7px;
+  height: 7px;
+}
+
+/* ---------- Edges ---------- */
+
+.react-flow__edge-path {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.25;
+}
+
+.react-flow__edge.rf-edge-data .react-flow__edge-path {
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+}
+
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke: var(--color-primary);
+  stroke-width: 2.5;
+}
+
+.react-flow__edge.rf-edge-control .react-flow__edge-path {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.react-flow__edge.rf-edge-feedback .react-flow__edge-path {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.25;
+  stroke-dasharray: 6 4;
+}
+
+.react-flow__edge.rf-edge-forward .react-flow__edge-path {
+  stroke: var(--stage-ex-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.react-flow__edge.rf-edge-multdiv .react-flow__edge-path {
+  stroke: var(--stage-ex-color);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+  opacity: 0.75;
+}
+
+.react-flow__edge.rf-edge-feedback .react-flow__edge-marker,
+.react-flow__edge.rf-edge-control  .react-flow__edge-marker,
+.react-flow__edge.rf-edge-forward  .react-flow__edge-marker,
+.react-flow__edge.rf-edge-multdiv  .react-flow__edge-marker {
+  opacity: 0.6;
+}
+
+.react-flow__edge .react-flow__edge-text {
+  font-family: var(--font-mono);
+  fill: var(--color-text-muted);
+  font-size: 10px;
+}

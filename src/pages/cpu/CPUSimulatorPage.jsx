@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import DemoLayout from '../../components/shared/DemoLayout'
+import PipelineDiagram from '../../components/cpu/PipelineDiagram'
 
 function CPUSimulatorPage() {
   const cpuVizContainerRef = useRef(null)
@@ -20,7 +21,6 @@ function CPUSimulatorPage() {
         await import('../../../archived/cpu-simulator/src/programs/basic-instructions.js')
         await import('../../../archived/cpu-simulator/src/programs/fibonacci.js')
 
-        await import('../../../archived/cpu-simulator/src/visualization/block-diagram-view.js')
         await import('../../../archived/cpu-simulator/src/visualization/register-view.js')
         await import('../../../archived/cpu-simulator/src/visualization/memory-view.js')
         await import('../../../archived/cpu-simulator/src/visualization/instruction-view.js')
@@ -131,7 +131,8 @@ function CPUSimulatorPage() {
         </aside>
 
         <div className="visualization-area">
-          <div id="cpu-viz-container" ref={cpuVizContainerRef}></div>
+          <PipelineDiagram />
+          <div id="cpu-viz-container" ref={cpuVizContainerRef} style={{ marginTop: '2rem' }}></div>
         </div>
       </div>
     </DemoLayout>
