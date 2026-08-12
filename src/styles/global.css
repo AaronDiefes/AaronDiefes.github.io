@@ -22,55 +22,13 @@ body {
   margin: 0 auto;
 }
 
-/* Homepage-specific styles */
-body.home-page {
-  background: var(--color-surface-dim);
-}
+/* The old homepage rules that lived here (body.home-page header/.container/
+   .section) have moved to src/styles/home.css, which styles the rebuilt page by
+   explicit class instead.
 
-body.home-page header {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 4rem 2rem;
-  text-align: center;
-}
+   They could not simply be left in place: `body.home-page header` is a bare
+   element selector, so it also matched the new <header class="hero"> and
+   dropped a full-bleed green gradient band behind it.
 
-body.home-page header h1 {
-  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-body.home-page header p {
-  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
-  opacity: 0.95;
-}
-
-body.home-page .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-  background: transparent;
-  box-shadow: none;
-}
-
-body.home-page .section {
-  background: var(--color-surface);
-  padding: 3rem;
-  margin-bottom: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-body.home-page .section h2 {
-  color: var(--color-text-heading);
-  margin-bottom: 1.5rem;
-  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-  border-bottom: 3px solid var(--color-primary);
-  padding-bottom: 0.5rem;
-}
-
-@media (max-width: 768px) {
-  body.home-page .section {
-    padding: 2rem;
-  }
-}
+   body.home-page is still applied by App.jsx and remains available as a
+   theming hook; it just no longer carries layout. */
