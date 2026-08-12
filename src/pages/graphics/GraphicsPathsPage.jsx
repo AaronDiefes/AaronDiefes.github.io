@@ -62,36 +62,11 @@ function GraphicsPathsPage() {
       tocItems={tocItems}
     >
       <style>{`
-        /* Page-specific content styles only — layout chrome comes from docs-layout.css */
-        .docs-layout .docs-content h3 {
-            color: #2c3e50;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
         .docs-layout .docs-content h4 {
             color: #2c3e50;
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
-        }
-
-        .docs-layout .docs-content p {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            color: #555;
-        }
-
-        .docs-layout .docs-content ul {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            color: #555;
-            padding-left: 2rem;
-        }
-
-        .docs-layout .docs-content li {
-            margin-bottom: 0.5rem;
         }
 
         .docs-layout .docs-content code {
@@ -116,13 +91,6 @@ function GraphicsPathsPage() {
             white-space: pre;
         }
 
-        .docs-layout .docs-content .code-block .keyword { color: #569cd6; }
-        .docs-layout .docs-content .code-block .comment { color: #6a9955; }
-        .docs-layout .docs-content .code-block .signal { color: #9cdcfe; }
-        .docs-layout .docs-content .code-block .operator { color: #d4d4d4; }
-        .docs-layout .docs-content .code-block .number { color: #b5cea8; }
-        .docs-layout .docs-content .code-block .string { color: #ce9178; }
-
         .docs-layout .docs-content .note {
             background: #f0f7ff;
             border-left: 4px solid #2E7D32;
@@ -134,7 +102,6 @@ function GraphicsPathsPage() {
         .docs-layout .docs-content .note strong {
             color: #2E7D32;
         }
-
       `}</style>
 
       <DocsSection id="vector-graphics-and-gradient-shading" title="Vector Graphics and Gradient Shading">

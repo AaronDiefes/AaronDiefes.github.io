@@ -21,25 +21,15 @@ function CpuRegfilePage() {
       tocItems={TOC}
     >
       <style>{`
-        /* Page-specific content styles only — layout chrome comes from docs-layout.css */
-        .docs-layout .docs-content h3 {
-            color: #2c3e50;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        .docs-layout .docs-content p {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            color: #555;
-        }
+        /* This page never set padding-left, so the global "* { padding: 0 }" reset
+           left its lists flush. docs-content.css now sets 2rem for every other
+           page, so it has to be reset back to 0 here to preserve the original
+           appearance. Pre-existing divergence, kept deliberately. */
         .docs-layout .docs-content ul {
             margin-bottom: 1rem;
             line-height: 1.8;
             color: #555;
-        }
-        .docs-layout .docs-content li {
-            margin-bottom: 0.5rem;
+            padding-left: 0;
         }
 
         .docs-layout .docs-content .code-block {

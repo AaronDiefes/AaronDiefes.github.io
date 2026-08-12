@@ -20,45 +20,6 @@ function CpuInstructionsPage() {
       tocItems={TOC}
     >
       <style>{`
-        /* Page-specific content styles only — layout chrome comes from docs-layout.css */
-        .docs-layout .docs-content h3 {
-            color: #2c3e50;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        .docs-layout .docs-content p {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            color: #555;
-        }
-        .docs-layout .docs-content ul {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            color: #555;
-            padding-left: 2rem;
-        }
-        .docs-layout .docs-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .docs-layout .docs-content .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1.5rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin: 1.5rem 0;
-        }
-        .docs-layout .docs-content .code-block .keyword  { color: #569cd6; }
-        .docs-layout .docs-content .code-block .comment  { color: #6a9955; }
-        .docs-layout .docs-content .code-block .signal   { color: #9cdcfe; }
-        .docs-layout .docs-content .code-block .operator { color: #d4d4d4; }
-        .docs-layout .docs-content .code-block .number   { color: #b5cea8; }
-
         .docs-layout .docs-content .bit-field {
             display: flex;
             border: 2px solid #2E7D32;
