@@ -1,0 +1,181 @@
+/**
+ * "Refined Forest" theme layer.
+ *
+ * This file deliberately REDEFINES THE EXISTING TOKEN NAMES from
+ * design-system.css rather than introducing a parallel vocabulary. That choice
+ * is what lets the rest of the site re-skin without being edited - most
+ * importantly src/styles/pipeline-flow.css, which is fully tokenized (89 var()
+ * calls, zero literal colours) and therefore inherits this palette for free.
+ *
+ * Import order matters: this must come AFTER design-system.css and
+ * visualization.css, the only other files with a global :root colour block.
+ * Equal specificity means source order decides. It contains only :root blocks
+ * and no element selectors, so it cannot perturb any component rule.
+ *
+ * Design intent: the previous palette used forest green as *area* - full-bleed
+ * gradient bands and solid green cards. Here it is an *accent*: links, rules,
+ * small marks, one dark band. The ground is a cool neutral rather than warm
+ * cream, which reads technical rather than editorial.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Accent -------------------------------------------------------- */
+  /* The single accent. Used for links, rules, focus, and the live-demo pill.
+     Kept under ~5% of pixels above the fold by design. */
+  --color-primary: #1E5631;
+  --color-primary-dark: #164023;
+  --color-accent: #2F7A46;        /* lighter green, legible on dark grounds */
+  --color-accent-light: #EAF1EC;  /* accent tint for chips and pill fills   */
+
+  /* ---- Surfaces ------------------------------------------------------ */
+  /* NOTE: --color-surface is used as a *foreground* colour in three places in
+     pipeline-flow.css (chip header text, pipeline-register text, handle
+     rings). Keeping it pure white preserves contrast there. */
+  --color-surface: #FFFFFF;       /* raised: cards, chips                   */
+  --color-surface-alt: #F3F4F6;   /* sunk: alternating bands, table heads   */
+  --color-surface-dim: #FAFAFA;   /* the page ground                        */
+
+  /* ---- Text ---------------------------------------------------------- */
+  /* NOTE: --color-text-heading does double duty in pipeline-flow.css - it is
+     both a text colour AND the IC chip border/header fill. Near-black keeps
+     the chips reading as chips while improving prose contrast. */
+  --color-text: #1A1D1F;
+  --color-text-heading: #1A1D1F;
+  --color-text-muted: #868D95;
+  --color-text-light: #5A6169;
+
+  /* ---- Lines --------------------------------------------------------- */
+  --color-border: #E5E7EB;
+  --color-border-light: #D2D6DB;
+
+  /* ---- Special purpose ----------------------------------------------- */
+  --color-code-bg: #F6F7F8;
+  --color-footer-bg: #171A1C;
+
+  /* ---- "Gradients" ---------------------------------------------------- */
+  /* Flattened to solid colour. The design has no gradients; these names are
+     kept only so existing consumers don't resolve to nothing. */
+  --gradient-primary: #1E5631;
+  --gradient-header: #171A1C;
+
+  /* ---- Typography ----------------------------------------------------- */
+  --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ---- Radius / shadow (previously missing entirely) ------------------- */
+  /* The old code used literals: 12px x13, 8px x46, 6px x18, 4px x31, 3px x16.
+     Collapsed to three steps; the design uses 4px almost everywhere. */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 20, 24, 0.05);
+  --shadow-md: 0 2px 8px rgba(16, 20, 24, 0.07);
+  --shadow-lg: 0 12px 32px rgba(16, 20, 24, 0.14);
+
+  /* ---- Layout --------------------------------------------------------- */
+  /* Promoted from .site-nav to :root. It was previously declared on the nav
+     element, but .docs-layout / .demo-layout-wrapper are SIBLINGS of the nav,
+     so inheritance never reached them and every consumer silently fell back to
+     the hardcoded 60px. Declaring it here makes those offsets work for the
+     first time. */
+  --nav-height: 56px;
+  --page-width: 1120px;
+  --measure: 66ch;
+
+  /* ---- Pipeline diagram tints ----------------------------------------- */
+  /* These render at 40% opacity when inactive and 85% when active, so a
+     saturated value hits the inactive state disproportionately. Kept pale and
+     shifted cool to sit on the new neutral ground. */
+  --stage-if-tint: #E8F0EA;
+  --stage-id-tint: #E6EDF4;
+  --stage-ex-tint: #F4EEE4;
+  --stage-mem-tint: #EFEAF2;
+  --stage-wb-tint: #F4E9EA;
+}
+
+/* ========================================================================
+   DARK
+   Authored once, applied in two places so all three viewer states resolve:
+   an explicit [data-theme] choice, and the default un-stamped state where
+   only prefers-color-scheme distinguishes light from dark.
+   ======================================================================== */
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-primary: #6FBF7F;       /* #1E5631 fails contrast on dark - the
+                                     accent must flip, not just the surfaces */
+  --color-primary-dark: #8FD49C;
+  --color-accent: #6FBF7F;
+  --color-accent-light: #16241B;
+
+  --color-surface: #16191C;
+  --color-surface-alt: #121517;
+  --color-surface-dim: #0F1214;
+
+  --color-text: #E8EAEC;
+  --color-text-heading: #E8EAEC;
+  --color-text-muted: #767D85;
+  --color-text-light: #A3AAB2;
+
+  --color-border: #262A2E;
+  --color-border-light: #343A40;
+
+  --color-code-bg: #0C0F11;
+  --color-footer-bg: #0A0C0D;
+
+  --gradient-primary: #6FBF7F;
+  --gradient-header: #0A0C0D;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  /* Dark-mode tints must be dark and desaturated. The light values would
+     render as glaring pale blocks behind near-white text. */
+  --stage-if-tint: #16241B;
+  --stage-id-tint: #152029;
+  --stage-ex-tint: #26200F;
+  --stage-mem-tint: #201828;
+  --stage-wb-tint: #291819;
+}
+
+/*
+ * NOT YET WIRED TO THE SYSTEM PREFERENCE - deliberately.
+ *
+ * The dark palette above only applies when something explicitly sets
+ * data-theme="dark" on <html>, and nothing does yet. The matching
+ * `@media (prefers-color-scheme: dark)` block is intentionally absent until the
+ * rest of the site is tokenized.
+ *
+ * Reason: large parts of the chrome (navigation.css, demo-layout.css, the docs
+ * landings) still carry hardcoded light-mode colours. Honouring the OS
+ * preference now would give anyone on a dark OS a half-dark site - the
+ * tokenized React Flow diagram would go dark while the nav and page bands
+ * stayed light. Verified: that is exactly what happened when this block was
+ * present.
+ *
+ * The media query lands in A6 together with the theme toggle, once the chrome
+ * is token-driven and can actually go dark as a set.
+ */
+
+/* ========================================================================
+   Frozen-diagram guard
+   pipeline-flow.css sizes its chips with hardcoded px font sizes (8-12px) and
+   PipelineDiagram.jsx sets explicit widths and per-port `top` offsets. IBM Plex
+   Mono has different metrics from the old Monaco/Menlo stack, so port labels
+   can overflow those fixed boxes. The diagram keeps the original stack until it
+   is unfrozen and re-measured.
+   ======================================================================== */
+.rf-cpu-wrapper {
+  --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+}
