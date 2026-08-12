@@ -67,7 +67,7 @@
   padding: 2rem;
   margin-bottom: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .docs-layout .docs-content > section.section:last-of-type {
@@ -75,7 +75,7 @@
 }
 
 .docs-layout .docs-content h2 {
-  color: #2c3e50;
+  color: var(--color-text-heading);
   margin: 0 0 1.25rem;
   font-size: 1.75rem;
   border-bottom: 3px solid var(--color-primary, #2E7D32);

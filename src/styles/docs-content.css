@@ -13,7 +13,7 @@
 
   /* 16/17 pages; the rest override locally */
 .docs-layout .docs-content h3 {
-  color: #2c3e50;
+  color: var(--color-text-heading);
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-size: 1.5rem;
@@ -23,14 +23,14 @@
 .docs-layout .docs-content p {
   margin-bottom: 1rem;
   line-height: 1.8;
-  color: #555;
+  color: var(--color-text-light);
 }
 
   /* 13/15 pages; the rest override locally */
 .docs-layout .docs-content ul {
   margin-bottom: 1rem;
   line-height: 1.8;
-  color: #555;
+  color: var(--color-text-light);
   padding-left: 2rem;
 }
 
@@ -41,8 +41,8 @@
 
   /* 10/17 pages; the rest override locally */
 .docs-layout .docs-content .code-block {
-  background: #1e1e1e;
-  color: #d4d4d4;
+  background: var(--color-code-bg);
+  color: var(--color-code-text);
   padding: 1.5rem;
   border-radius: 8px;
   overflow-x: auto;
@@ -54,28 +54,28 @@
 
   /* 16/17 pages; the rest override locally */
 .docs-layout .docs-content .code-block .keyword {
-  color: #569cd6;
+  color: var(--color-code-keyword);
 }
 
   /* 16/17 pages; the rest override locally */
 .docs-layout .docs-content .code-block .comment {
-  color: #6a9955;
+  color: var(--color-code-comment);
 }
 
   /* 16/17 pages; the rest override locally */
 .docs-layout .docs-content .code-block .signal {
-  color: #9cdcfe;
+  color: var(--color-code-signal);
 }
 
 .docs-layout .docs-content .code-block .operator {
-  color: #d4d4d4;
+  color: var(--color-code-text);
 }
 
 .docs-layout .docs-content .code-block .number {
-  color: #b5cea8;
+  color: var(--color-code-number);
 }
 
 .docs-layout .docs-content .code-block .string {
-  color: #ce9178;
+  color: var(--color-code-string);
 }
 

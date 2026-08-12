@@ -28,13 +28,13 @@ function CpuRegfilePage() {
         .docs-layout .docs-content ul {
             margin-bottom: 1rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--color-text-light);
             padding-left: 0;
         }
 
         .docs-layout .docs-content .code-block {
-            background: #2c3e50;
-            color: #ecf0f1;
+            background: var(--color-code-bg);
+            color: var(--color-code-text);
             padding: 1.5rem;
             border-radius: 8px;
             overflow-x: auto;
@@ -43,20 +43,20 @@ function CpuRegfilePage() {
             font-size: 0.9rem;
             line-height: 1.6;
         }
-        .docs-layout .docs-content .code-block .comment { color: #95a5a6; }
-        .docs-layout .docs-content .code-block .keyword { color: #3498db; }
-        .docs-layout .docs-content .code-block .type    { color: #e67e22; }
-        .docs-layout .docs-content .code-block .signal  { color: #2ecc71; }
+        .docs-layout .docs-content .code-block .comment { color: var(--color-code-comment); }
+        .docs-layout .docs-content .code-block .keyword { color: var(--color-code-keyword); }
+        .docs-layout .docs-content .code-block .type    { color: var(--color-code-string); }
+        .docs-layout .docs-content .code-block .signal  { color: var(--color-code-signal); }
 
         .docs-layout .docs-content .port-diagram {
-            background: #f8f9fa;
+            background: var(--color-surface-alt);
             padding: 1.5rem;
             border-radius: 8px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.85rem;
             line-height: 1.8;
             margin: 1.5rem 0;
-            border-left: 4px solid #2E7D32;
+            border-left: 4px solid var(--color-primary);
         }
 
         .docs-layout .docs-content .ops-table {
@@ -66,7 +66,7 @@ function CpuRegfilePage() {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .docs-layout .docs-content .ops-table th {
-            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
             color: white;
             padding: 1rem;
             text-align: left;
@@ -74,11 +74,11 @@ function CpuRegfilePage() {
         }
         .docs-layout .docs-content .ops-table td {
             padding: 0.75rem 1rem;
-            border-bottom: 1px solid #e0e0e0;
-            color: #555;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-light);
         }
         .docs-layout .docs-content .ops-table tr:hover {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
         }
 
         @media (max-width: 768px) {

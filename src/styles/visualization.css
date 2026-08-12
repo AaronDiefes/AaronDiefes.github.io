@@ -18,7 +18,7 @@
   --stage-wb-color: #F44336;   /* Write Back - Red */
 
   /* Register change highlighting */
-  --color-highlight-yellow: #FFF9C4;
+  --color-highlight-yellow: var(--color-highlight, #FFF9C4);
 }
 
 /* ============================================

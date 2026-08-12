@@ -27,7 +27,7 @@ function CpuMultdivPage() {
             margin: 1.5rem 0;
         }
         .docs-layout .docs-content .ops-table th {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -35,13 +35,13 @@ function CpuMultdivPage() {
         }
         .docs-layout .docs-content .ops-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--color-border);
         }
         .docs-layout .docs-content .ops-table tr:hover {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
         }
         .docs-layout .docs-content .ops-table code {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;

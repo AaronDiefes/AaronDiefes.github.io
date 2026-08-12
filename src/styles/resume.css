@@ -1,0 +1,251 @@
+/**
+ * Web résumé (/resume).
+ *
+ * Shares the .wrap / .btn / .dash-list / .draft primitives from home.css.
+ *
+ * The print stylesheet at the bottom is what makes the PDF: the intent is that
+ * the downloadable file is produced by printing this route, so there is one
+ * source of truth rather than a web résumé and a document that drift apart.
+ */
+
+.cv-page {
+  padding-bottom: 56px;
+}
+
+.cv-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+.cv-updated {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.03em;
+}
+
+.cv {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 48px 52px;
+  margin-top: 26px;
+}
+
+.cv-header {
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 18px;
+  margin-bottom: 26px;
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.cv-name {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.015em;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.cv-role {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 6px 0 0;
+}
+
+.cv-contact {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-text-light);
+  line-height: 1.9;
+  text-align: right;
+}
+
+.cv-contact a {
+  color: var(--color-text-light);
+  text-decoration: none;
+}
+
+.cv-contact a:hover {
+  color: var(--color-primary);
+}
+
+.cv-section {
+  margin-bottom: 30px;
+}
+
+.cv-section > h2 {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+  margin: 0 0 16px;
+}
+
+.cv-entry {
+  margin-bottom: 20px;
+}
+
+.cv-entry-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.cv-entry-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.cv-entry-org {
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  margin: 2px 0 0;
+}
+
+.cv-entry-when {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.cv-entry-note {
+  color: var(--color-text-light);
+  font-size: 0.92rem;
+  margin: 8px 0 0;
+  max-width: 76ch;
+}
+
+.cv-skills {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 8px 20px;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.cv-skills dt {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding-top: 3px;
+}
+
+.cv-skills dd {
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+@media (max-width: 680px) {
+  .cv {
+    padding: 26px 22px;
+  }
+  .cv-contact {
+    text-align: left;
+  }
+  .cv-skills {
+    grid-template-columns: 1fr;
+    gap: 2px 0;
+  }
+  .cv-skills dd {
+    margin-bottom: 10px;
+  }
+}
+
+/* ======================================================================
+   PRINT
+   Produces the downloadable PDF. Drops the site chrome, forces a light
+   ground regardless of theme (printers do not have a dark mode), and
+   avoids splitting an entry across pages.
+   ====================================================================== */
+@media print {
+  /* Force light values - a dark theme would otherwise print as a black page. */
+  :root,
+  :root[data-theme='dark'] {
+    --color-surface: #ffffff;
+    --color-surface-alt: #ffffff;
+    --color-surface-dim: #ffffff;
+    --color-text: #000000;
+    --color-text-heading: #000000;
+    --color-text-light: #1a1a1a;
+    --color-text-muted: #444444;
+    --color-border: #cccccc;
+    --color-border-light: #cccccc;
+    --color-primary: #14532d;
+  }
+
+  @page {
+    margin: 0.6in;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .site-nav,
+  .site-footer,
+  .cv-actions,
+  .command-palette-backdrop {
+    display: none !important;
+  }
+
+  .wrap,
+  .cv-page {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .cv {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+  }
+
+  .cv-entry,
+  .cv-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-section > h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Draft blocks must never appear on a printed résumé. */
+  .draft,
+  .draft-tag {
+    display: none !important;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}

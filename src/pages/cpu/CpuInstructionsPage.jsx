@@ -22,7 +22,7 @@ function CpuInstructionsPage() {
       <style>{`
         .docs-layout .docs-content .bit-field {
             display: flex;
-            border: 2px solid #2E7D32;
+            border: 2px solid var(--color-primary);
             border-radius: 8px;
             overflow: hidden;
             margin: 1.5rem 0;
@@ -32,7 +32,7 @@ function CpuInstructionsPage() {
         .docs-layout .docs-content .bit-field .field {
             padding: 0.75rem;
             text-align: center;
-            border-right: 1px solid #2E7D32;
+            border-right: 1px solid var(--color-primary);
             flex: 1;
         }
         .docs-layout .docs-content .bit-field .field:last-child {
@@ -40,11 +40,11 @@ function CpuInstructionsPage() {
         }
         .docs-layout .docs-content .bit-field .field-name {
             font-weight: 700;
-            color: #2E7D32;
+            color: var(--color-primary);
         }
         .docs-layout .docs-content .bit-field .field-bits {
             font-size: 0.75rem;
-            color: #888;
+            color: var(--color-text-muted);
             margin-top: 0.25rem;
         }
 
@@ -56,7 +56,7 @@ function CpuInstructionsPage() {
             font-size: 0.9rem;
         }
         .docs-layout .docs-content .ops-table th {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -64,21 +64,21 @@ function CpuInstructionsPage() {
         }
         .docs-layout .docs-content .ops-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--color-border-light);
         }
         .docs-layout .docs-content .ops-table tr:hover {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
         }
         .docs-layout .docs-content .ops-table code {
             background: rgba(46, 125, 50, 0.1);
             padding: 0.15rem 0.4rem;
             border-radius: 3px;
-            color: #1B5E20;
+            color: var(--color-primary-dark);
         }
 
         .docs-layout .docs-content .encoding-example {
-            background: #f9f9f9;
-            border-left: 4px solid #2E7D32;
+            background: var(--color-surface-alt);
+            border-left: 4px solid var(--color-primary);
             padding: 1.5rem;
             border-radius: 0 8px 8px 0;
             margin: 1.5rem 0;

@@ -63,24 +63,24 @@ function GraphicsOptimizationPage() {
     >
       <style>{`
         .docs-layout .docs-content h4 {
-            color: #2c3e50;
+            color: var(--color-text-heading);
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
         }
 
         .docs-layout .docs-content code {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.9rem;
-            color: #c7254e;
+            color: var(--color-code-string);
         }
 
         .docs-layout .docs-content .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
+            background: var(--color-code-bg);
+            color: var(--color-code-text);
             padding: 1.5rem;
             border-radius: 8px;
             overflow-x: auto;
@@ -96,15 +96,15 @@ function GraphicsOptimizationPage() {
         }
 
         .docs-layout .docs-content .info-box {
-            background: #e8f5e9;
-            border-left: 4px solid #2E7D32;
+            background: var(--stage-if-tint);
+            border-left: 4px solid var(--color-primary);
             padding: 1rem 1.5rem;
             margin: 1.5rem 0;
             border-radius: 4px;
         }
 
         .docs-layout .docs-content .info-box strong {
-            color: #1B5E20;
+            color: var(--color-primary-dark);
         }
 
         .docs-layout .docs-content .data-table {
@@ -114,7 +114,7 @@ function GraphicsOptimizationPage() {
         }
 
         .docs-layout .docs-content .data-table thead {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
         }
 
@@ -126,11 +126,11 @@ function GraphicsOptimizationPage() {
 
         .docs-layout .docs-content .data-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--color-border-light);
         }
 
         .docs-layout .docs-content .data-table tbody tr:nth-child(even) {
-            background: #f8f9fa;
+            background: var(--color-surface-alt);
         }
       `}</style>
 

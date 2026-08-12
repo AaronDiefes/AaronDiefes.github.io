@@ -7,13 +7,13 @@
   padding: 2rem;
   margin-bottom: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .docs-layout .docs-content .tabs-header {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
@@ -23,7 +23,7 @@
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #555;
+  color: var(--color-text-light);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -32,13 +32,13 @@
 }
 
 .docs-layout .docs-content .tab-button:hover {
-  color: #2E7D32;
-  background: #f5f5f5;
+  color: var(--color-primary);
+  background: var(--color-surface-alt);
 }
 
 .docs-layout .docs-content .tab-button.active {
-  color: #2E7D32;
-  border-bottom-color: #2E7D32;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
   background: transparent;
 }
 

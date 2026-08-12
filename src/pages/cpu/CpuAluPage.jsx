@@ -26,7 +26,7 @@ function CpuAluPage() {
             margin: 1.5rem 0;
         }
         .docs-layout .docs-content .ops-table th {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -34,13 +34,13 @@ function CpuAluPage() {
         }
         .docs-layout .docs-content .ops-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--color-border);
         }
         .docs-layout .docs-content .ops-table tr:hover {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
         }
         .docs-layout .docs-content .ops-table code {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
@@ -48,19 +48,19 @@ function CpuAluPage() {
         }
 
         .docs-layout .docs-content h3 {
-            color: #2c3e50;
+            color: var(--color-text-heading);
             margin: 1.5rem 0 0.75rem;
             font-size: 1.25rem;
         }
         .docs-layout .docs-content p {
             margin-bottom: 1rem;
             line-height: 1.7;
-            color: #444;
+            color: var(--color-text-light);
         }
         .docs-layout .docs-content ul {
             margin-bottom: 1rem;
             line-height: 1.7;
-            color: #444;
+            color: var(--color-text-light);
             padding-left: 2rem;
         }
         .docs-layout .docs-content li { margin-bottom: 0.4rem; }

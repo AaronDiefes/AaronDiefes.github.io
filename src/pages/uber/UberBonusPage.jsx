@@ -24,8 +24,8 @@ function UberBonusPage() {
         .docs-layout .docs-content .complexity-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
-            background: #e8f5e9;
-            color: #2E7D32;
+            background: var(--stage-if-tint);
+            color: var(--color-primary);
             border-radius: 4px;
             font-weight: 600;
             font-size: 0.9rem;
@@ -35,9 +35,9 @@ function UberBonusPage() {
         .docs-layout .docs-content .performance-results {
           margin: 2rem 0;
           padding: 1.5rem;
-          background: #f8f9fa;
+          background: var(--color-surface-alt);
           border-radius: 8px;
-          border-left: 4px solid #2E7D32;
+          border-left: 4px solid var(--color-primary);
         }
 
         .docs-layout .docs-content .metrics-grid {
@@ -57,7 +57,7 @@ function UberBonusPage() {
         .docs-layout .docs-content .metric-label {
           display: block;
           font-weight: 600;
-          color: #2E7D32;
+          color: var(--color-primary);
           font-size: 0.9rem;
           margin-bottom: 0.5rem;
         }
@@ -66,7 +66,7 @@ function UberBonusPage() {
           display: block;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #2c3e50;
+          color: var(--color-text-heading);
         }
 
         .docs-layout .docs-content .performance-graph {
@@ -82,7 +82,7 @@ function UberBonusPage() {
         .docs-layout .docs-content .graph-caption {
           text-align: center;
           font-style: italic;
-          color: #666;
+          color: var(--color-text-muted);
           margin-top: 0.5rem;
           font-size: 0.9rem;
         }
@@ -98,7 +98,7 @@ function UberBonusPage() {
         }
 
         .docs-layout .docs-content .comparison-table th {
-          background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
           color: white;
           padding: 1rem;
           text-align: left;
@@ -107,8 +107,8 @@ function UberBonusPage() {
 
         .docs-layout .docs-content .comparison-table td {
           padding: 1rem;
-          border-bottom: 1px solid #e0e0e0;
-          color: #2c3e50;
+          border-bottom: 1px solid var(--color-border);
+          color: var(--color-text-heading);
         }
 
         .docs-layout .docs-content .comparison-table tr:last-child td {
@@ -116,7 +116,7 @@ function UberBonusPage() {
         }
 
         .docs-layout .docs-content .comparison-table tr:hover {
-          background: #f8f9fa;
+          background: var(--color-surface-alt);
         }
 
         @media (max-width: 768px) {

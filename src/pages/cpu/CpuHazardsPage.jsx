@@ -24,13 +24,13 @@ function CpuHazardsPage() {
         .docs-layout .docs-content ol {
             margin-bottom: 1rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--color-text-light);
             padding-left: 2rem;
         }
 
         .docs-layout .docs-content .hazard-example {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
+            background: var(--stage-ex-tint);
+            border-left: 4px solid var(--status-warn-border);
             padding: 1.5rem;
             border-radius: 0 8px 8px 0;
             margin: 1.5rem 0;
@@ -47,13 +47,13 @@ function CpuHazardsPage() {
             grid-template-columns: auto repeat(5, 1fr);
             gap: 0;
             margin: 1.5rem 0;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border-light);
             border-radius: 8px;
             overflow: hidden;
             max-width: 800px;
         }
         .docs-layout .docs-content .timeline-header {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
             padding: 0.75rem;
             font-weight: 600;
@@ -62,31 +62,31 @@ function CpuHazardsPage() {
         .docs-layout .docs-content .timeline-cell {
             padding: 0.75rem;
             text-align: center;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border-light);
             background: white;
         }
         .docs-layout .docs-content .timeline-label {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.75rem;
             font-weight: 600;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border-light);
             white-space: nowrap;
         }
 
-        .docs-layout .docs-content .stage-if       { background: #e3f2fd; font-weight: 600; }
-        .docs-layout .docs-content .stage-id       { background: #f3e5f5; font-weight: 600; }
-        .docs-layout .docs-content .stage-ex       { background: #fff9c4; font-weight: 600; }
-        .docs-layout .docs-content .stage-mem      { background: #ffebee; font-weight: 600; }
-        .docs-layout .docs-content .stage-wb       { background: #e8f5e9; font-weight: 600; }
-        .docs-layout .docs-content .stage-stall    { background: #ffccbc; font-weight: 600; color: #d84315; }
-        .docs-layout .docs-content .stage-conflict { background: #ff9800; color: white; font-weight: 700; }
+        .docs-layout .docs-content .stage-if       { background: var(--stage-id-tint); font-weight: 600; }
+        .docs-layout .docs-content .stage-id       { background: var(--stage-mem-tint); font-weight: 600; }
+        .docs-layout .docs-content .stage-ex       { background: var(--color-highlight); font-weight: 600; }
+        .docs-layout .docs-content .stage-mem      { background: var(--stage-wb-tint); font-weight: 600; }
+        .docs-layout .docs-content .stage-wb       { background: var(--stage-if-tint); font-weight: 600; }
+        .docs-layout .docs-content .stage-stall    { background: var(--status-warn-bg); font-weight: 600; color: var(--status-err-fg); }
+        .docs-layout .docs-content .stage-conflict { background: var(--status-warn-border); color: white; font-weight: 700; }
 
         .docs-layout .docs-content .forwarding-diagram {
             display: flex;
             justify-content: space-around;
             align-items: center;
             padding: 2rem;
-            background: #f9f9f9;
+            background: var(--color-surface-alt);
             border-radius: 8px;
             margin: 1.5rem 0;
             flex-wrap: wrap;
@@ -94,7 +94,7 @@ function CpuHazardsPage() {
         }
         .docs-layout .docs-content .forwarding-box {
             background: white;
-            border: 2px solid #2E7D32;
+            border: 2px solid var(--color-primary);
             border-radius: 8px;
             padding: 1.5rem;
             min-width: 150px;
@@ -103,16 +103,16 @@ function CpuHazardsPage() {
         }
         .docs-layout .docs-content .forwarding-box h4 {
             margin: 0 0 0.5rem 0;
-            color: #2E7D32;
+            color: var(--color-primary);
             font-size: 1rem;
         }
         .docs-layout .docs-content .forwarding-box p {
             margin: 0;
             font-size: 0.85rem;
-            color: #666;
+            color: var(--color-text-muted);
         }
         .docs-layout .docs-content .forwarding-arrow {
-            color: #ff9800;
+            color: var(--status-warn-border);
             font-size: 2rem;
             font-weight: bold;
         }

@@ -63,7 +63,7 @@ function GraphicsAdvancedGeometryPage() {
     >
       <style>{`
         .docs-layout .docs-content h4 {
-            color: #2c3e50;
+            color: var(--color-text-heading);
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
@@ -73,22 +73,22 @@ function GraphicsAdvancedGeometryPage() {
         .docs-layout .docs-content ol {
             margin-bottom: 1rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--color-text-light);
             padding-left: 2rem;
         }
 
         .docs-layout .docs-content code {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.9rem;
-            color: #c7254e;
+            color: var(--color-code-string);
         }
 
         .docs-layout .docs-content .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
+            background: var(--color-code-bg);
+            color: var(--color-code-text);
             padding: 1.5rem;
             border-radius: 8px;
             overflow-x: auto;
@@ -98,12 +98,12 @@ function GraphicsAdvancedGeometryPage() {
             margin: 1.5rem 0;
             white-space: pre;
         }
-        .docs-layout .docs-content .code-block .type { color: #4ec9b0; }
-        .docs-layout .docs-content .code-block .function { color: #dcdcaa; }
+        .docs-layout .docs-content .code-block .type { color: var(--color-code-signal); }
+        .docs-layout .docs-content .code-block .function { color: var(--color-code-number); }
 
         .docs-layout .docs-content .demo-instruction {
-            background: #f0f8f4;
-            border-left: 4px solid #2E7D32;
+            background: var(--stage-if-tint);
+            border-left: 4px solid var(--color-primary);
             padding: 1rem 1.5rem;
             margin: 1.5rem 0;
             border-radius: 4px;

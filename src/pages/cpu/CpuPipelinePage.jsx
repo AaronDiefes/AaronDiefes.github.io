@@ -22,7 +22,7 @@ function CpuPipelinePage() {
     >
       <style>{`
         .docs-layout .docs-content h4 {
-            color: #2E7D32;
+            color: var(--color-primary);
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
@@ -34,7 +34,7 @@ function CpuPipelinePage() {
             align-items: center;
             margin: 2rem 0;
             padding: 2rem;
-            background: #f8f9fa;
+            background: var(--color-surface-alt);
             border-radius: 8px;
             flex-wrap: wrap;
             gap: 1rem;
@@ -46,11 +46,11 @@ function CpuPipelinePage() {
             padding: 1rem;
             background: white;
             border-radius: 8px;
-            border: 2px solid #2E7D32;
+            border: 2px solid var(--color-primary);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .docs-layout .docs-content .pipeline-step h4 {
-            color: #2E7D32;
+            color: var(--color-primary);
             font-weight: 600;
             margin: 0 0 0.5rem 0;
             font-size: 1.1rem;
@@ -58,11 +58,11 @@ function CpuPipelinePage() {
         .docs-layout .docs-content .pipeline-step p {
             margin: 0;
             font-size: 0.85rem;
-            color: #666;
+            color: var(--color-text-muted);
         }
         .docs-layout .docs-content .pipeline-arrow {
             font-size: 1.5rem;
-            color: #2E7D32;
+            color: var(--color-primary);
             font-weight: bold;
         }
 
@@ -73,7 +73,7 @@ function CpuPipelinePage() {
             font-size: 0.9rem;
         }
         .docs-layout .docs-content .control-table th {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -81,7 +81,7 @@ function CpuPipelinePage() {
         }
         .docs-layout .docs-content .control-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--color-border);
             text-align: center;
         }
         .docs-layout .docs-content .control-table td:first-child {
@@ -89,10 +89,10 @@ function CpuPipelinePage() {
             font-weight: 600;
         }
         .docs-layout .docs-content .control-table tr:hover {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
         }
         .docs-layout .docs-content .control-table code {
-            background: #f5f5f5;
+            background: var(--color-surface-alt);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
@@ -109,24 +109,24 @@ function CpuPipelinePage() {
         .docs-layout .docs-content .timeline-table td {
             padding: 0.5rem;
             text-align: center;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border-light);
         }
         .docs-layout .docs-content .timeline-table th {
-            background: #2c3e50;
-            color: white;
+            background: var(--color-surface-alt);
+            color: var(--color-text-heading);
             font-weight: 600;
         }
         .docs-layout .docs-content .timeline-table td:first-child {
-            background: #f8f9fa;
+            background: var(--color-surface-alt);
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--color-text-heading);
         }
 
-        .docs-layout .docs-content .stage-if  { background: #e8f5e9; color: #2E7D32; font-weight: 600; }
-        .docs-layout .docs-content .stage-id  { background: #c8e6c9; color: #1B5E20; font-weight: 600; }
-        .docs-layout .docs-content .stage-ex  { background: #a5d6a7; color: #1B5E20; font-weight: 600; }
-        .docs-layout .docs-content .stage-mem { background: #81c784; color: white;   font-weight: 600; }
-        .docs-layout .docs-content .stage-wb  { background: #66bb6a; color: white;   font-weight: 600; }
+        .docs-layout .docs-content .stage-if  { background: var(--stage-if-tint); color: var(--color-primary); font-weight: 600; }
+        .docs-layout .docs-content .stage-id  { background: var(--stage-if-tint); color: var(--color-primary-dark); font-weight: 600; }
+        .docs-layout .docs-content .stage-ex  { background: var(--color-accent); color: var(--color-primary-dark); font-weight: 600; }
+        .docs-layout .docs-content .stage-mem { background: var(--color-accent); color: white;   font-weight: 600; }
+        .docs-layout .docs-content .stage-wb  { background: var(--color-primary); color: white;   font-weight: 600; }
 
         @media (max-width: 768px) {
             .docs-layout .docs-content .pipeline-diagram {

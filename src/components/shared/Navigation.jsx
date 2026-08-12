@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import ThemeToggle from './ThemeToggle'
 import PROFILE from '../../content/profile'
 import { hasPublishedExperience } from '../../content/experience'
 
@@ -123,23 +124,27 @@ function Navigation() {
             </li>
           ))}
 
-          {PROFILE.resumePdf && (
-            <li>
-              <a
-                className="nav-resume"
-                href={PROFILE.resumePdf}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Résumé
-              </a>
-            </li>
-          )}
+          {/* Points at the /resume route, which always exists. The PDF is a
+              separate thing: when PROFILE.resumePdf is set the resume page
+              offers it as a download, and until then it offers print-to-PDF. */}
+          <li>
+            <Link
+              className="nav-resume"
+              to="/resume"
+              aria-current={location.pathname === '/resume' ? 'page' : undefined}
+            >
+              Résumé
+            </Link>
+          </li>
 
           <li>
             <a href={PROFILE.github} target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
+          </li>
+
+          <li>
+            <ThemeToggle />
           </li>
         </ul>
       </div>

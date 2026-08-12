@@ -11,6 +11,25 @@
       Restore the real path before the app mounts so React Router sees it.
       Must run before /src/main.jsx. See public/404.html for the encoder.
     -->
+    <!--
+      Theme bootstrap. Must be inline and synchronous, before the module script:
+      it stamps data-theme on <html> ahead of first paint so a visitor who chose
+      dark never sees a flash of light. Only stamps when there IS a stored
+      choice - otherwise nothing is set and the prefers-color-scheme block in
+      theme.css governs. Storage key must match THEME_KEY in src/lib/theme.js.
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('ad-theme')
+          if (t === 'light' || t === 'dark') {
+            document.documentElement.setAttribute('data-theme', t)
+          }
+        } catch (e) {
+          /* blocked storage: fall through to the system preference */
+        }
+      })()
+    </script>
     <script>
       (function () {
         var l = window.location

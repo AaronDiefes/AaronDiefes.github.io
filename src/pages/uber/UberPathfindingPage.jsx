@@ -25,8 +25,8 @@ function UberPathfindingPage() {
         .docs-layout .docs-content .complexity-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
-            background: #e8f5e9;
-            color: #2E7D32;
+            background: var(--stage-if-tint);
+            color: var(--color-primary);
             border-radius: 4px;
             font-weight: 600;
             font-size: 0.9rem;

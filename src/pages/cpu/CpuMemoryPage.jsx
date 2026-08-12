@@ -25,7 +25,7 @@ function CpuMemoryPage() {
         .docs-layout .docs-content .memory-map {
             display: flex;
             flex-direction: column;
-            border: 2px solid #2E7D32;
+            border: 2px solid var(--color-primary);
             border-radius: 8px;
             overflow: hidden;
             margin: 1.5rem 0;
@@ -34,18 +34,18 @@ function CpuMemoryPage() {
             display: flex;
             justify-content: space-between;
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--color-border);
         }
         .docs-layout .docs-content .memory-region:last-child {
             border-bottom: none;
         }
         .docs-layout .docs-content .memory-region .addr {
             font-family: 'Monaco', 'Courier New', monospace;
-            color: #2E7D32;
+            color: var(--color-primary);
             font-weight: 600;
         }
         .docs-layout .docs-content .memory-region .desc {
-            color: #555;
+            color: var(--color-text-light);
         }
 
         /* Inline CTA button used within content (Launch CPU Simulator) */
@@ -59,15 +59,15 @@ function CpuMemoryPage() {
             display: inline-block;
             padding: 0.75rem 1.5rem;
             background: white;
-            color: #2E7D32;
+            color: var(--color-primary);
             text-decoration: none;
             border-radius: 6px;
             font-weight: 600;
             transition: background 0.3s, color 0.3s;
-            border: 2px solid #2E7D32;
+            border: 2px solid var(--color-primary);
         }
         .docs-layout .docs-content .cta-link:hover {
-            background: #2E7D32;
+            background: var(--color-primary);
             color: white;
         }
       `}</style>

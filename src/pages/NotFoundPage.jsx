@@ -15,12 +15,12 @@ export default function NotFoundPage() {
           justify-content: center;
           text-align: center;
           padding: 4rem 2rem;
-          color: #2c3e50;
+          color: var(--color-text-heading);
         }
         .notfound h1 {
           font-size: clamp(3rem, 4vw + 2rem, 6rem);
           margin: 0;
-          background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -28,12 +28,12 @@ export default function NotFoundPage() {
         .notfound p {
           font-size: 1.2rem;
           margin: 1rem 0 2rem;
-          color: #555;
+          color: var(--color-text-light);
         }
         .notfound a {
           display: inline-block;
           padding: 0.75rem 1.5rem;
-          background: #2E7D32;
+          background: var(--color-primary);
           color: white;
           text-decoration: none;
           border-radius: 6px;
@@ -41,11 +41,11 @@ export default function NotFoundPage() {
           transition: background 0.2s;
         }
         .notfound a:hover {
-          background: #1B5E20;
+          background: var(--color-primary-dark);
         }
         footer {
-          background: #2c3e50;
-          color: rgba(255, 255, 255, 0.8);
+          background: var(--color-footer-bg);
+          color: var(--color-on-band-dim);
           text-align: center;
           padding: 2rem;
           margin-top: 4rem;

@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 
 // Top-level pages
 import HomePage from './pages/HomePage'
+import ResumePage from './pages/ResumePage'
+import CommandPalette from './components/shared/CommandPalette'
 import AdminPage from './pages/AdminPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -65,8 +67,14 @@ function AppContent() {
   }, [location])
 
   return (
-    <Routes>
+    <>
+      {/* Mounted once, outside <Routes>, so the Cmd/Ctrl-K shortcut works on
+          every page. Renders null until opened, so it costs nothing at rest. */}
+      <CommandPalette />
+
+      <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/resume" element={<ResumePage />} />
       <Route path="/admin" element={<AdminPage />} />
 
       {/* CPU Project */}
@@ -98,7 +106,8 @@ function AppContent() {
       <Route path="/projects/uber/docs/bonus" element={<UberBonusPage />} />
 
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+      </Routes>
+    </>
   )
 }
 

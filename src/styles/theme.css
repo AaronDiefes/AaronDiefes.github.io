@@ -51,8 +51,48 @@
   --color-border-light: #D2D6DB;
 
   /* ---- Special purpose ----------------------------------------------- */
-  --color-code-bg: #F6F7F8;
   --color-footer-bg: #171A1C;
+
+  /* Text and links on the dark contact/footer band, which stays dark in both
+     themes - so these are NOT simply --color-text. */
+  --color-on-band: #E9EBED;
+  --color-on-band-dim: #9BA3AA;
+
+  /* Code blocks. Light-on-dark in light mode is fine, but the same value in
+     dark mode would make a code block vanish into the page, so the dark theme
+     makes it LIGHTER than the surface rather than darker. */
+  --color-code-bg: #1E1E1E;
+  --color-code-text: #D4D4D4;
+  --color-code-keyword: #569CD6;
+  --color-code-comment: #6A9955;
+  --color-code-signal: #9CDCFE;
+  --color-code-operator: #D4D4D4;
+  --color-code-number: #B5CEA8;
+  --color-code-string: #CE9178;
+
+  /* Draft frame - development only, never shipped. */
+  --color-draft: #A15C11;
+  --color-draft-bg: #FDF7EF;
+
+  /* Simulator feedback: the flash when a register or memory cell changes. */
+  --color-highlight: #FFF9C4;
+
+  /* Destructive control (the simulator's Reset button). */
+  --color-danger: #C0392B;
+  --color-danger-hover: #A93226;
+
+  /* Status states in the WASM demo. These are semantic (success / warning /
+     error), deliberately separate from the brand accent, and are set as class
+     names from JS - see updateStatus() in GraphicsWasmPage. */
+  --status-ok-bg: #D4EDDA;
+  --status-ok-fg: #155724;
+  --status-ok-border: #28A745;
+  --status-warn-bg: #FFF3CD;
+  --status-warn-fg: #856404;
+  --status-warn-border: #FFC107;
+  --status-err-bg: #F8D7DA;
+  --status-err-fg: #721C24;
+  --status-err-border: #DC3545;
 
   /* ---- "Gradients" ---------------------------------------------------- */
   /* Flattened to solid colour. The design has no gradients; these names are
@@ -130,8 +170,39 @@
   --color-border: #262A2E;
   --color-border-light: #343A40;
 
-  --color-code-bg: #0C0F11;
   --color-footer-bg: #0A0C0D;
+  --color-on-band: #E8EAEC;
+  --color-on-band-dim: #828A92;
+
+  /* Lighter than --color-surface (#16191C), not darker: on a dark page a
+     near-black code block reads as a hole rather than a panel. */
+  --color-code-bg: #1F2428;
+  --color-code-text: #D7DDE2;
+  --color-code-keyword: #7FB3E8;
+  --color-code-comment: #7C9E7C;
+  --color-code-signal: #A8D3F0;
+  --color-code-operator: #D7DDE2;
+  --color-code-number: #B9D4A6;
+  --color-code-string: #DDA07C;
+
+  --color-draft: #D29247;
+  --color-draft-bg: #1E1710;
+
+  --color-highlight: #3A3620;
+
+  --color-danger: #E05A4A;
+  --color-danger-hover: #F07566;
+
+  /* Same semantics, dark-ground surfaces. */
+  --status-ok-bg: #12251A;
+  --status-ok-fg: #7FCF95;
+  --status-ok-border: #2E7D4F;
+  --status-warn-bg: #2A2210;
+  --status-warn-fg: #E0BD6A;
+  --status-warn-border: #8A6D1F;
+  --status-err-bg: #2C1618;
+  --status-err-fg: #E88C8C;
+  --status-err-border: #8C3239;
 
   --gradient-primary: #6FBF7F;
   --gradient-header: #0A0C0D;
@@ -150,23 +221,89 @@
 }
 
 /*
- * NOT YET WIRED TO THE SYSTEM PREFERENCE - deliberately.
+ * System preference.
  *
- * The dark palette above only applies when something explicitly sets
- * data-theme="dark" on <html>, and nothing does yet. The matching
- * `@media (prefers-color-scheme: dark)` block is intentionally absent until the
- * rest of the site is tokenized.
+ * Guarded with :not([data-theme='light']) so an explicit light choice still
+ * wins over a dark OS. Together with the [data-theme='dark'] block above this
+ * covers all three viewer states: explicit dark, explicit light, and the
+ * default un-stamped state where only the OS preference is known.
  *
- * Reason: large parts of the chrome (navigation.css, demo-layout.css, the docs
- * landings) still carry hardcoded light-mode colours. Honouring the OS
- * preference now would give anyone on a dark OS a half-dark site - the
- * tokenized React Flow diagram would go dark while the nav and page bands
- * stayed light. Verified: that is exactly what happened when this block was
- * present.
- *
- * The media query lands in A6 together with the theme toggle, once the chrome
- * is token-driven and can actually go dark as a set.
+ * Enabled now that the chrome is token-driven. It was deliberately withheld
+ * earlier: with the page bands and navigation still carrying hardcoded light
+ * colours, a dark OS produced a half-dark site.
  */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+  color-scheme: dark;
+
+  --color-primary: #6FBF7F;       /* #1E5631 fails contrast on dark - the
+                                     accent must flip, not just the surfaces */
+  --color-primary-dark: #8FD49C;
+  --color-accent: #6FBF7F;
+  --color-accent-light: #16241B;
+
+  --color-surface: #16191C;
+  --color-surface-alt: #121517;
+  --color-surface-dim: #0F1214;
+
+  --color-text: #E8EAEC;
+  --color-text-heading: #E8EAEC;
+  --color-text-muted: #767D85;
+  --color-text-light: #A3AAB2;
+
+  --color-border: #262A2E;
+  --color-border-light: #343A40;
+
+  --color-footer-bg: #0A0C0D;
+  --color-on-band: #E8EAEC;
+  --color-on-band-dim: #828A92;
+
+  /* Lighter than --color-surface (#16191C), not darker: on a dark page a
+     near-black code block reads as a hole rather than a panel. */
+  --color-code-bg: #1F2428;
+  --color-code-text: #D7DDE2;
+  --color-code-keyword: #7FB3E8;
+  --color-code-comment: #7C9E7C;
+  --color-code-signal: #A8D3F0;
+  --color-code-operator: #D7DDE2;
+  --color-code-number: #B9D4A6;
+  --color-code-string: #DDA07C;
+
+  --color-draft: #D29247;
+  --color-draft-bg: #1E1710;
+
+  --color-highlight: #3A3620;
+
+  --color-danger: #E05A4A;
+  --color-danger-hover: #F07566;
+
+  /* Same semantics, dark-ground surfaces. */
+  --status-ok-bg: #12251A;
+  --status-ok-fg: #7FCF95;
+  --status-ok-border: #2E7D4F;
+  --status-warn-bg: #2A2210;
+  --status-warn-fg: #E0BD6A;
+  --status-warn-border: #8A6D1F;
+  --status-err-bg: #2C1618;
+  --status-err-fg: #E88C8C;
+  --status-err-border: #8C3239;
+
+  --gradient-primary: #6FBF7F;
+  --gradient-header: #0A0C0D;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  /* Dark-mode tints must be dark and desaturated. The light values would
+     render as glaring pale blocks behind near-white text. */
+  --stage-if-tint: #16241B;
+  --stage-id-tint: #152029;
+  --stage-ex-tint: #26200F;
+  --stage-mem-tint: #201828;
+  --stage-wb-tint: #291819;
+  }
+}
 
 /* ========================================================================
    Frozen-diagram guard
