@@ -1,106 +1,126 @@
 /**
- * Site Navigation Styles
- * Responsive navigation bar with accessible hamburger menu
+ * Site navigation.
+ *
+ * Flat, thin, and quiet: a hairline that only appears once the page is
+ * scrolled, no drop shadow, no shrink-on-scroll. Shrinking or morphing headers
+ * are a consumer-marketing convention and read as such.
+ *
+ * BEHAVIOURAL RULES - these look like styling and are actually logic:
+ *
+ *  1. `.site-nav .nav-links { display: flex }` overrides the user-agent
+ *     `[hidden] { display: none }` rule. That means the mobile menu is closed
+ *     ONLY by the `.nav-links[hidden] { display: none }` rule inside the 768px
+ *     media query below. Delete it and the menu is permanently open.
+ *  2. The 768px breakpoint is duplicated in Navigation.jsx (MOBILE_BREAKPOINT).
+ *     Change one without the other and the menu stops auto-closing.
+ *  3. `.sr-only` must keep the clip pattern or "Toggle menu" becomes visible.
  */
 
-/* Desktop Navigation Bar */
 .site-nav {
-  --nav-height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
   width: 100%;
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-surface-dim);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--timing-instant) var(--easing-standard);
+}
+
+/* Set by App.jsx once the page is scrolled past the top. */
+.site-nav.is-stuck {
+  border-bottom-color: var(--color-border);
+}
+
+.site-nav-inner {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 28px;
+  height: var(--nav-height);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 28px;
 }
 
 .site-nav .nav-brand {
-  color: white;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--color-text-heading);
   text-decoration: none;
-  font-size: 1.125rem;
 }
 
 .site-nav .nav-brand:hover {
-  opacity: 0.9;
+  color: var(--color-primary);
 }
 
 .site-nav .nav-links {
+  margin-left: auto;
   display: flex;
-  gap: var(--space-md);
+  align-items: center;
+  gap: 24px;
   list-style: none;
-  margin: 0;
   padding: 0;
 }
 
 .site-nav .nav-links a {
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  color: var(--color-text-light);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 4px;
-  transition: background var(--timing-instant) var(--easing-standard);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color var(--timing-instant) var(--easing-standard);
 }
 
 .site-nav .nav-links a:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.site-nav .nav-links a:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
+  color: var(--color-text);
 }
 
 .site-nav .nav-links a.active {
-  background: rgba(255, 255, 255, 0.2);
-  font-weight: 600;
-  position: relative;
+  color: var(--color-text);
+  border-bottom-color: var(--color-primary);
 }
 
-.site-nav .nav-links a.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: var(--space-sm);
-  right: var(--space-sm);
-  height: 2px;
-  background: white;
+/* The résumé is the highest-intent target for this audience, so it is the only
+   outlined item - deliberately an outline and not a filled button, which reads
+   as a marketing call to action. */
+.site-nav .nav-links a.nav-resume {
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
-/* Hamburger Menu Button (hidden on desktop) */
+.site-nav .nav-links a.nav-resume:hover {
+  background: var(--color-accent-light);
+}
+
+/* Hamburger (mobile only) */
 .menu-toggle {
   display: none;
   background: none;
-  border: none;
+  border: 0;
   cursor: pointer;
-  color: white;
-  padding: var(--space-xs);
-  position: relative;
   width: 32px;
   height: 32px;
-  z-index: var(--z-overlay);
+  position: relative;
+  margin-left: auto;
 }
 
-.menu-toggle:hover {
-  opacity: 0.9;
-}
-
-.menu-toggle:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* CSS Hamburger Icon (3 bars) */
 .hamburger-icon,
 .hamburger-icon::before,
 .hamburger-icon::after {
-  display: block;
-  width: 24px;
+  width: 22px;
   height: 2px;
-  background: white;
+  background: var(--color-text);
   position: absolute;
-  left: 4px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  left: 5px;
+  transition: transform var(--timing-standard) var(--easing-standard),
+              opacity var(--timing-standard) var(--easing-standard);
 }
 
 .hamburger-icon {
@@ -109,15 +129,15 @@
 
 .hamburger-icon::before {
   content: '';
-  top: -8px;
+  top: -7px;
 }
 
 .hamburger-icon::after {
   content: '';
-  top: 8px;
+  top: 7px;
 }
 
-/* Screen Reader Only */
+/* Screen-reader-only text. Do not simplify - see rule 3 above. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -128,14 +148,10 @@
   border: 0;
 }
 
-/* Mobile Breakpoint */
+/* Mobile. Breakpoint duplicated in Navigation.jsx - see rule 2 above. */
 @media (max-width: 768px) {
   .menu-toggle {
     display: block;
-  }
-
-  .site-nav {
-    position: relative;
   }
 
   .site-nav .nav-links {
@@ -144,25 +160,34 @@
     left: 0;
     right: 0;
     flex-direction: column;
-    background: #2c3e50;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    padding: var(--space-sm);
+    align-items: stretch;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-xs);
     z-index: var(--z-dropdown);
     gap: 0;
   }
 
+  /* The only thing that closes the mobile menu - see rule 1 above. */
   .site-nav .nav-links[hidden] {
     display: none;
   }
 
   .site-nav .nav-links a {
-    padding: var(--space-sm) var(--space-md);
+    padding: 10px 14px;
     display: block;
     width: 100%;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
+    border-bottom: 0;
   }
 
   .site-nav .nav-links a:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-alt);
+  }
+
+  .site-nav .nav-links a.nav-resume {
+    text-align: center;
+    margin-top: 4px;
   }
 }

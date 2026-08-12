@@ -13,24 +13,35 @@
   scroll-margin-top: calc(var(--nav-height, 60px) + 1rem);
 }
 
-/* Landing-header banner reused from the per-page inline styles, lifted into
-   the layout so we don't depend on them. */
+/* Page header. The saturated green banner is gone: green is an accent in this
+   design, not an area. A hairline and left-aligned type carry the hierarchy
+   instead, which also puts the first line of content much higher on screen. */
 .docs-layout .landing-header {
-  background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-  color: white;
-  padding: 3rem 2rem 2.5rem;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--color-surface-dim);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  padding: 34px 0 28px;
+  text-align: left;
+}
+.docs-layout .landing-header > * {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: 28px;
 }
 .docs-layout .landing-header h1 {
-  font-size: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
-  font-weight: 700;
-  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.15rem);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--color-text-heading);
+  margin: 0;
 }
 .docs-layout .landing-header p {
-  font-size: 1.15rem;
-  opacity: 0.95;
-  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  margin: 8px auto 0;
+  max-width: var(--page-width);
 }
 
 /* Grid container */

@@ -1,0 +1,230 @@
+/**
+ * Project overview ("docs landing") pages.
+ *
+ * Extracted from three near-identical inline <style> blocks in
+ * CpuDocsLanding, graphics/DocsPage and UberDocsLanding - roughly 750 lines of
+ * duplication. Those blocks were also UNSCOPED: they styled bare `.container`
+ * and `.section`, which leaked site-wide for as long as one of these pages was
+ * mounted, and collided with the same class names in global.css and
+ * docs-layout.css.
+ *
+ * Everything here is scoped under .docs-landing, a wrapper class added to each
+ * page's root element, so the leak is closed.
+ */
+
+.docs-landing {
+  background: var(--color-surface-dim);
+  min-height: 100vh;
+}
+
+/* Page header: hairline, left-aligned. The saturated green banner is gone -
+   green is an accent in this design, not an area. */
+.docs-landing .landing-header {
+  background: var(--color-surface-dim);
+  border-bottom: 1px solid var(--color-border);
+  padding: 34px 0 28px;
+  text-align: left;
+}
+
+.docs-landing .landing-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.15rem);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--color-text-heading);
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding-inline: 28px;
+}
+
+.docs-landing .landing-header p {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  max-width: var(--page-width);
+  margin: 8px auto 0;
+  padding-inline: 28px;
+}
+
+.docs-landing .container {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.docs-landing .section {
+  padding-block: 48px 8px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.docs-landing .section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.75rem);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-heading);
+  letter-spacing: -0.012em;
+  margin: 0 0 18px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.docs-landing .section h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-heading);
+  margin: 24px 0 10px;
+}
+
+.docs-landing .section p,
+.docs-landing .section li {
+  color: var(--color-text-light);
+  line-height: 1.7;
+}
+
+.docs-landing .section ul {
+  padding-left: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+/* Document index. Hairlines live on the cards rather than on a container
+   background, so the empty cells in a partly-filled last row stay invisible
+   instead of rendering as a solid block. */
+.docs-landing .doc-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(276px, 1fr));
+  border-top: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
+  margin-top: 6px;
+}
+
+.docs-landing .doc-card {
+  background: var(--color-surface);
+  padding: 20px 22px;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  display: block;
+  transition: background var(--timing-instant) var(--easing-standard);
+}
+
+.docs-landing .doc-card:hover {
+  background: var(--color-surface-alt);
+}
+
+.docs-landing .doc-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-heading);
+  margin: 0 0 5px;
+}
+
+.docs-landing .doc-card:hover h3 {
+  color: var(--color-primary);
+}
+
+.docs-landing .doc-card p {
+  color: var(--color-text-light);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Quick links row */
+.docs-landing .quick-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 26px 0 56px;
+}
+
+.docs-landing .quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--timing-instant) var(--easing-standard),
+              color var(--timing-instant) var(--easing-standard);
+}
+
+.docs-landing .quick-link:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Inline pipeline diagram used by the CPU and Graphics overviews */
+.docs-landing .pipeline-diagram {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 18px 0 8px;
+}
+
+.docs-landing .pipeline-step {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-accent-light);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.docs-landing .pipeline-arrow {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Render gallery (graphics overview only) */
+.docs-landing .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.docs-landing .gallery-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.docs-landing .gallery-item img {
+  width: 100%;
+  display: block;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.docs-landing .caption {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: 8px;
+}
+
+@media (max-width: 680px) {
+  .docs-landing .container,
+  .docs-landing .landing-header h1,
+  .docs-landing .landing-header p {
+    padding-inline: 18px;
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react'
 import Navigation from './Navigation'
+import SiteFooter from './SiteFooter'
 
 function DemoLayout({ wrapperClass = '', title, subtitle, badge, children }) {
   return (
@@ -16,11 +17,9 @@ function DemoLayout({ wrapperClass = '', title, subtitle, badge, children }) {
 
           <main className="demo-main">{children}</main>
 
-          <footer className="demo-footer">
-            <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
-          </footer>
         </div>
       </div>
+      <SiteFooter />
     </div>
   )
 }

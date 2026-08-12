@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import Navigation from '../shared/Navigation'
+import SiteFooter from '../shared/SiteFooter'
 import TableOfContents from './TableOfContents'
 import { getSiblingNav } from '../../lib/docs-nav'
 
@@ -77,9 +78,7 @@ function DocsLayout({
         </main>
       </div>
 
-      <footer className="docs-footer">
-        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

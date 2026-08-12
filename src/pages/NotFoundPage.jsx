@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Navigation from '../components/shared/Navigation'
+import SiteFooter from '../components/shared/SiteFooter'
 
 export default function NotFoundPage() {
   return (
@@ -58,10 +59,7 @@ export default function NotFoundPage() {
         <p>That page doesn't exist (or moved).</p>
         <Link to="/">Back to home</Link>
       </main>
-
-      <footer>
-        <p>&copy; {new Date().getFullYear()} Aaron Diefes. All rights reserved.</p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
