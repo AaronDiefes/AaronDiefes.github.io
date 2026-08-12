@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { installChunkRecovery } from './lib/chunk-recovery'
 import './styles/fonts.css'
 import './styles/design-system.css'
 import './styles/navigation.css'
@@ -22,6 +23,12 @@ import './styles/pipeline-flow.css'
 import './styles/demo-layout.css'
 import './styles/cpu-demo.css'
 import './styles/graphics-demo.css'
+import './styles/app-shell.css'
+
+// Must run before the first lazy chunk can be requested: it listens for a
+// route chunk that 404s after a deploy and reloads once to pick up fresh
+// filenames. See the header comment in chunk-recovery.js.
+installChunkRecovery()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
