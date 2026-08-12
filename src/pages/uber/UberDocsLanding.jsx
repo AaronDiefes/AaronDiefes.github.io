@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { DOCS_NAV } from '../../lib/docs-nav'
+import Navigation from '../../components/shared/Navigation'
 
 function UberDocsLanding() {
   return (
@@ -197,6 +198,8 @@ function UberDocsLanding() {
             }
         }
       `}</style>
+
+      <Navigation />
 
       <header className="landing-header">
         <h1>Uber Algorithmic System</h1>

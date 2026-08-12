@@ -5,6 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aaron Diefes - Portfolio</title>
+    <!--
+      Decoder for the SPA redirect in public/404.html. GitHub Pages has no
+      server-side rewrite, so a deep link arrives here as /?/projects/cpu/demo.
+      Restore the real path before the app mounts so React Router sees it.
+      Must run before /src/main.jsx. See public/404.html for the encoder.
+    -->
+    <script>
+      (function () {
+        var l = window.location
+        if (l.search[1] !== '/') return
+        var decoded = l.search
+          .slice(1)
+          .split('&')
+          .map(function (s) {
+            return s.replace(/~and~/g, '&')
+          })
+          .join('?')
+        window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

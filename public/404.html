@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aaron Diefes - Portfolio</title>
+    <!--
+      GitHub Pages serves this file for any path that has no matching file.
+      Because the site is a single-page app using BrowserRouter, deep links like
+      /projects/cpu/demo would otherwise show GitHub's 404 page.
+
+      This script encodes the requested path into a query string and redirects to
+      the site root, where the decoder in index.html restores the real URL via
+      history.replaceState before React Router mounts. Adapted from
+      rafgraph/spa-github-pages.
+
+      pathSegmentsToKeep is 0 because the site is served from the domain root
+      (aarondiefes.github.io), not from a project subpath.
+    -->
+    <script>
+      (function () {
+        var pathSegmentsToKeep = 0
+        var l = window.location
+        l.replace(
+          l.protocol +
+            '//' +
+            l.hostname +
+            (l.port ? ':' + l.port : '') +
+            l.pathname
+              .split('/')
+              .slice(0, 1 + pathSegmentsToKeep)
+              .join('/') +
+            '/?/' +
+            l.pathname
+              .slice(1)
+              .split('/')
+              .slice(pathSegmentsToKeep)
+              .join('/')
+              .replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1) : '') +
+            l.hash
+        )
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>

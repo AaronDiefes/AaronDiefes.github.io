@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { DOCS_NAV } from '../../lib/docs-nav'
+import Navigation from '../../components/shared/Navigation'
 
 function DocsPage() {
   return (
@@ -284,6 +285,8 @@ function DocsPage() {
             }
         }
       `}</style>
+
+      <Navigation />
 
       <header className="landing-header">
         <h1>Graphics Engine Documentation</h1>
