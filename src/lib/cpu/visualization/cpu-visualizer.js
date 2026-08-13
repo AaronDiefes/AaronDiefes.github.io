@@ -33,16 +33,13 @@
 
       // The block diagram is rendered by the React PipelineDiagram component
       // mounted separately (CPUSimulatorPage.jsx). The vanilla coordinator
-      // only owns the caption + register/memory/instruction views now.
+      // only owns the register and memory views now.
       this.blockDiagramView = null;
       this.registerView = new RegisterView(
         this.container.querySelector('[data-register-view]')
       );
       this.memoryView = new MemoryView(
         this.container.querySelector('[data-memory-view]')
-      );
-      this.instructionView = new InstructionView(
-        this.container.querySelector('[data-instruction-view]')
       );
 
       // Bind and register event listener for AnimationEngine events
@@ -55,10 +52,16 @@
      * @private
      */
     _createDOM() {
+      /*
+       * The narration strip and the "Current Instruction" panel used to live
+       * here. Both assumed a single active stage - the caption described one
+       * stage per cycle and the instruction panel named one "current"
+       * instruction - which stopped being meaningful once five instructions are
+       * in flight at once. They are replaced by <PipelineNarration>, which
+       * accounts for every stage and for the hazard events. Registers and Data
+       * Memory stay here: they are frame-agnostic and work unchanged.
+       */
       this.container.innerHTML = `
-        <div class="cpu-caption" data-caption>
-          <em>Press Play or Step to begin execution.</em>
-        </div>
         <section class="info-section">
           <div class="info-panels">
             <section class="registers-section">
@@ -67,9 +70,6 @@
             </section>
             <section class="memory-section">
               <div data-memory-view></div>
-            </section>
-            <section class="instruction-detail-section">
-              <div data-instruction-view></div>
             </section>
           </div>
         </section>
@@ -95,8 +95,6 @@
     render(state) {
       this.registerView.render(state);
       this.memoryView.render(state);
-      this.instructionView.render(state);
-      this._renderCaption(state);
     }
 
     /**

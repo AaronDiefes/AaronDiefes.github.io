@@ -1,0 +1,152 @@
+/**
+ * Per-cycle narration.
+ *
+ * Same contrast approach as the timeline: the stage badge takes the
+ * theme-aware --stage-*-tint as its ground with --color-text as its ink, so
+ * both invert together and legibility holds in either theme by construction.
+ * The saturated --stage-*-color is used only where contrast does not apply.
+ */
+
+.pipeline-narration {
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.narr-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.narr-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-heading);
+}
+
+.narr-cycle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.narr-empty {
+  margin: 0;
+  padding: 1.25rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.narr-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.narr-stage {
+  display: grid;
+  grid-template-columns: 3rem 5.5rem 1fr;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.42rem 1rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.narr-stage + .narr-stage {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.narr-stage.is-idle {
+  color: var(--color-text-muted);
+}
+
+.narr-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.14rem 0;
+  border-radius: 3px;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text);
+}
+
+.narr-stage.stage-if  .narr-badge { background: var(--stage-if-tint);  border-bottom-color: var(--stage-if-color); }
+.narr-stage.stage-id  .narr-badge { background: var(--stage-id-tint);  border-bottom-color: var(--stage-id-color); }
+.narr-stage.stage-ex  .narr-badge { background: var(--stage-ex-tint);  border-bottom-color: var(--stage-ex-color); }
+.narr-stage.stage-mem .narr-badge { background: var(--stage-mem-tint); border-bottom-color: var(--stage-mem-color); }
+.narr-stage.stage-wb  .narr-badge { background: var(--stage-wb-tint);  border-bottom-color: var(--stage-wb-color); }
+
+.narr-stage.is-idle .narr-badge { opacity: 0.45; }
+
+.narr-stage-label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.narr-text code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--color-surface-alt);
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  color: var(--color-code-inline);
+}
+
+/* ---- Hazard events ------------------------------------------------------ */
+
+.narr-events {
+  list-style: none;
+  margin: 0;
+  padding: 0.6rem 1rem 0.8rem;
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.narr-event {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm, 4px);
+  border-left: 3px solid transparent;
+}
+
+.narr-event.is-stall {
+  background: var(--status-warn-bg);
+  color: var(--status-warn-fg);
+  border-left-color: var(--status-warn-border);
+}
+
+.narr-event.is-flush {
+  background: var(--status-err-bg);
+  color: var(--status-err-fg);
+  border-left-color: var(--status-err-border);
+}
+
+.narr-event.is-forward {
+  background: var(--status-info-bg);
+  color: var(--status-info-fg);
+  border-left-color: var(--status-info-border);
+}
+
+@media (max-width: 768px) {
+  .narr-stage {
+    grid-template-columns: 2.6rem 1fr;
+    row-gap: 0.2rem;
+  }
+  .narr-stage-label { grid-column: 2; }
+  .narr-text { grid-column: 2; }
+}

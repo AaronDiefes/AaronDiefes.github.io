@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import DemoLayout from '../../components/shared/DemoLayout'
 import PipelineDiagram from '../../components/cpu/PipelineDiagram'
 import PipelineTimeline from '../../components/cpu/PipelineTimeline'
+import PipelineNarration from '../../components/cpu/PipelineNarration'
 
 function CPUSimulatorPage() {
   /* The whole simulated run, captured when a program loads. The timeline needs
@@ -189,6 +190,8 @@ function CPUSimulatorPage() {
           {/* Sits above the datapath on purpose: the timeline is the index -
               it tells you where you are before you look at where data flows. */}
           <PipelineTimeline sequence={sequence} />
+          {/* When (timeline) -> why (narration) -> where (datapath). */}
+          <PipelineNarration />
           <PipelineDiagram />
           <div id="cpu-viz-container" ref={cpuVizContainerRef} style={{ marginTop: '2rem' }}></div>
         </div>
