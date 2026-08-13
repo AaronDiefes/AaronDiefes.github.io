@@ -362,6 +362,7 @@ const initialNodes = [
     label: 'PC', subtitle: 'reg_32bit · stallable', stage: 'if', width: 240,
     inputs: [
       { id: 'writeIn', label: 'writeIn' },
+      { id: 'writeEnable', label: 'writeEnable = ~stall' },
     ],
     outputs: [{ id: 'readOut', label: 'PC_Out' }],
   } },
@@ -494,7 +495,6 @@ const initialNodes = [
       { id: 'B',     label: 'data_operandB' },
       { id: 'mult',  label: 'ctrl_MULT' },
       { id: 'div',   label: 'ctrl_DIV' },
-      { id: 'clock', label: 'clock' },
     ],
     outputs: [
       { id: 'result',    label: 'data_result' },
@@ -522,6 +522,8 @@ const initialNodes = [
       { id: 'imm',     label: 'signext_imm' },
       { id: 'opa',     label: 'data_operandA' },
       { id: 'sel_ins', label: 'ins (opcode)' },
+      { id: 'ne',      label: 'not_equal' },
+      { id: 'lt',      label: 'less_than' },
     ],
     outputs: [
       { id: 'target',      label: 'branch_jump_target' },
@@ -685,6 +687,20 @@ const initialEdges = [
   { id: 'mw-wmfwd', type: 'feedback', source: 'MEMWB', sourceHandle: 'data', target: 'WMFWD', targetHandle: 'in1', className: 'rf-edge-forward', data: { routeY: 65 }, label: 'WM bypass' },
 
   // Branch target + take_branch back to PC Source Mux — route via TOP
+  // ---------- Status wires: the branch decision and the exception path ------
+  // These ports were drawn but unwired. They carry real signals: processor.v
+  // derives do_bne from not_equal and do_blt from less_than, and an ALU
+  // overflow is turned into a fake setx that writes $r30. Without them the
+  // branch loop was drawn with no visible cause - BRTGT fed PC_MUX, but
+  // nothing showed what made take_branch true.
+  { id: 'alu-ne-brtgt', source: 'ALU', sourceHandle: 'isNotEqual', target: 'BRTGT', targetHandle: 'ne', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'alu-lt-brtgt', source: 'ALU', sourceHandle: 'isLessThan', target: 'BRTGT', targetHandle: 'lt', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'alu-ovf-xm',   source: 'ALU', sourceHandle: 'overflow',   target: 'XMDATA', targetHandle: 'exc', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
+  { id: 'md-exc-xm',    source: 'MULTDIV', sourceHandle: 'exception', target: 'XMDATA', targetHandle: 'exc', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
+  // jal links PC+1 into $r31, and that value rides the ID/EX latch.
+  { id: 'idex-jal-xm',  source: 'IDEX', sourceHandle: 'pc', target: 'XMDATA', targetHandle: 'jal', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+
+  { id: 'md-stall-pc', type: 'feedback', source: 'MULTDIV', sourceHandle: 'rdy', target: 'PC', targetHandle: 'writeEnable', className: 'rf-edge-forward', data: { routeY: 965 }, label: 'multdiv stall -> freeze PC' },
   { id: 'brtgt-pcmux', type: 'feedback', source: 'BRTGT', sourceHandle: 'target',      target: 'PC_MUX', targetHandle: 'in1', className: 'rf-edge-feedback', data: { routeY: 50 }, label: 'branch/jump target' },
   { id: 'brtgt-sel',   type: 'feedback', source: 'BRTGT', sourceHandle: 'take_branch', target: 'PC_MUX', targetHandle: 'sel', className: 'rf-edge-feedback', data: { routeY: 80 } },
 
@@ -693,6 +709,42 @@ const initialEdges = [
   { id: 'wb-rf-wen',   type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeEnable', target: 'REGFILE', targetHandle: 'writeEnable', className: 'rf-edge-feedback', data: { routeY: 35 } },
   { id: 'wb-rf-wdata', type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeData',   target: 'REGFILE', targetHandle: 'writeData',   className: 'rf-edge-feedback', data: { routeY: 45 } },
 ]
+
+
+/**
+ * Control signals, shown only when the visitor asks for them.
+ *
+ * They are kept off the default view because the datapath is the story - where
+ * data flows - and drawing nine more dashed wires across it obscures exactly
+ * the thing a first look should see. But they are real, and leaving the ports
+ * dangling was its own kind of lie.
+ *
+ * Note there is no Control Unit box to draw them from, and that is faithful
+ * rather than lazy: processor.v has no such module. Decode is inline
+ * combinational logic on the instruction bits, so each control wire is sourced
+ * from the latch that actually carries those bits.
+ *
+ * The three forwarding selects are the honest exception. They are not decoded
+ * from an instruction at all - they come from comparing destination registers
+ * across latches - so they are drawn from the latch holding the candidate
+ * value, labelled as the comparison they really are.
+ */
+const controlEdges = [
+  { id: 'ctrl-aluop',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'op',    label: 'ALUopcode' },
+  { id: 'ctrl-shamt',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'shamt', label: 'shiftamt' },
+  { id: 'ctrl-alusrc',  source: 'IDEX', sourceHandle: 'ins', target: 'ALUSRC',  targetHandle: 'sel',   label: 'is_i_type' },
+  { id: 'ctrl-mult',    source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'mult',  label: 'is_mul' },
+  { id: 'ctrl-div',     source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'div',   label: 'is_div' },
+  { id: 'ctrl-wren',    source: 'EXMEM', sourceHandle: 'ins', target: 'DMEM',   targetHandle: 'wren',  label: 'is_sw' },
+  { id: 'ctrl-fwda',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDA',   targetHandle: 'sel',   label: 'rd match (MX/WX)' },
+  { id: 'ctrl-fwdb',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDB',   targetHandle: 'sel',   label: 'rd match (MX/WX)' },
+  { id: 'ctrl-wmfwd',   source: 'MEMWB', sourceHandle: 'ins', target: 'WMFWD',  targetHandle: 'sel',   label: 'rd match (WM)' },
+].map((e) => ({
+  ...e,
+  type: 'smoothstep',
+  className: 'rf-edge-control',
+  labelStyle: { fontSize: 9 },
+}))
 
 // ---------- Component -----------------------------------------------------
 
@@ -750,6 +802,7 @@ function PipelineDiagramInner() {
    * at close to 1:1 and the Verilog signal names finally read.
    */
   const [expanded, setExpanded] = useState(false)
+  const [showControl, setShowControl] = useState(false)
   const wrapperRef = useRef(null)
   const { fitBounds, fitView } = useReactFlow()
 
@@ -872,13 +925,14 @@ function PipelineDiagramInner() {
   }, [occupied, state])
 
   const edges = useMemo(() => {
-    return initialEdges.map((e) => {
+    const base = showControl ? [...initialEdges, ...controlEdges] : initialEdges
+    return base.map((e) => {
       if (e.data?.path && occupied[e.data.path]) {
         return { ...e, animated: true }
       }
       return e
     })
-  }, [occupied])
+  }, [occupied, showControl])
 
   return (
     <section className={`rf-cpu-panel${expanded ? ' is-expanded' : ''}`} aria-label="Datapath">
@@ -896,6 +950,15 @@ function PipelineDiagramInner() {
               {f === 'ALL' ? 'Whole datapath' : f}
             </button>
           ))}
+          <button
+            type="button"
+            className={`rf-focus-btn${showControl ? ' is-on' : ''}`}
+            aria-pressed={showControl}
+            onClick={() => setShowControl((v) => !v)}
+            title="Show the control signals decoded from each instruction"
+          >
+            Control
+          </button>
           <button
             type="button"
             className="rf-focus-btn rf-expand-btn"
