@@ -250,28 +250,55 @@ function PipelineRegisterNode({ data }) {
         <div className="rf-pipereg-label">{data.label}</div>
         <div className="rf-pipereg-instr">{data.instruction || '—'}</div>
       </div>
-      <div className="rf-pipereg-ports">
-        {inputs.map((p, i) => (
-          <div
-            key={`in-${p.id}`}
-            className="rf-pipereg-port rf-pipereg-port-in"
-            style={{ top: portY(inStep, i) - 7 }}
-          >
-            <Handle type="target" position={Position.Left} id={p.id} style={{ top: portY(inStep, i) }} />
-            <span className="rf-pipereg-port-label">{p.label}</span>
-          </div>
-        ))}
-        {outputs.map((p, i) => (
-          <div
-            key={`out-${p.id}`}
-            className="rf-pipereg-port rf-pipereg-port-out"
-            style={{ top: portY(outStep, i) - 7 }}
-          >
-            <span className="rf-pipereg-port-label">{p.label}</span>
-            <Handle type="source" position={Position.Right} id={p.id} style={{ top: portY(outStep, i) }} />
-          </div>
-        ))}
-      </div>
+      {/*
+        Handles and labels are SIBLINGS, both positioned absolutely against the
+        node itself. They used to be nested: an absolutely-positioned wrapper
+        holding a Handle that ALSO carried its own `top`, inside a
+        position:relative ports area, with a portY that already included the
+        header height. Those offsets compounded, so handles landed at roughly
+        double their intended y - on IF/ID the `ins` handle sat 296px BELOW the
+        bottom of the register. Every cross-stage wire therefore terminated in
+        empty canvas, which is what "the wires are not connected" looked like.
+
+        One portY formula drives both the handle and its label, so they cannot
+        drift apart again.
+      */}
+      {inputs.map((p, i) => (
+        <span
+          key={`in-lbl-${p.id}`}
+          className="rf-pipereg-port-label rf-pipereg-port-label-in"
+          style={{ top: portY(inStep, i) - 6 }}
+        >
+          {p.label}
+        </span>
+      ))}
+      {outputs.map((p, i) => (
+        <span
+          key={`out-lbl-${p.id}`}
+          className="rf-pipereg-port-label rf-pipereg-port-label-out"
+          style={{ top: portY(outStep, i) - 6 }}
+        >
+          {p.label}
+        </span>
+      ))}
+      {inputs.map((p, i) => (
+        <Handle
+          key={`in-h-${p.id}`}
+          type="target"
+          position={Position.Left}
+          id={p.id}
+          style={{ top: portY(inStep, i) }}
+        />
+      ))}
+      {outputs.map((p, i) => (
+        <Handle
+          key={`out-h-${p.id}`}
+          type="source"
+          position={Position.Right}
+          id={p.id}
+          style={{ top: portY(outStep, i) }}
+        />
+      ))}
     </div>
   )
 }
@@ -337,12 +364,19 @@ const PIPE_TOP = 165
 const PIPE_WIDTH = 130
 
 const initialNodes = [
+  /*
+   * zIndex -1 puts the bands BELOW the edges. React Flow's viewport layers in a
+   * fixed order - edges, then edgelabel-renderer, then nodes - so nodes paint
+   * last. These bands are opaque rectangles up to 1080x810, which meant every
+   * wire routed inside a stage was drawn and then covered by its own band. Only
+   * the wires in the channels between bands were ever visible.
+   */
   // ---- Stage band backgrounds (wider; channels between them are 180 px) ----
-  { id: 'band-if',  type: 'band', position: { x: 0,    y: BAND_TOP }, data: { stage: 'if',  name: 'INSTRUCTION FETCH',  short: 'IF',  width: 480,  height: BAND_HEIGHT } },
-  { id: 'band-id',  type: 'band', position: { x: 660,  y: BAND_TOP }, data: { stage: 'id',  name: 'INSTRUCTION DECODE', short: 'ID',  width: 380,  height: BAND_HEIGHT } },
-  { id: 'band-ex',  type: 'band', position: { x: 1220, y: BAND_TOP }, data: { stage: 'ex',  name: 'EXECUTE',            short: 'EX',  width: 1080, height: BAND_HEIGHT } },
-  { id: 'band-mem', type: 'band', position: { x: 2480, y: BAND_TOP }, data: { stage: 'mem', name: 'MEMORY ACCESS',      short: 'MEM', width: 320,  height: BAND_HEIGHT } },
-  { id: 'band-wb',  type: 'band', position: { x: 2980, y: BAND_TOP }, data: { stage: 'wb',  name: 'WRITE BACK',         short: 'WB',  width: 320,  height: BAND_HEIGHT } },
+  { id: 'band-if',  type: 'band', zIndex: -1, position: { x: 0,    y: BAND_TOP }, data: { stage: 'if',  name: 'INSTRUCTION FETCH',  short: 'IF',  width: 480,  height: BAND_HEIGHT } },
+  { id: 'band-id',  type: 'band', zIndex: -1, position: { x: 660,  y: BAND_TOP }, data: { stage: 'id',  name: 'INSTRUCTION DECODE', short: 'ID',  width: 380,  height: BAND_HEIGHT } },
+  { id: 'band-ex',  type: 'band', zIndex: -1, position: { x: 1220, y: BAND_TOP }, data: { stage: 'ex',  name: 'EXECUTE',            short: 'EX',  width: 1080, height: BAND_HEIGHT } },
+  { id: 'band-mem', type: 'band', zIndex: -1, position: { x: 2480, y: BAND_TOP }, data: { stage: 'mem', name: 'MEMORY ACCESS',      short: 'MEM', width: 320,  height: BAND_HEIGHT } },
+  { id: 'band-wb',  type: 'band', zIndex: -1, position: { x: 2980, y: BAND_TOP }, data: { stage: 'wb',  name: 'WRITE BACK',         short: 'WB',  width: 320,  height: BAND_HEIGHT } },
 
   // ==== IF stage (band 0–480) ====
   // PC_MUX uses the classic trapezoidal MUX symbol; selects between PC+1
@@ -447,7 +481,7 @@ const initialNodes = [
     ],
     outputs: [{ id: 'out', label: 'forwarded_A' }],
   } },
-  { id: 'FWDB', type: 'ic', position: { x: 1260, y: 410 }, data: {
+  { id: 'FWDB', type: 'ic', position: { x: 1260, y: 430 }, data: {
     label: 'Fwd Mux B (3:1)', subtitle: 'forwarded_B', variant: 'mux', stage: 'ex', width: 280,
     inputs: [
       { id: 'sel',    label: 'sel = mx/wx' },
@@ -700,7 +734,7 @@ const initialEdges = [
   // jal links PC+1 into $r31, and that value rides the ID/EX latch.
   { id: 'idex-jal-xm',  source: 'IDEX', sourceHandle: 'pc', target: 'XMDATA', targetHandle: 'jal', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
 
-  { id: 'md-stall-pc', type: 'feedback', source: 'MULTDIV', sourceHandle: 'rdy', target: 'PC', targetHandle: 'writeEnable', className: 'rf-edge-forward', data: { routeY: 965 }, label: 'multdiv stall -> freeze PC' },
+  { id: 'md-stall-pc', type: 'feedback', source: 'MULTDIV', sourceHandle: 'rdy', target: 'PC', targetHandle: 'writeEnable', className: 'rf-edge-forward', data: { routeY: 935 }, label: 'multdiv stall -> freeze PC' },
   { id: 'brtgt-pcmux', type: 'feedback', source: 'BRTGT', sourceHandle: 'target',      target: 'PC_MUX', targetHandle: 'in1', className: 'rf-edge-feedback', data: { routeY: 50 }, label: 'branch/jump target' },
   { id: 'brtgt-sel',   type: 'feedback', source: 'BRTGT', sourceHandle: 'take_branch', target: 'PC_MUX', targetHandle: 'sel', className: 'rf-edge-feedback', data: { routeY: 80 } },
 

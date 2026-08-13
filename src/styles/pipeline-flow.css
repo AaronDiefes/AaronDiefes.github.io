@@ -275,6 +275,9 @@
 /* ---------- Pipeline register ---------- */
 
 .rf-pipereg {
+  /* Positioning context for the port labels and handles, which are absolutely
+     positioned siblings against this box - see PipelineRegisterNode. */
+  position: relative;
   background: var(--color-pipeline-fill);
   color: var(--color-surface);
   border: 1.5px solid var(--color-pipeline-stroke);
@@ -311,36 +314,17 @@
   line-height: 1.2;
 }
 
-.rf-pipereg-ports {
-  position: relative;
-  flex: 1;
-  min-height: 30px;
-}
-
-.rf-pipereg-port {
+.rf-pipereg-port-label {
   position: absolute;
-  display: flex;
-  align-items: center;
+  white-space: nowrap;
   font-size: 8.5px;
   line-height: 1;
-}
-
-.rf-pipereg-port-in {
-  left: 4px;
-  justify-content: flex-start;
-}
-
-.rf-pipereg-port-out {
-  right: 4px;
-  justify-content: flex-end;
-}
-
-.rf-pipereg-port-label {
-  white-space: nowrap;
-  background: var(--color-pipeline-fill);
   padding: 1px 2px;
   font-family: var(--font-mono);
 }
+
+.rf-pipereg-port-label-in  { left: 5px; }
+.rf-pipereg-port-label-out { right: 5px; }
 
 .rf-pipereg .react-flow__handle {
   background: var(--color-pipeline-stroke);
