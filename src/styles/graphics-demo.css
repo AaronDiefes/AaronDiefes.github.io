@@ -42,7 +42,7 @@
   width: 100%;
   padding: 0.75rem;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-surface);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -57,7 +57,11 @@
 }
 
 .demo-layout-wrapper.graphics-demo .controls button:focus-visible {
-  outline: 2px solid white;
+  /* outline-offset puts this ring OUTSIDE the button, on the .controls panel -
+     not on the button's green fill. A white ring was therefore invisible
+     against the light panel in light mode. --color-text-heading contrasts with
+     the panel in both themes. */
+  outline: 2px solid var(--color-text-heading);
   outline-offset: 2px;
 }
 
@@ -86,6 +90,10 @@
 }
 
 .demo-layout-wrapper.graphics-demo #canvas {
+  /* Stays literally white in both themes, on purpose - this is the drawing
+     surface the C++ engine renders onto, not page chrome. It reads as a sheet
+     of paper on a dark page, which is what a canvas should look like, and
+     tokenizing it would tint whatever the engine draws. */
   background: white;
   border: 2px solid var(--color-border-light);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -127,7 +135,7 @@
 }
 
 .demo-layout-wrapper.graphics-demo .demo-description {
-  background: white;
+  background: var(--color-surface);
   padding: 1rem;
   border-radius: 6px;
   border-left: 4px solid var(--color-primary);
@@ -157,7 +165,7 @@
 }
 
 .demo-layout-wrapper.graphics-demo .param-group {
-  background: white;
+  background: var(--color-surface);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 6px;

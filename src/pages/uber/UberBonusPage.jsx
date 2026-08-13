@@ -48,7 +48,7 @@ function UberBonusPage() {
         }
 
         .docs-layout .docs-content .metric-card {
-          background: white;
+          background: var(--color-surface);
           padding: 1rem;
           border-radius: 6px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -91,7 +91,7 @@ function UberBonusPage() {
           width: 100%;
           border-collapse: collapse;
           margin: 2rem 0;
-          background: white;
+          background: var(--color-surface);
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -99,7 +99,7 @@ function UberBonusPage() {
 
         .docs-layout .docs-content .comparison-table th {
           background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-          color: white;
+          color: var(--color-surface);
           padding: 1rem;
           text-align: left;
           font-weight: 600;
@@ -644,7 +644,7 @@ function UberBonusPage() {
               <td>13.1 s</td>
               <td>10 candidates + cache</td>
             </tr>
-            <tr style={{ background: '#f0f8ff' }}>
+            <tr style={{ background: 'var(--status-info-bg)' }}>
               <td><strong>T5: KD-Tree + Pruning</strong></td>
               <td>669.95</td>
               <td>35.70</td>
@@ -653,7 +653,7 @@ function UberBonusPage() {
             </tr>
           </tbody>
         </table>
-        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>
+        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--color-text-light)' }}>
           * T5 included for comparison as the baseline pruning algorithm
         </p>
 
@@ -666,22 +666,22 @@ function UberBonusPage() {
         </ul>
 
         <h3>Why Are B1/B2/B4 So Similar? Understanding the Results</h3>
-        <p style={{ background: '#fff3cd', padding: '1.5rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #ffc107' }}>
+        <p style={{ background: 'var(--status-warn-bg)', padding: '1.5rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid var(--status-warn-border)' }}>
           <strong>The Surprising Result:</strong> B1, B2, and B4 produce nearly identical metrics (570-577 avg D1, 141-143 avg D2) despite being conceptually different algorithms. This reveals important insights about when algorithmic variations matter in practice.
         </p>
 
         <h4>Why Each Algorithm's Unique Feature Has Minimal Impact</h4>
 
         <div style={{ display: 'grid', gap: '1.5rem', marginTop: '1.5rem' }}>
-          <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <h4 style={{ color: '#2E7D32', marginTop: 0 }}>B1: Manhattan vs Euclidean Heuristic</h4>
+          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--color-border-light)' }}>
+            <h4 style={{ color: 'var(--color-primary)', marginTop: 0 }}>B1: Manhattan vs Euclidean Heuristic</h4>
             <p style={{ marginBottom: '0.5rem' }}><strong>Theory:</strong> Manhattan distance better approximates grid-based city routing.</p>
             <p style={{ marginBottom: '0.5rem' }}><strong>Reality:</strong> The heuristic only affects A* search node expansion order, not the final shortest path. Both Manhattan and Euclidean heuristics find the same optimal path.</p>
-            <p style={{ marginBottom: 0, fontStyle: 'italic', color: '#666' }}><strong>Impact:</strong> Identical driver selections → identical D1/D2 metrics</p>
+            <p style={{ marginBottom: 0, fontStyle: 'italic', color: 'var(--color-text-light)' }}><strong>Impact:</strong> Identical driver selections → identical D1/D2 metrics</p>
           </div>
 
-          <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <h4 style={{ color: '#2E7D32', marginTop: 0 }}>B2: Workload Balancing Penalty</h4>
+          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--color-border-light)' }}>
+            <h4 style={{ color: 'var(--color-primary)', marginTop: 0 }}>B2: Workload Balancing Penalty</h4>
             <p style={{ marginBottom: '0.5rem' }}><strong>Theory:</strong> Exponential penalty prevents driver burnout by favoring underutilized drivers.</p>
             <p style={{ marginBottom: '0.5rem' }}><strong>Reality:</strong> With 4,000 drivers and 10,000 passengers, drivers average only 2.5 rides each. The penalty formula <code>1.5 ** (numRides / 10 + 1)</code> produces:</p>
             <ul style={{ marginLeft: '1.5rem', marginBottom: '0.5rem' }}>
@@ -689,21 +689,21 @@ function UberBonusPage() {
               <li>2 rides: 1.67× penalty</li>
               <li>5 rides: 1.84× penalty</li>
             </ul>
-            <p style={{ marginBottom: 0, fontStyle: 'italic', color: '#666' }}><strong>Impact:</strong> Only 23% penalty spread across the range is too weak to significantly reorder driver selections. Most drivers remain competitive despite ride count differences.</p>
+            <p style={{ marginBottom: 0, fontStyle: 'italic', color: 'var(--color-text-light)' }}><strong>Impact:</strong> Only 23% penalty spread across the range is too weak to significantly reorder driver selections. Most drivers remain competitive despite ride count differences.</p>
           </div>
 
-          <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <h4 style={{ color: '#2E7D32', marginTop: 0 }}>B4: Path Caching Strategy</h4>
+          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--color-border-light)' }}>
+            <h4 style={{ color: 'var(--color-primary)', marginTop: 0 }}>B4: Path Caching Strategy</h4>
             <p style={{ marginBottom: '0.5rem' }}><strong>Theory:</strong> Cache repeated pathfinding queries for 3-5× speedup.</p>
             <p style={{ marginBottom: '0.5rem' }}><strong>Reality:</strong> Simulation output shows majority of "pickup time not matched" messages, indicating low cache hit rate. With 10,000 passengers spread across Manhattan and 600 road network nodes, there are few repeated (driver_node, passenger_node) pairs.</p>
-            <p style={{ marginBottom: 0, fontStyle: 'italic', color: '#666' }}><strong>Impact:</strong> Cache improves execution speed but doesn't change which drivers are selected or final D1/D2 metrics.</p>
+            <p style={{ marginBottom: 0, fontStyle: 'italic', color: 'var(--color-text-light)' }}><strong>Impact:</strong> Cache improves execution speed but doesn't change which drivers are selected or final D1/D2 metrics.</p>
           </div>
 
-          <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', border: '1px solid #d4edda', borderLeft: '4px solid #28a745' }}>
-            <h4 style={{ color: '#28a745', marginTop: 0 }}>B3: Traffic-Aware Routing (The Exception)</h4>
+          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--status-ok-border)', borderLeft: '4px solid var(--status-ok-border)' }}>
+            <h4 style={{ color: 'var(--status-ok-fg)', marginTop: 0 }}>B3: Traffic-Aware Routing (The Exception)</h4>
             <p style={{ marginBottom: '0.5rem' }}><strong>Theory:</strong> Dynamic traffic modeling for rush hour optimization.</p>
             <p style={{ marginBottom: '0.5rem' }}><strong>Reality:</strong> B3 actually <em>does</em> show meaningful differences! Uses <code>get_time_with_traffic()</code> which multiplies edge costs by accumulated traffic counts throughout the simulation.</p>
-            <p style={{ marginBottom: 0, fontStyle: 'italic', color: '#666' }}><strong>Impact:</strong> 9% worse D1 (621 vs 571) and 35% worse D2 (93 vs 141) because later passengers experience traffic congestion from earlier rides. This demonstrates that B3's traffic modeling is actually working - it's just revealing that accumulated traffic degrades performance!</p>
+            <p style={{ marginBottom: 0, fontStyle: 'italic', color: 'var(--color-text-light)' }}><strong>Impact:</strong> 9% worse D1 (621 vs 571) and 35% worse D2 (93 vs 141) because later passengers experience traffic congestion from earlier rides. This demonstrates that B3's traffic modeling is actually working - it's just revealing that accumulated traffic degrades performance!</p>
           </div>
         </div>
 
@@ -733,7 +733,7 @@ function UberBonusPage() {
         </ul>
 
         <h4 style={{ marginTop: '2rem' }}>The Algorithm Design Lesson</h4>
-        <div style={{ background: '#e7f3ff', padding: '1.5rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #2196F3' }}>
+        <div style={{ background: 'var(--status-info-bg)', padding: '1.5rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid var(--status-info-border)' }}>
           <p style={{ marginBottom: '0.5rem' }}><strong>Theory vs. Practice:</strong> These results demonstrate an important principle in algorithm design: <em>algorithmic improvements only matter when the dataset characteristics amplify their effects</em>.</p>
           <p style={{ marginBottom: 0 }}>
             Workload balancing, caching, and heuristic variations are theoretically sound optimizations, but in this uniformly-distributed, moderate-scale dataset, the <strong>dominant factor is simply finding nearby drivers</strong>. The subtle refinements get "washed out" by the fact that all algorithms evaluate the same candidate pool in similar order. Only B3's traffic modeling - which fundamentally changes edge costs throughout the simulation - produces measurably different behavior.

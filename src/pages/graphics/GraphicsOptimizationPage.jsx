@@ -75,7 +75,7 @@ function GraphicsOptimizationPage() {
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.9rem;
-            color: var(--color-code-string);
+            color: var(--color-code-inline);
         }
 
         .docs-layout .docs-content .code-block {
@@ -115,7 +115,7 @@ function GraphicsOptimizationPage() {
 
         .docs-layout .docs-content .data-table thead {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
         }
 
         .docs-layout .docs-content .data-table th {

@@ -34,7 +34,7 @@ export default function NotFoundPage() {
           display: inline-block;
           padding: 0.75rem 1.5rem;
           background: var(--color-primary);
-          color: white;
+          color: var(--color-surface);
           text-decoration: none;
           border-radius: 6px;
           font-weight: 600;

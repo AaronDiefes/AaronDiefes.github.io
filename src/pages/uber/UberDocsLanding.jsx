@@ -40,7 +40,7 @@ function UberDocsLanding() {
             The project implements and analyzes <strong>nine distinct matching algorithms</strong>, each building on insights from previous iterations:
           </p>
           <p style={{ marginTop: '1rem', marginBottom: '0.5rem' }}><strong>Core Algorithm Progression (T1-T5):</strong></p>
-          <ul style={{ lineHeight: 1.8, color: '#555', marginBottom: '1.5rem' }}>
+          <ul style={{ lineHeight: 1.8, color: 'var(--color-text-light)', marginBottom: '1.5rem' }}>
             <li><strong>T1: Brute Force</strong> - Exhaustive driver evaluation for each passenger</li>
             <li><strong>T2: Sorted Distance</strong> - Pre-sorting with early termination optimization</li>
             <li><strong>T3: Grid-Based Partitioning</strong> - Spatial grid cells for localized search</li>
@@ -48,7 +48,7 @@ function UberDocsLanding() {
             <li><strong>T5: KD-Tree + Road Network</strong> - Spatial indexing with Dijkstra pathfinding</li>
           </ul>
           <p style={{ marginBottom: '0.5rem' }}><strong>Bonus Optimizations (B1-B4):</strong></p>
-          <ul style={{ lineHeight: 1.8, color: '#555' }}>
+          <ul style={{ lineHeight: 1.8, color: 'var(--color-text-light)' }}>
             <li><strong>B1: Manhattan Routing</strong> - Grid-optimized distance metric for urban areas</li>
             <li><strong>B2: Workload Balancing</strong> - Exponential penalty for driver fairness</li>
             <li><strong>B3: Traffic-Aware Routing</strong> - Dynamic congestion modeling and adaptation</li>

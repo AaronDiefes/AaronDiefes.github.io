@@ -390,3 +390,27 @@
   fill: var(--color-text-muted);
   font-size: 10px;
 }
+
+/* ---------------------------------------------------------------------------
+ * React Flow's own zoom / fit controls.
+ *
+ * These ship with a hardcoded white button face and dark icons, so on the dark
+ * theme they render as three bright white squares floating over a near-black
+ * diagram. They stay legible either way - this is purely so they belong to the
+ * page. Scoped to .rf-cpu-wrapper so no other React Flow instance is affected.
+ * ------------------------------------------------------------------------- */
+.rf-cpu-wrapper .react-flow__controls-button {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.rf-cpu-wrapper .react-flow__controls-button:hover {
+  background: var(--color-surface-alt);
+}
+
+/* The icons are inline SVG with their own fill; currentColor makes them track
+   the button's colour instead of staying near-black on a dark face. */
+.rf-cpu-wrapper .react-flow__controls-button svg {
+  fill: currentColor;
+}

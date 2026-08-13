@@ -78,6 +78,11 @@
   padding: 10px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-light);
+  /* Explicit, because .btn is worn by both <a> and <button>. Without it a
+     <button> picks up the UA `buttonface` fill - grey, which both breaks the
+     outline treatment the other buttons have and drops the label to 2.4:1 in
+     dark mode. */
+  background: transparent;
   color: var(--color-text);
   text-decoration: none;
   transition: border-color var(--timing-instant) var(--easing-standard),
@@ -153,7 +158,11 @@
   font-weight: var(--weight-medium);
 }
 .hero-proof-sep {
-  color: var(--color-border-light);
+  /* Was --color-border-light, a token meant for hairlines: ~1.4:1 on white and
+     1.63:1 on the dark ground, so the separators between the proof points were
+     effectively invisible in both themes. Muted keeps them quieter than the
+     text they divide while actually rendering. */
+  color: var(--color-text-muted);
 }
 
 /* ---------- project cards --------------------------------------------- */

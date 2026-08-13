@@ -44,7 +44,7 @@ function CpuPipelinePage() {
             min-width: 100px;
             text-align: center;
             padding: 1rem;
-            background: white;
+            background: var(--color-surface);
             border-radius: 8px;
             border: 2px solid var(--color-primary);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -74,7 +74,7 @@ function CpuPipelinePage() {
         }
         .docs-layout .docs-content .control-table th {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
             padding: 0.75rem;
             text-align: left;
             font-weight: 600;
@@ -124,9 +124,11 @@ function CpuPipelinePage() {
 
         .docs-layout .docs-content .stage-if  { background: var(--stage-if-tint); color: var(--color-primary); font-weight: 600; }
         .docs-layout .docs-content .stage-id  { background: var(--stage-if-tint); color: var(--color-primary-dark); font-weight: 600; }
-        .docs-layout .docs-content .stage-ex  { background: var(--color-accent); color: var(--color-primary-dark); font-weight: 600; }
-        .docs-layout .docs-content .stage-mem { background: var(--color-accent); color: white;   font-weight: 600; }
-        .docs-layout .docs-content .stage-wb  { background: var(--color-primary); color: white;   font-weight: 600; }
+        /* --color-primary-dark on --color-accent is two shades of the same
+           green: 1.36:1 light, 1.28:1 dark. Matches its siblings instead. */
+        .docs-layout .docs-content .stage-ex  { background: var(--color-accent); color: var(--color-surface); font-weight: 600; }
+        .docs-layout .docs-content .stage-mem { background: var(--color-accent); color: var(--color-surface);   font-weight: 600; }
+        .docs-layout .docs-content .stage-wb  { background: var(--color-primary); color: var(--color-surface);   font-weight: 600; }
 
         @media (max-width: 768px) {
             .docs-layout .docs-content .pipeline-diagram {

@@ -54,7 +54,7 @@ function CpuHazardsPage() {
         }
         .docs-layout .docs-content .timeline-header {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
             padding: 0.75rem;
             font-weight: 600;
             text-align: center;
@@ -63,7 +63,7 @@ function CpuHazardsPage() {
             padding: 0.75rem;
             text-align: center;
             border: 1px solid var(--color-border-light);
-            background: white;
+            background: var(--color-surface);
         }
         .docs-layout .docs-content .timeline-label {
             background: var(--color-surface-alt);
@@ -79,7 +79,18 @@ function CpuHazardsPage() {
         .docs-layout .docs-content .stage-mem      { background: var(--stage-wb-tint); font-weight: 600; }
         .docs-layout .docs-content .stage-wb       { background: var(--stage-if-tint); font-weight: 600; }
         .docs-layout .docs-content .stage-stall    { background: var(--status-warn-bg); font-weight: 600; color: var(--status-err-fg); }
-        .docs-layout .docs-content .stage-conflict { background: var(--status-warn-border); color: white; font-weight: 700; }
+        /* The saturated amber (--status-warn-border) is a border colour, and it
+           is unusable as a text fill: white on it scores 1.63:1 in light mode
+           and no token clears 4.5:1 in both themes. So the cell takes the
+           designed warn pair (4.96:1 light / 8.73:1 dark) and keeps its louder
+           identity - and its distinction from .stage-stall - via an inset ring
+           in the original amber rather than a flood fill. */
+        .docs-layout .docs-content .stage-conflict {
+            background: var(--status-warn-bg);
+            color: var(--status-warn-fg);
+            box-shadow: inset 0 0 0 2px var(--status-warn-border);
+            font-weight: 700;
+        }
 
         .docs-layout .docs-content .forwarding-diagram {
             display: flex;
@@ -93,7 +104,7 @@ function CpuHazardsPage() {
             gap: 2rem;
         }
         .docs-layout .docs-content .forwarding-box {
-            background: white;
+            background: var(--color-surface);
             border: 2px solid var(--color-primary);
             border-radius: 8px;
             padding: 1.5rem;
@@ -111,8 +122,12 @@ function CpuHazardsPage() {
             font-size: 0.85rem;
             color: var(--color-text-muted);
         }
+        /* These arrows carry meaning - they show which way a value is forwarded
+           - so they have to be readable. The raw amber border colour scored
+           1.48:1 on the band; the warn foreground keeps the amber identity at
+           4.5:1+ in both themes. */
         .docs-layout .docs-content .forwarding-arrow {
-            color: var(--status-warn-border);
+            color: var(--status-warn-fg);
             font-size: 2rem;
             font-weight: bold;
         }

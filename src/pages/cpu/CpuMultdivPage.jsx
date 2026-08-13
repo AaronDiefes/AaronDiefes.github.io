@@ -28,7 +28,7 @@ function CpuMultdivPage() {
         }
         .docs-layout .docs-content .ops-table th {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
             padding: 0.75rem;
             text-align: left;
             font-weight: 600;
@@ -228,7 +228,7 @@ function CpuMultdivPage() {
         <p>
           The algorithm maintains a remainder register and a quotient register. Each cycle:
         </p>
-        <ol style={{ lineHeight: '1.8', color: '#555', paddingLeft: '2rem' }}>
+        <ol style={{ lineHeight: '1.8', color: 'var(--color-text-light)', paddingLeft: '2rem' }}>
           <li>Shift the remainder left by 1 bit, bringing in the next bit of the dividend</li>
           <li>Subtract the divisor from the remainder (trial subtraction)</li>
           <li>Check if the result is negative:

@@ -58,7 +58,7 @@ function CpuMemoryPage() {
         .docs-layout .docs-content .cta-link {
             display: inline-block;
             padding: 0.75rem 1.5rem;
-            background: white;
+            background: var(--color-surface);
             color: var(--color-primary);
             text-decoration: none;
             border-radius: 6px;
@@ -68,7 +68,7 @@ function CpuMemoryPage() {
         }
         .docs-layout .docs-content .cta-link:hover {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
         }
       `}</style>
 

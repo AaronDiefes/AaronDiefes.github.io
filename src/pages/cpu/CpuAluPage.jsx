@@ -27,7 +27,7 @@ function CpuAluPage() {
         }
         .docs-layout .docs-content .ops-table th {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
             padding: 0.75rem;
             text-align: left;
             font-weight: 600;

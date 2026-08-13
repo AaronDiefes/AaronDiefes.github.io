@@ -67,7 +67,7 @@ function CpuRegfilePage() {
         }
         .docs-layout .docs-content .ops-table th {
             background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-            color: white;
+            color: var(--color-surface);
             padding: 1rem;
             text-align: left;
             font-weight: 600;
