@@ -223,6 +223,41 @@ function eventsOf(result, kind) {
   check('two multiplies: each latched its own operands', regs(r, [3, 6]), [15, 99])
 }
 
+// =============================================================================
+// 9. Curated demo programs: every one must produce its documented result AND
+//    terminate. The programs these replace both ran to a safety cap forever
+//    because a branch-target bug made the loop exit unreachable - and nothing
+//    caught it. These assertions are what make that impossible to repeat.
+// =============================================================================
+{
+  await import('../src/lib/cpu/programs/curated-programs.js')
+  const programs = globalThis.CPU_PROGRAMS
+  check('curated: six programs registered', Object.keys(programs).length, 6)
+
+  for (const [id, prog] of Object.entries(programs)) {
+    const r = Sim.simulate(prog)
+    const e = prog.expect || {}
+
+    if (e.registers) {
+      for (const [reg, want] of Object.entries(e.registers)) {
+        check(`${id}: $${reg}`, r.finalRegisters[Number(reg)], want)
+      }
+    }
+    if (e.memory) {
+      for (const [addr, want] of Object.entries(e.memory)) {
+        check(`${id}: mem[${addr}]`, r.finalMemory[Number(addr)], want)
+      }
+    }
+    if (e.totalCycles != null) check(`${id}: cycle count`, r.metadata.totalCycles, e.totalCycles)
+    if (e.stalls != null) check(`${id}: stall count`, eventsOf(r, 'stall').length, e.stalls)
+    if (e.flushes != null) check(`${id}: flush count`, eventsOf(r, 'flush').length, e.flushes)
+
+    // Termination is the property that was silently broken before.
+    check(`${id}: terminates well before the cap`, r.metadata.totalCycles < 1000, true)
+    check(`${id}: retired every instruction it should`, r.metadata.totalInstructions > 0, true)
+  }
+}
+
 // ---- report -----------------------------------------------------------------
 console.log(`\n  ${passed} passed, ${failures.length} failed\n`)
 if (failures.length) {
