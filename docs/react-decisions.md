@@ -30,6 +30,13 @@ saying so is more credible than claiming every page needed a component model.
 
 ## 1. Route-based code splitting
 
+> **Status: implemented** on `perf/code-splitting`. Measured result: first load fell from
+> 1,198 KB to 198 KB of JavaScript — **237 KB to 64 KB gzipped**, a 73% reduction — and the
+> chunk-size warning is gone. React Flow (181 KB) and its 14 KB stylesheet now load only on
+> `/projects/cpu/demo`. Sourcemaps are off in production, removing a further ~2.8 MB per
+> deploy. The sections below describe the reasoning; the notes marked *Outcome* record what
+> actually happened when it ran.
+
 ### The problem
 
 The production bundle is **one chunk: 1,232 KB raw / 240 KB gzipped.** Vite prints a
@@ -88,11 +95,48 @@ window.addEventListener('vite:preloadError', () => {
 })
 ```
 
+**Outcome.** Shipped as `src/lib/chunk-recovery.js`, with one change from the sketch above: a
+*timestamp* rather than a boolean flag. A boolean has to be cleared on success, and every
+place you might clear it is either too early (clear it on load, and a failing chunk reloads
+forever) or unreachable (the load failed, so nothing runs). A timestamp expires on its own and
+needs no reset path. Storage access is also wrapped — if `sessionStorage` throws (Safari
+private mode), the handler declines to reload at all, because an unguarded reload loop is
+worse than a visible error.
+
+This was verified rather than assumed: removing a chunk from `dist/` reproduced the trap
+exactly — the missing asset returned **200 with `content-type: text/html`**, the handler fired
+and reloaded (confirmed via `performance.getEntriesByType('navigation')[0].type === "reload"`),
+the second attempt was suppressed, and the error boundary rendered instead of a white screen.
+
+The no-flash claim was also measured, not assumed: a `MutationObserver` watching for
+`.route-fallback` during a client-side navigation to a lazy route recorded **zero** fallback
+renders.
+
 ### Expected result
 
 Entry chunk from 240 KB gzip to roughly 60–90 KB, with React Flow off the critical path.
 Pair with `build.rollupOptions.output.manualChunks` to give react/react-dom/react-router a
 long-cached vendor chunk.
+
+**Outcome: 64 KB gzipped**, at the good end of that estimate.
+
+| | before | after |
+|---|---|---|
+| JS on first load | 1,198 KB (237 KB gzip) | 198 KB (**64 KB gzip**) |
+| CSS on first load | 85 KB | 70 KB |
+| Sourcemaps per deploy | ~2.8 MB | none |
+| Chunks | 1 | entry + 2 vendor + 1 per route |
+
+One unplanned bonus: React Flow's *stylesheet* split out alongside its JavaScript, because it
+is imported by `PipelineDiagram` rather than by `main.jsx`. That took 14 KB of diagram CSS off
+every documentation page.
+
+A caution for later, since it is easy to get wrong: splitting moves `vendor-flow.css` to load
+*after* the main stylesheet, which inverts the cascade order for anything both files style.
+The overrides for React Flow's zoom controls survive that only because they are scoped
+(`.rf-cpu-wrapper .react-flow__controls-button`, two classes) and win on specificity rather
+than on order. An unscoped override would silently stop applying the moment splitting was
+enabled.
 
 ---
 
@@ -110,6 +154,21 @@ Two real failure surfaces:
 - A failed lazy chunk (see above) — currently a blank white page.
 - `src/hooks/useWasmModule.js` loads a 132 KB binary. The hook catches its own load errors
   into state, but `new module.CanvasWrapper(...)` in `GraphicsWasmPage` is unguarded.
+  *(Correction: `useWasmModule.js` is dead code — never imported. The live loader is inline
+  in `GraphicsWasmPage.jsx`, so the unguarded construction is on the page, not the hook.)*
+
+**Outcome.** Shipped as `src/components/shared/ErrorBoundary.jsx`. Two details worth keeping:
+
+*The fallback imports nothing.* No `<Navigation>`, no `<Link>`, no content modules — just
+markup and a plain `<a href="/">`. If the thing that threw was the navigation or the router,
+a fallback rendering them throws again from inside the boundary, and an error thrown while
+rendering a fallback is **not** caught. A full document load is the one recovery that still
+works when the client router is the broken part.
+
+*Reset is a `resetKey` prop, not `key` on the boundary.* Keying the boundary looks tidier and
+is wrong twice over: it remounts the whole route subtree on every navigation rather than only
+after a failure, and it defeats `v7_startTransition` — a changed key forces React to discard
+the previous tree, which is exactly the screen the transition was holding on to.
 
 ---
 
