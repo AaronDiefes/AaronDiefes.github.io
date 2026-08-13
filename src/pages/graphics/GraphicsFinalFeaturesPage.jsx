@@ -72,7 +72,7 @@ function GraphicsFinalFeaturesPage() {
             border-radius: 3px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.9rem;
-            color: var(--color-code-string);
+            color: var(--color-code-inline);
         }
 
         .docs-layout .docs-content .code-block {

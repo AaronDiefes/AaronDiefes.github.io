@@ -3,7 +3,7 @@
    advanced-geometry, final-features, optimization-performance). */
 
 .docs-layout .docs-content .tabs-container {
-  background: white;
+  background: var(--color-surface);
   padding: 2rem;
   margin-bottom: 2rem;
   border-radius: 12px;

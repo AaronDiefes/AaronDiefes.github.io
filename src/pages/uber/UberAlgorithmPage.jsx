@@ -52,7 +52,7 @@ function UberAlgorithmPage() {
         }
 
         .docs-layout .docs-content .metric-card {
-          background: white;
+          background: var(--color-surface);
           padding: 1rem;
           border-radius: 6px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -95,7 +95,7 @@ function UberAlgorithmPage() {
           width: 100%;
           border-collapse: collapse;
           margin: 2rem 0;
-          background: white;
+          background: var(--color-surface);
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -103,7 +103,7 @@ function UberAlgorithmPage() {
 
         .docs-layout .docs-content .comparison-table th {
           background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-          color: white;
+          color: var(--color-surface);
           padding: 1rem;
           text-align: left;
           font-weight: 600;
@@ -171,27 +171,27 @@ function UberAlgorithmPage() {
 
         <h3>Dataset Specifications</h3>
         <div className="metrics-grid">
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Passengers:</span>
             <span className="metric-value">10,000</span>
           </div>
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Drivers:</span>
             <span className="metric-value">4,000</span>
           </div>
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Road Network:</span>
             <span className="metric-value">600 nodes</span>
           </div>
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Time Period:</span>
             <span className="metric-value">7 days</span>
           </div>
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Geographic Area:</span>
             <span className="metric-value">Manhattan</span>
           </div>
-          <div className="metric-card" style={{ background: 'white' }}>
+          <div className="metric-card" style={{ background: 'var(--color-surface)' }}>
             <span className="metric-label">Date Range:</span>
             <span className="metric-value">Jan 15-21, 2024</span>
           </div>
@@ -380,7 +380,7 @@ function UberAlgorithmPage() {
         <p>
           Instead of searching through all drivers (or a sorted subset), T3 uses <strong>spatial partitioning</strong> to dramatically reduce the search space. The idea: divide the geographic area into a grid of cells, assign each driver to a cell based on their coordinates, and for each rider, search only the nearby cells (3×3 neighborhood around the rider's cell).
         </p>
-        <p style={{ background: '#fff3cd', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #ffc107', fontSize: '0.95rem' }}>
+        <p style={{ background: 'var(--status-warn-bg)', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid var(--status-warn-border)', fontSize: '0.95rem' }}>
           <strong>Note:</strong> The current implementation evaluates all available drivers (not grid-filtered) using Dijkstra pathfinding, making it functionally similar to brute-force with accurate distance calculation. True grid partitioning would limit evaluation to nearby cells only.
         </p>
         <p>
@@ -482,7 +482,7 @@ function UberAlgorithmPage() {
             <li><strong>D2:</strong> 134.66 → 177.16 min = <strong>+32% improvement</strong> (higher = more paid time vs unpaid)</li>
             <li><strong>Runtime:</strong> 10.9s → 20.6 min = <strong>113× slower</strong></li>
           </ul>
-          <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+          <p style={{ fontStyle: 'italic', color: 'var(--color-text-light)', marginTop: '1rem' }}>
             <strong>Why is T3 so much slower?</strong> T2 uses Euclidean distance for matching (~2000 fast comparisons), then runs Dijkstra only 2× for the selected driver (pickup + trip). T3 runs Dijkstra for EVERY available driver during matching (~2000 pathfinding calls per passenger) to find the driver with the shortest pickup time. This results in ~1000× more Dijkstra computations. Even with 8-core multiprocessing, T3 is 113× slower than T2. The trade-off: T3's road network matching achieves better D1/D2 metrics through more accurate distance calculations.
           </p>
         </div>
@@ -534,7 +534,7 @@ function UberAlgorithmPage() {
           <strong>Real-World Performance:</strong> For 1,000 riders and 1,000 drivers, KD-Tree reduces query time from milliseconds (grid) to microseconds per rider. This is the go-to approach for production systems handling spatial queries at scale.
         </p>
         <p>
-          <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/kdtree" style={{ color: '#2E7D32', fontWeight: 600 }}>KD-Tree Documentation</Link> for detailed implementation, balancing strategies, and performance benchmarks.
+          <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/kdtree" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>KD-Tree Documentation</Link> for detailed implementation, balancing strategies, and performance benchmarks.
         </p>
 
         <h3>Experimental Results</h3>
@@ -570,7 +570,7 @@ function UberAlgorithmPage() {
             <li><strong>D2:</strong> 177.16 → 177.58 min = <strong>+0.2% (essentially same)</strong></li>
             <li><strong>Runtime:</strong> 20.6 min → 20.5 min = <strong>-0.5% (essentially same)</strong></li>
           </ul>
-          <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+          <p style={{ fontStyle: 'italic', color: 'var(--color-text-light)', marginTop: '1rem' }}>
             <strong>T4 vs T3:</strong> Both algorithms evaluate all available drivers (~2000 per passenger). T3 uses Dijkstra, while T4 uses A* with Euclidean heuristic. Theoretically, A* should be ~30% faster than Dijkstra, which over 20M calls should save ~6 minutes. However, actual runtime is nearly identical (20.5 vs 20.6 min). This is because on small, dense Manhattan grids (600 nodes), both algorithms explore similar nodes and complete in ~0.5ms per call, making the heuristic advantage negligible. The similarity demonstrates that Big O constant factors don't always translate to practical improvements on small graphs.
           </p>
         </div>
@@ -649,7 +649,7 @@ function UberAlgorithmPage() {
           <strong>Real-World Impact:</strong> In urban environments with rivers, highways, and one-way streets, road distance can differ from Euclidean distance by 2-3×. This leads to significantly better D1/D2 metrics and user satisfaction.
         </p>
         <p>
-          <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/pathfinding" style={{ color: '#2E7D32', fontWeight: 600 }}>Pathfinding Documentation</Link> for details on Dijkstra's algorithm, graph representation, and optimization techniques.
+          <strong>Learn More:</strong> See the <Link to="/projects/uber/docs/pathfinding" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Pathfinding Documentation</Link> for details on Dijkstra's algorithm, graph representation, and optimization techniques.
         </p>
 
         <h3>Experimental Results</h3>
@@ -685,7 +685,7 @@ function UberAlgorithmPage() {
             <li><strong>D2:</strong> 177.58 → 35.70 min = <strong>-80% worse</strong></li>
             <li><strong>Runtime:</strong> 20.5 min → 1.2 min = <strong>-94% faster (17× speedup!)</strong></li>
           </ul>
-          <p style={{ fontStyle: 'italic', color: '#666', marginTop: '1rem' }}>
+          <p style={{ fontStyle: 'italic', color: 'var(--color-text-light)', marginTop: '1rem' }}>
             <strong>T5's Speed-Accuracy Trade-off:</strong> Unlike T3/T4 which evaluate all available drivers, T5 implements aggressive filtering by pruning to only the 10 closest candidates (by Euclidean distance) before computing pickup times. This reduces matching quality (worse D1/D2) but achieves dramatic speedup — 74.8 seconds vs 20.5 minutes, making it 17× faster than T4. The early termination when finding a driver within 6 minutes further improves performance. T5 demonstrates that for real-time systems prioritizing response time over perfect matching, candidate pruning is essential.
           </p>
         </div>
@@ -697,7 +697,7 @@ function UberAlgorithmPage() {
           After implementing T3-T5 algorithms, a critical performance bottleneck emerged: <strong>Dijkstra's pathfinding was too slow for large datasets</strong>. With 10,000 passengers and 4,000 available drivers, T3-T5 required computing road network distances for thousands of driver-passenger pairs, causing execution times to exceed <strong>100+ minutes per algorithm</strong>.
         </p>
 
-        <div style={{ background: '#fff3cd', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #ffc107' }}>
+        <div style={{ background: 'var(--status-warn-bg)', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid var(--status-warn-border)' }}>
           <strong>Original Bottleneck (per passenger):</strong>
           <ul style={{ marginTop: '0.5rem', marginBottom: 0 }}>
             <li>~2,000 available drivers to evaluate</li>
@@ -742,23 +742,23 @@ function UberAlgorithmPage() {
 
         <h3>Performance Results</h3>
         <div className="metrics-grid">
-          <div className="metric-card" style={{ background: '#d4edda', border: '1px solid #28a745' }}>
+          <div className="metric-card" style={{ background: 'var(--status-ok-bg)', border: '1px solid var(--status-ok-border)' }}>
             <span className="metric-label">T3 Speedup:</span>
             <span className="metric-value">5.4× faster</span>
             <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>111 min → 20.6 min</span>
           </div>
-          <div className="metric-card" style={{ background: '#d4edda', border: '1px solid #28a745' }}>
+          <div className="metric-card" style={{ background: 'var(--status-ok-bg)', border: '1px solid var(--status-ok-border)' }}>
             <span className="metric-label">T4 Speedup:</span>
             <span className="metric-value">~5× faster</span>
             <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>~100 min → 20.5 min</span>
           </div>
-          <div className="metric-card" style={{ background: '#d1ecf1', border: '1px solid #17a2b8' }}>
+          <div className="metric-card" style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)' }}>
             <span className="metric-label">Hardware:</span>
             <span className="metric-value">M1 Pro (8 cores)</span>
             <span style={{ fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>Python 3.13</span>
           </div>
         </div>
-        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>
+        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--color-text-light)' }}>
           Note: T5 doesn't require multiprocessing - its 10-candidate pruning makes it naturally fast (1.2 minutes without parallelization).
         </p>
         <div className="metrics-grid">
@@ -766,18 +766,18 @@ function UberAlgorithmPage() {
 
         <h3>What Changed vs. What Didn't</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
-          <div style={{ background: '#d4edda', padding: '1.5rem', borderRadius: '8px', border: '2px solid #28a745' }}>
-            <h4 style={{ color: '#155724', marginTop: 0 }}>What Changed (Computation Only)</h4>
-            <ul style={{ color: '#155724', lineHeight: 1.8 }}>
+          <div style={{ background: 'var(--status-ok-bg)', padding: '1.5rem', borderRadius: '8px', border: '2px solid var(--status-ok-border)' }}>
+            <h4 style={{ color: 'var(--status-ok-fg)', marginTop: 0 }}>What Changed (Computation Only)</h4>
+            <ul style={{ color: 'var(--status-ok-fg)', lineHeight: 1.8 }}>
               <li>Dijkstra pathfinding parallelized across 8 cores</li>
               <li>Driver evaluation jobs distributed to worker processes</li>
               <li>Results merged in parallel before final selection</li>
               <li>Execution time reduced by 5-7× due to parallelism</li>
             </ul>
           </div>
-          <div style={{ background: '#fff3cd', padding: '1.5rem', borderRadius: '8px', border: '2px solid #ffc107' }}>
-            <h4 style={{ color: '#856404', marginTop: 0 }}>What Didn't Change (Algorithms Unchanged)</h4>
-            <ul style={{ color: '#856404', lineHeight: 1.8 }}>
+          <div style={{ background: 'var(--status-warn-bg)', padding: '1.5rem', borderRadius: '8px', border: '2px solid var(--status-warn-border)' }}>
+            <h4 style={{ color: 'var(--status-warn-fg)', marginTop: 0 }}>What Didn't Change (Algorithms Unchanged)</h4>
+            <ul style={{ color: 'var(--status-warn-fg)', lineHeight: 1.8 }}>
               <li>T3 grid partitioning logic identical</li>
               <li>T4 KD-Tree structure and queries identical</li>
               <li>T5 hybrid KD-Tree + Dijkstra logic identical</li>
@@ -786,7 +786,7 @@ function UberAlgorithmPage() {
           </div>
         </div>
 
-        <div style={{ background: '#e7f3ff', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid #2196F3' }}>
+        <div style={{ background: 'var(--status-info-bg)', padding: '1rem', borderRadius: '8px', margin: '1.5rem 0', borderLeft: '4px solid var(--status-info-border)' }}>
           <strong>Key Takeaway:</strong> Multiprocessing is a <em>computational optimization</em>, not an <em>algorithmic optimization</em>. T3 and T4 produce identical results with or without multiprocessing — they just run faster with parallel execution. The 5× speedup comes from parallelizing 20 million pathfinding calls (not cache hits - the base implementation populates but doesn't retrieve cached paths). T5 doesn't require multiprocessing because its candidate pruning (10 drivers vs 2000) makes it naturally fast (1.2 minutes). The D1 and D2 metrics reflect the algorithm's matching quality, not the implementation's execution speed.
         </div>
       </DocsSection>
@@ -850,7 +850,7 @@ function UberAlgorithmPage() {
             </tr>
           </tbody>
         </table>
-        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#666' }}>
+        <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--color-text-light)' }}>
           * T3-T4 runtimes use fork-based multiprocessing optimization (see Multiprocessing Optimization section below). T5 uses candidate pruning and doesn't require multiprocessing.
         </p>
 

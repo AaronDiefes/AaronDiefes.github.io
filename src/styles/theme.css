@@ -43,7 +43,10 @@
      the chips reading as chips while improving prose contrast. */
   --color-text: #1A1D1F;
   --color-text-heading: #1A1D1F;
-  --color-text-muted: #868D95;
+  /* Darkened from #868D95, which scored 3.36:1 on white and 3.05:1 on the
+     alternating band - below the 4.5:1 AA minimum for normal-size text. This
+     is 5.31:1 / 4.82:1. */
+  --color-text-muted: #656C75;
   --color-text-light: #5A6169;
 
   /* ---- Lines --------------------------------------------------------- */
@@ -69,6 +72,11 @@
   --color-code-operator: #D4D4D4;
   --color-code-number: #B5CEA8;
   --color-code-string: #CE9178;
+  /* Inline <code> in prose is a DIFFERENT thing from a syntax token: it sits on
+     a light chip (--color-surface-alt), not on the dark code-block ground. It
+     needs its own colour - the original #C7254E, which scores 5.02:1 on the
+     chip. Reusing --color-code-string here drops it to 2.4:1. */
+  --color-code-inline: #C7254E;
 
   /* Draft frame - development only, never shipped. */
   --color-draft: #A15C11;
@@ -93,6 +101,12 @@
   --status-err-bg: #F8D7DA;
   --status-err-fg: #721C24;
   --status-err-border: #DC3545;
+  /* Informational callouts in the documentation pages. Added alongside the
+     others so a blue "note" panel has somewhere to go; without it those
+     panels flatten to neutral grey and stop reading as a distinct aside. */
+  --status-info-bg: #E7F3FF;
+  --status-info-fg: #0C5460;
+  --status-info-border: #2196F3;
 
   /* ---- "Gradients" ---------------------------------------------------- */
   /* Flattened to solid colour. The design has no gradients; these names are
@@ -164,7 +178,9 @@
 
   --color-text: #E8EAEC;
   --color-text-heading: #E8EAEC;
-  --color-text-muted: #767D85;
+  /* Lightened from #767D85 (4.24:1 on the card surface) to clear 4.5:1 AA.
+     Now 4.79:1 on --color-surface, 4.98:1 on --color-surface-alt. */
+  --color-text-muted: #7F868E;
   --color-text-light: #A3AAB2;
 
   --color-border: #262A2E;
@@ -184,6 +200,7 @@
   --color-code-operator: #D7DDE2;
   --color-code-number: #B9D4A6;
   --color-code-string: #DDA07C;
+  --color-code-inline: #FF8FA3;
 
   --color-draft: #D29247;
   --color-draft-bg: #1E1710;
@@ -203,6 +220,9 @@
   --status-err-bg: #2C1618;
   --status-err-fg: #E88C8C;
   --status-err-border: #8C3239;
+  --status-info-bg: #16232C;
+  --status-info-fg: #7FC3E0;
+  --status-info-border: #2A6E8F;
 
   --gradient-primary: #6FBF7F;
   --gradient-header: #0A0C0D;
@@ -248,7 +268,9 @@
 
   --color-text: #E8EAEC;
   --color-text-heading: #E8EAEC;
-  --color-text-muted: #767D85;
+  /* Lightened from #767D85 (4.24:1 on the card surface) to clear 4.5:1 AA.
+     Now 4.79:1 on --color-surface, 4.98:1 on --color-surface-alt. */
+  --color-text-muted: #7F868E;
   --color-text-light: #A3AAB2;
 
   --color-border: #262A2E;
@@ -268,6 +290,7 @@
   --color-code-operator: #D7DDE2;
   --color-code-number: #B9D4A6;
   --color-code-string: #DDA07C;
+  --color-code-inline: #FF8FA3;
 
   --color-draft: #D29247;
   --color-draft-bg: #1E1710;
@@ -287,6 +310,9 @@
   --status-err-bg: #2C1618;
   --status-err-fg: #E88C8C;
   --status-err-border: #8C3239;
+  --status-info-bg: #16232C;
+  --status-info-fg: #7FC3E0;
+  --status-info-border: #2A6E8F;
 
   --gradient-primary: #6FBF7F;
   --gradient-header: #0A0C0D;

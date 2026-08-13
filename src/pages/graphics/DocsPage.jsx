@@ -30,7 +30,7 @@ function DocsPage() {
           <p>
             <strong>Key Features:</strong>
           </p>
-          <ul style={{ lineHeight: 1.8, color: '#555' }}>
+          <ul style={{ lineHeight: 1.8, color: 'var(--color-text-light)' }}>
             <li><strong>Shape Drawing:</strong> Rectangles, polygons, paths with curves</li>
             <li><strong>Transformations:</strong> 2D affine matrices (translate, rotate, scale) with CTM stack</li>
             <li><strong>Shaders:</strong> Solid colors, linear/radial/sweep gradients, bitmap textures with tile modes</li>
@@ -40,7 +40,7 @@ function DocsPage() {
           </ul>
 
           <h3>Technologies Used</h3>
-          <ul style={{ lineHeight: 1.8, color: '#555' }}>
+          <ul style={{ lineHeight: 1.8, color: 'var(--color-text-light)' }}>
             <li><strong>C++17:</strong> Core rendering engine implementation with hand-optimized rasterization algorithms</li>
             <li><strong>WebAssembly:</strong> Compiles C++ to bytecode that runs at near-native speed in the browser</li>
             <li><strong>Emscripten:</strong> Toolchain for compiling C++ to WebAssembly and generating JavaScript bindings</li>
@@ -173,17 +173,20 @@ function DocsPage() {
             Comprehensive list of all rendering capabilities organized by category. Click to expand and see detailed feature descriptions with links to documentation.
           </p>
 
-          <details style={{ marginTop: '2rem', border: '2px solid #2E7D32', borderRadius: '8px', overflow: 'hidden' }}>
-            <summary style={{ background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)', color: 'white', padding: '1.5rem', fontSize: '1.25rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+          <details style={{ marginTop: '2rem', border: '2px solid var(--color-primary)', borderRadius: '8px', overflow: 'hidden' }}>
+            {/* color is --color-surface, not white: --gradient-primary inverts
+                to a pale green in dark mode, where white text drops to ~2.2:1.
+                --color-surface tracks the flip and stays legible in both. */}
+            <summary style={{ background: 'var(--gradient-primary)', color: 'var(--color-surface)', padding: '1.5rem', fontSize: '1.25rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
               View All Engine Capabilities (26 Features)
             </summary>
 
-            <div style={{ padding: '2rem', background: 'white' }}>
+            <div style={{ padding: '2rem', background: 'var(--color-surface)' }}>
               {/* Category 1: Core Rendering */}
               <div style={{ marginBottom: '3rem' }}>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>1. Core Rendering</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>Fundamental drawing operations: shape rasterization, edge-list algorithm, Porter-Duff compositing.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>1. Core Rendering</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>Fundamental drawing operations: shape rasterization, edge-list algorithm, Porter-Duff compositing.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>Edge Rasterization</strong> – Scanline algorithm using sorted edge list for efficient pixel coverage</li>
                   <li><strong>Rectangle Drawing</strong> – Optimized axis-aligned rectangle fill with clipping</li>
                   <li><strong>Polygon Drawing</strong> – Convex polygon rasterization using edge walking</li>
@@ -194,9 +197,9 @@ function DocsPage() {
 
               {/* Category 2: Shaders & Textures */}
               <div style={{ marginBottom: '3rem' }}>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>2. Shaders & Textures</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>Shader pipeline: solid colors, gradients (linear, radial, sweep), bitmap textures with tile modes.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>2. Shaders & Textures</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>Shader pipeline: solid colors, gradients (linear, radial, sweep), bitmap textures with tile modes.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>Solid Color Shader</strong> – Simple constant color shader with alpha channel support</li>
                   <li><strong>Linear Gradient</strong> – Color interpolation along a line with multiple color stops</li>
                   <li><strong>Radial Gradient</strong> – Circular gradient radiating from center point</li>
@@ -208,9 +211,9 @@ function DocsPage() {
 
               {/* Category 3: Transformations */}
               <div style={{ marginBottom: '3rem' }}>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>3. Transformations</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>2D affine transformations: translate, rotate, scale, shear. Current Transformation Matrix (CTM) stack for hierarchical transforms.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>3. Transformations</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>2D affine transformations: translate, rotate, scale, shear. Current Transformation Matrix (CTM) stack for hierarchical transforms.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>Matrix Transform</strong> – 3x3 homogeneous coordinate matrix for 2D affine transforms</li>
                   <li><strong>CTM Stack</strong> – save() and restore() for hierarchical transformation management</li>
                   <li><strong>Translate</strong> – Move coordinate system by (dx, dy)</li>
@@ -221,9 +224,9 @@ function DocsPage() {
 
               {/* Category 4: Paths & Curves */}
               <div style={{ marginBottom: '3rem' }}>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>4. Paths & Curves</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>Path construction, winding fill rule, Bezier curve tessellation for smooth curves.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>4. Paths & Curves</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>Path construction, winding fill rule, Bezier curve tessellation for smooth curves.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>GPath Construction</strong> – Moveto, lineto, quadto, cubicto path building</li>
                   <li><strong>Winding Fill Rule</strong> – Non-zero winding rule for complex path filling</li>
                   <li><strong>Quadratic Bezier</strong> – Smooth quadratic curves with adaptive tessellation</li>
@@ -234,9 +237,9 @@ function DocsPage() {
 
               {/* Category 5: Advanced Geometry */}
               <div style={{ marginBottom: '3rem' }}>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>5. Advanced Geometry</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>Triangle meshes, quad rendering, Coons patches for complex surface modeling.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>5. Advanced Geometry</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>Triangle meshes, quad rendering, Coons patches for complex surface modeling.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>Triangle Mesh</strong> – Vertex array with per-vertex colors and texture coordinates</li>
                   <li><strong>Quad Rendering</strong> – 4-point texture mapping with bilinear interpolation</li>
                   <li><strong>Coons Patches</strong> – Bicubic surface interpolation from 4 boundary curves</li>
@@ -246,9 +249,9 @@ function DocsPage() {
 
               {/* Category 6: Optimization & Performance */}
               <div>
-                <h3 style={{ color: '#2E7D32', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid #2E7D32' }}>6. Optimization & Performance</h3>
-                <p style={{ color: '#666', marginBottom: '1rem' }}>Performance optimizations for real-time software rendering.</p>
-                <ul style={{ lineHeight: 2, color: '#555' }}>
+                <h3 style={{ color: 'var(--color-primary)', fontSize: '1.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--color-primary)' }}>6. Optimization & Performance</h3>
+                <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>Performance optimizations for real-time software rendering.</p>
+                <ul style={{ lineHeight: 2, color: 'var(--color-text-light)' }}>
                   <li><strong>Fixed-Point Division</strong> – Fast div255 approximation using shifts (10x faster)</li>
                   <li><strong>Blend Fast Paths</strong> – Alpha-based optimization (opaque/transparent shortcuts)</li>
                   <li><strong>Static Dispatch</strong> – Template-based blend dispatch (eliminates function call overhead)</li>

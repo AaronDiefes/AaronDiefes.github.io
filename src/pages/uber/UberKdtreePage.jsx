@@ -196,7 +196,7 @@ function UberKdtreePage() {
 
       <DocsSection id="ride-sharing-integration" title="Ride-Sharing Integration">
         <p>
-          In the T4 algorithm from the <Link to="/projects/uber/docs/algorithm" style={{ color: '#2E7D32', fontWeight: 600 }}>Algorithm Evolution</Link> page, KD-Trees replace brute-force driver scanning. The matching workflow builds a tree once from all driver locations, then queries it for each rider to find the nearest available driver.
+          In the T4 algorithm from the <Link to="/projects/uber/docs/algorithm" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Algorithm Evolution</Link> page, KD-Trees replace brute-force driver scanning. The matching workflow builds a tree once from all driver locations, then queries it for each rider to find the nearest available driver.
         </p>
 
         <h3>Matching with KD-Tree</h3>

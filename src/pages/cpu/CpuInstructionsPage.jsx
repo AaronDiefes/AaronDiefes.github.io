@@ -57,7 +57,7 @@ function CpuInstructionsPage() {
         }
         .docs-layout .docs-content .ops-table th {
             background: var(--color-primary);
-            color: white;
+            color: var(--color-surface);
             padding: 0.75rem;
             text-align: left;
             font-weight: 600;
@@ -387,7 +387,7 @@ function CpuInstructionsPage() {
             </tr>
           </tbody>
         </table>
-        <p style={{fontSize: '0.9rem', color: '#666', marginTop: '0.5rem'}}>
+        <p style={{fontSize: '0.9rem', color: 'var(--color-text-light)', marginTop: '0.5rem'}}>
           * Note: Exact opcodes are representative of the implemented ISA. The table provides an educational reference.
         </p>
       </DocsSection>

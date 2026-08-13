@@ -30,7 +30,7 @@ function CpuDocsLanding() {
           <p>
             <strong>Key Features:</strong>
           </p>
-          <ul style={{ lineHeight: 1.8, color: '#555' }}>
+          <ul style={{ lineHeight: 1.8, color: 'var(--color-text-light)' }}>
             <li><strong>32-bit Architecture:</strong> 32 general-purpose registers, 32-bit data and address paths</li>
             <li><strong>5-Stage Pipeline:</strong> IF (Instruction Fetch), ID (Instruction Decode), EX (Execute), MEM (Memory Access), WB (Write Back)</li>
             <li><strong>Hazard Detection:</strong> Data hazard detection with stall logic</li>
