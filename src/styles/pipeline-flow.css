@@ -6,7 +6,18 @@
  */
 
 .rf-cpu-wrapper {
-  height: 1020px;
+  /*
+   * Was 1020px, matching the board's own height back when the canvas was meant
+   * to be viewed 1:1. Fitted into the demo column the whole board is only about
+   * 250px tall, so a 1020px box left roughly 750px of empty grid under it and
+   * pushed everything below off the screen.
+   *
+   * 560px is chosen for the FOCUSED view, which is the one that has to be
+   * readable: the widest stage (EX, ~1410px with its channels) fits a ~900px
+   * column at around 0.64 zoom and needs ~540px of height. The whole-datapath
+   * overview then sits comfortably inside the same box.
+   */
+  height: 560px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-surface);
@@ -69,7 +80,9 @@
 
 .rf-ic.active {
   border-width: 2.5px;
-  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.25), 0 2px 6px rgba(0, 0, 0, 0.18);
+  /* Tokenised: this was rgba(46,125,50,.25), a literal that stayed the same
+     forest green in dark mode where the accent is a pale green. */
+  box-shadow: 0 0 0 3px var(--color-accent-light), 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
 .rf-ic-header {
@@ -220,7 +233,7 @@
 
 .rf-classic-mux.active .rf-classic-mux-polygon {
   stroke-width: 3;
-  filter: drop-shadow(0 0 6px rgba(46, 125, 50, 0.3));
+  filter: drop-shadow(0 0 6px var(--color-accent-light));
 }
 
 .rf-classic-mux-in-label,
@@ -276,7 +289,7 @@
 }
 
 .rf-pipereg.active {
-  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.3), 0 2px 6px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 0 3px var(--color-pipeline-fill), 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
 .rf-pipereg-header {
@@ -413,4 +426,178 @@
    the button's colour instead of staying near-black on a dark face. */
 .rf-cpu-wrapper .react-flow__controls-button svg {
   fill: currentColor;
+}
+
+/* ---------------------------------------------------------------------------
+ * Panel chrome: stage focus and the legend.
+ *
+ * The board is ~3300px wide; fitted into the demo column it sits near 0.3 zoom,
+ * where the port labels carrying the Verilog signal names are unreadable. The
+ * focus buttons drive the viewport to one stage at a time so that detail stays
+ * in the diagram instead of being simplified out of it.
+ * ------------------------------------------------------------------------- */
+
+.rf-cpu-panel {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.rf-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.rf-panel-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-heading);
+}
+
+.rf-focus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.rf-focus-btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--color-text-light);
+  cursor: pointer;
+}
+
+.rf-focus-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.rf-focus-btn.is-on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  /* Foreground from the page ground, so it inverts with the theme - white text
+     scores about 2.2:1 on the pale green the accent becomes in dark mode. */
+  color: var(--color-surface);
+}
+
+.rf-focus-btn:focus-visible {
+  outline: 2px solid var(--color-text-heading);
+  outline-offset: 2px;
+}
+
+/* Dimming when one stage has focus. Everything stays on screen - the point is
+   to keep the rest of the machine visible as context, just quieter. */
+.rf-cpu-wrapper[data-focus] .rf-ic,
+.rf-cpu-wrapper[data-focus] .rf-classic-mux,
+.rf-cpu-wrapper[data-focus] .rf-stage-band {
+  opacity: 0.18;
+  transition: opacity 250ms var(--easing-standard, ease);
+}
+
+.rf-cpu-wrapper[data-focus="if"]  .rf-ic.stage-if,
+.rf-cpu-wrapper[data-focus="if"]  .rf-classic-mux.stage-if,
+.rf-cpu-wrapper[data-focus="if"]  .rf-stage-band.stage-if,
+.rf-cpu-wrapper[data-focus="id"]  .rf-ic.stage-id,
+.rf-cpu-wrapper[data-focus="id"]  .rf-classic-mux.stage-id,
+.rf-cpu-wrapper[data-focus="id"]  .rf-stage-band.stage-id,
+.rf-cpu-wrapper[data-focus="ex"]  .rf-ic.stage-ex,
+.rf-cpu-wrapper[data-focus="ex"]  .rf-classic-mux.stage-ex,
+.rf-cpu-wrapper[data-focus="ex"]  .rf-stage-band.stage-ex,
+.rf-cpu-wrapper[data-focus="mem"] .rf-ic.stage-mem,
+.rf-cpu-wrapper[data-focus="mem"] .rf-classic-mux.stage-mem,
+.rf-cpu-wrapper[data-focus="mem"] .rf-stage-band.stage-mem,
+.rf-cpu-wrapper[data-focus="wb"]  .rf-ic.stage-wb,
+.rf-cpu-wrapper[data-focus="wb"]  .rf-classic-mux.stage-wb,
+.rf-cpu-wrapper[data-focus="wb"]  .rf-stage-band.stage-wb {
+  opacity: 1;
+}
+
+/* Pipeline registers bound the focused stage on both sides, so they stay lit. */
+.rf-cpu-wrapper[data-focus] .rf-pipereg {
+  opacity: 0.55;
+}
+
+/* ---- Legend ------------------------------------------------------------- */
+
+.rf-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1rem 0.7rem;
+  border-top: 1px solid var(--color-border-light);
+  font-size: 0.72rem;
+  color: var(--color-text-light);
+}
+
+.rf-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rf-swatch {
+  width: 1.6rem;
+  height: 0;
+  border-top-width: 2px;
+  border-top-style: solid;
+  flex: none;
+}
+
+.rf-swatch.is-data     { border-top-color: var(--color-text); }
+.rf-swatch.is-control  { border-top-color: var(--color-text-muted); border-top-style: dashed; }
+.rf-swatch.is-forward  { border-top-color: var(--stage-ex-color); border-top-style: dashed; }
+.rf-swatch.is-feedback { border-top-color: var(--color-text-muted); border-top-style: dotted; }
+.rf-swatch.is-live     { border-top-color: var(--color-primary); border-top-width: 3px; }
+
+.rf-legend-note {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .rf-panel-head { align-items: flex-start; flex-direction: column; }
+  .rf-legend { gap: 0.6rem; font-size: 0.68rem; }
+}
+
+/* ---- Expanded view ------------------------------------------------------
+ * Focus reframes; expanding supplies the space. The EX stage is ~1410px wide
+ * with its channels, so inside the ~680px demo column even a perfect fit tops
+ * out near 0.45 zoom and the port labels stay unreadable. Filling the viewport
+ * gets EX close to 1:1, which is the whole reason the schematic is drawn at
+ * signal-name detail in the first place.
+ * ----------------------------------------------------------------------- */
+
+.rf-cpu-panel.is-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 110);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+}
+
+.rf-cpu-panel.is-expanded .rf-cpu-wrapper {
+  flex: 1;
+  height: auto;          /* the fixed 560px is for the inline view only */
+  border: 0;
+  border-radius: 0;
+}
+
+.rf-expand-btn {
+  margin-left: 0.35rem;
+  border-color: var(--color-border);
 }

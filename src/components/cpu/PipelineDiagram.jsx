@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { ReactFlow, Background, Controls, Handle, Position, MarkerType, BaseEdge, EdgeLabelRenderer } from '@xyflow/react'
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import { ReactFlow, ReactFlowProvider, useReactFlow, Background, Controls, Handle, Position, MarkerType, BaseEdge, EdgeLabelRenderer } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useCpuState } from '../../hooks/useCpuFrame'
 
@@ -704,10 +704,107 @@ const STAGE_ORDER = ['IF', 'ID', 'EX', 'MEM', 'WB']
  */
 const PIPEREG_FEEDS = { IFID: 'ID', IDEX: 'EX', EXMEM: 'MEM', MEMWB: 'WB' }
 
-function PipelineDiagram() {
+/**
+ * Viewport bounds per stage, derived from the band nodes so they can never drift
+ * from the layout. Padded sideways to take in the pipeline registers sitting in
+ * the channels either side of each band.
+ */
+const STAGE_BOUNDS = (() => {
+  const out = {}
+  initialNodes
+    .filter((n) => n.type === 'band')
+    .forEach((n) => {
+      const stage = n.data.short
+      out[stage] = {
+        x: n.position.x - 165,
+        y: n.position.y - 20,
+        width: n.data.width + 330,
+        height: n.data.height + 40,
+      }
+    })
+  return out
+})()
+
+const FOCUS_OPTIONS = ['ALL', 'IF', 'ID', 'EX', 'MEM', 'WB']
+
+function PipelineDiagramInner() {
   // One shared subscription rather than a private window listener - see
   // useCpuFrame. The frame now describes the whole machine for one clock cycle.
   const state = useCpuState()
+
+  /*
+   * The whole board is ~3300px wide. Fitted into the demo column that lands at
+   * roughly 0.3 zoom, where the 10.5px port labels - the Verilog signal names
+   * that are the point of drawing it at this level of detail - are unreadable.
+   * Rather than simplify the schematic, the viewport focuses one stage at a
+   * time, so the detail survives and becomes legible on demand.
+   */
+  const [focus, setFocus] = useState('ALL')
+
+  /*
+   * Focusing alone cannot make this readable, and it is worth being clear why:
+   * the EX stage is ~1410px wide including its channels, while the demo column
+   * is around 680px. Even perfectly fitted that caps out near 0.45 zoom, so the
+   * 10.5px port labels still render at ~5px. The missing ingredient is not
+   * framing, it is space - hence expanding to the full viewport, where EX fits
+   * at close to 1:1 and the Verilog signal names finally read.
+   */
+  const [expanded, setExpanded] = useState(false)
+  const wrapperRef = useRef(null)
+  const { fitBounds, fitView } = useReactFlow()
+
+  const applyFocus = useCallback(() => {
+    if (focus === 'ALL') {
+      fitView({ padding: 0.04, duration: 300 })
+    } else if (STAGE_BOUNDS[focus]) {
+      fitBounds(STAGE_BOUNDS[focus], { padding: 0.08, duration: 300 })
+    }
+  }, [focus, fitBounds, fitView])
+
+  /*
+   * The fit cannot happen until React Flow has an initialised instance AND a
+   * measured container. Calling it earlier silently does nothing, which left
+   * the board sitting at zoom 1 in its top-left corner - the default viewport -
+   * looking like the diagram had simply rendered wrong.
+   */
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    if (ready) applyFocus()
+  }, [ready, applyFocus])
+
+  /*
+   * Re-apply the framing whenever the canvas changes size.
+   *
+   * A single requestAnimationFrame after expanding is not enough: the fit gets
+   * computed against the pre-expand box, and React Flow then runs its own
+   * resize fit on top, so the view ends up showing the whole board no matter
+   * which stage was selected. Observing the element instead means the framing
+   * is re-applied after the layout has actually settled - and it fixes window
+   * resizes and the sidebar collapsing at the same time.
+   */
+  useEffect(() => {
+    const el = wrapperRef.current
+    if (!el || !ready || typeof ResizeObserver === 'undefined') return
+    let timer
+    const ro = new ResizeObserver(() => {
+      clearTimeout(timer)
+      timer = setTimeout(applyFocus, 120)
+    })
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      clearTimeout(timer)
+    }
+  }, [applyFocus, ready])
+
+  // Escape leaves the expanded view, per the usual dialog affordance.
+  useEffect(() => {
+    if (!expanded) return
+    const onKey = (e) => { if (e.key === 'Escape') setExpanded(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [expanded])
 
   /**
    * Which stages hold a real instruction right now. This used to collapse to a
@@ -727,6 +824,28 @@ function PipelineDiagram() {
     return out
   }, [state])
 
+  /**
+   * Is this chip doing work this cycle?
+   *
+   * Being in an occupied stage is the baseline, but a few units are only
+   * involved for particular instructions, and lighting them unconditionally
+   * would teach the wrong thing - it would suggest every instruction runs the
+   * multiplier, or touches data memory.
+   */
+  const chipIsActive = (node) => {
+    const stage = node.data.stage
+    if (!stage) return false
+    const S = stage.toUpperCase()
+    if (!occupied[S]) return false
+
+    const slot = state && state.stages ? state.stages[S] : null
+    if (!slot) return false
+
+    if (node.id === 'MULTDIV') return slot.mnemonic === 'MUL' || slot.mnemonic === 'DIV'
+    if (node.id === 'DMEM') return !!(slot.memRead || slot.memWrite)
+    return true
+  }
+
   const nodes = useMemo(() => {
     return initialNodes.map((n) => {
       const next = { ...n, data: { ...n.data } }
@@ -740,7 +859,13 @@ function PipelineDiagram() {
         // in flight.
         const feeds = PIPEREG_FEEDS[n.id]
         const slot = state && state.stages ? state.stages[feeds] : null
-        next.data.instruction = slot && !slot.bubble && slot.mnemonic ? slot.mnemonic : '—'
+        const holds = slot && !slot.bubble && slot.mnemonic
+        next.data.instruction = holds ? slot.mnemonic : '—'
+        next.data.active = !!holds
+      } else {
+        // .rf-ic.active / .rf-classic-mux.active have existed in the stylesheet
+        // all along and nothing ever set them, so individual chips never lit up.
+        next.data.active = chipIsActive(n)
       }
       return next
     })
@@ -756,29 +881,88 @@ function PipelineDiagram() {
   }, [occupied])
 
   return (
-    <div className="rf-cpu-wrapper">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.04 }}
-        minZoom={0.2}
-        maxZoom={2}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
-        proOptions={{ hideAttribution: true }}
-        defaultEdgeOptions={{
-          type: 'smoothstep',
-          markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10 },
-        }}
-      >
-        <Background gap={24} size={1} />
-        <Controls showInteractive={false} />
-      </ReactFlow>
-    </div>
+    <section className={`rf-cpu-panel${expanded ? ' is-expanded' : ''}`} aria-label="Datapath">
+      <header className="rf-panel-head">
+        <h3 className="rf-panel-title">Datapath</h3>
+        <div className="rf-focus" role="group" aria-label="Zoom to a pipeline stage">
+          {FOCUS_OPTIONS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={`rf-focus-btn${focus === f ? ' is-on' : ''}`}
+              aria-pressed={focus === f}
+              onClick={() => setFocus(f)}
+            >
+              {f === 'ALL' ? 'Whole datapath' : f}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="rf-focus-btn rf-expand-btn"
+            aria-pressed={expanded}
+            onClick={() => setExpanded((v) => !v)}
+            title={expanded ? 'Close (Esc)' : 'Fill the window so the port labels are readable'}
+          >
+            {expanded ? 'Close' : 'Expand'}
+          </button>
+        </div>
+      </header>
+
+      {/* data-focus drives the dimming; see pipeline-flow.css. */}
+      <div ref={wrapperRef} className="rf-cpu-wrapper" data-focus={focus === 'ALL' ? undefined : focus.toLowerCase()}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          /*
+           * Deliberately NOT using the `fitView` prop. React Flow re-runs its
+           * own fit whenever the container resizes, which raced our stage
+           * framing and always won - select EX, expand, and you would be handed
+           * the whole board again. The initial fit is done here instead, so
+           * there is exactly one thing deciding the viewport.
+           */
+          onInit={() => setReady(true)}
+          /* 0.2 was too high a floor for the whole-datapath view in a narrow
+             column - the fit would clamp and clip the board. */
+          minZoom={0.1}
+          maxZoom={2}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
+          proOptions={{ hideAttribution: true }}
+          defaultEdgeOptions={{
+            type: 'smoothstep',
+            markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10 },
+          }}
+        >
+          <Background gap={24} size={1} />
+          <Controls showInteractive={false} />
+        </ReactFlow>
+      </div>
+
+      {/* Nothing previously explained what solid vs dashed vs orange meant. */}
+      <footer className="rf-legend">
+        <span className="rf-legend-item"><i className="rf-swatch is-data" />data</span>
+        <span className="rf-legend-item"><i className="rf-swatch is-control" />control</span>
+        <span className="rf-legend-item"><i className="rf-swatch is-forward" />forwarding</span>
+        <span className="rf-legend-item"><i className="rf-swatch is-feedback" />feedback</span>
+        <span className="rf-legend-item"><i className="rf-swatch is-live" />carrying data now</span>
+        <span className="rf-legend-item rf-legend-note">dashed outline = external module</span>
+      </footer>
+    </section>
+  )
+}
+
+/**
+ * useReactFlow (used for the stage focus) only works inside a provider, and the
+ * provider has to sit ABOVE the component that calls it - hence the split.
+ */
+function PipelineDiagram() {
+  return (
+    <ReactFlowProvider>
+      <PipelineDiagramInner />
+    </ReactFlowProvider>
   )
 }
 
