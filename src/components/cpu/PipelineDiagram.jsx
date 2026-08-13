@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { ReactFlow, Background, Controls, Handle, Position, MarkerType, BaseEdge, EdgeLabelRenderer } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { useCpuState } from '../../hooks/useCpuFrame'
 
 /**
  * 5-stage pipelined RISC processor — schematic-accurate version.
@@ -695,48 +696,64 @@ const initialEdges = [
 
 // ---------- Component -----------------------------------------------------
 
-function PipelineDiagram() {
-  const [activeStage, setActiveStage] = useState(null)
-  const [instructionMnemonic, setInstructionMnemonic] = useState('')
+const STAGE_ORDER = ['IF', 'ID', 'EX', 'MEM', 'WB']
 
-  useEffect(() => {
-    const onFrameChange = (event) => {
-      const state = event.detail?.state
-      if (!state) return
-      const order = ['IF', 'ID', 'EX', 'MEM', 'WB']
-      let active = null
-      for (const s of order) {
-        if (state.pipeline[s]?.active) active = s
-      }
-      setActiveStage(active)
-      const inst = state.pipeline.IF.instruction
-      setInstructionMnemonic(inst && inst.mnemonic !== 'NOP' ? inst.mnemonic : '')
+/**
+ * Each pipeline register holds the instruction the stage DOWNSTREAM of it is
+ * working on this cycle: the IF/ID latch feeds ID, ID/EX feeds EX, and so on.
+ */
+const PIPEREG_FEEDS = { IFID: 'ID', IDEX: 'EX', EXMEM: 'MEM', MEMWB: 'WB' }
+
+function PipelineDiagram() {
+  // One shared subscription rather than a private window listener - see
+  // useCpuFrame. The frame now describes the whole machine for one clock cycle.
+  const state = useCpuState()
+
+  /**
+   * Which stages hold a real instruction right now. This used to collapse to a
+   * single "active stage" by taking the last match in IF..WB order, which was
+   * correct only while the simulator ran one instruction at a time. Against a
+   * real pipeline that logic reports WB and nothing else, so the diagram would
+   * look broken rather than busy.
+   */
+  const occupied = useMemo(() => {
+    if (!state) return {}
+    const out = {}
+    for (const s of STAGE_ORDER) {
+      const slot = state.stages ? state.stages[s] : null
+      const legacy = state.pipeline ? state.pipeline[s] : null
+      out[s] = slot ? !slot.bubble : !!(legacy && legacy.active)
     }
-    window.addEventListener('cpu:framechange', onFrameChange)
-    return () => window.removeEventListener('cpu:framechange', onFrameChange)
-  }, [])
+    return out
+  }, [state])
 
   const nodes = useMemo(() => {
-    const activeBandId = activeStage ? `band-${activeStage.toLowerCase()}` : null
     return initialNodes.map((n) => {
       const next = { ...n, data: { ...n.data } }
+
       if (n.type === 'band') {
-        next.data.active = n.id === activeBandId
+        const stage = n.id.replace('band-', '').toUpperCase()
+        next.data.active = !!occupied[stage]
       } else if (n.type === 'pipereg') {
-        next.data.instruction = instructionMnemonic || '—'
+        // Each latch shows its OWN occupant. Previously all four echoed the
+        // mnemonic from IF, which was only ever right because nothing else was
+        // in flight.
+        const feeds = PIPEREG_FEEDS[n.id]
+        const slot = state && state.stages ? state.stages[feeds] : null
+        next.data.instruction = slot && !slot.bubble && slot.mnemonic ? slot.mnemonic : '—'
       }
       return next
     })
-  }, [activeStage, instructionMnemonic])
+  }, [occupied, state])
 
   const edges = useMemo(() => {
     return initialEdges.map((e) => {
-      if (activeStage && e.data?.path === activeStage) {
+      if (e.data?.path && occupied[e.data.path]) {
         return { ...e, animated: true }
       }
       return e
     })
-  }, [activeStage])
+  }, [occupied])
 
   return (
     <div className="rf-cpu-wrapper">

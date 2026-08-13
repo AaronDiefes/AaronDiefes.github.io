@@ -27,24 +27,34 @@ function CPUSimulatorPage() {
 
     const loadScripts = async () => {
       try {
-        await import('../../../archived/cpu-simulator/src/core/cpu-state.js')
-        await import('../../../archived/cpu-simulator/src/core/instruction-set.js')
-        await import('../../../archived/cpu-simulator/src/core/sequence-generator.js')
+        /*
+         * These now come from src/lib/cpu/, not archived/. The archived tree is
+         * marked read-only by CLAUDE.md, and until now the live demo imported
+         * fourteen modules straight out of it - so "archived" was never actually
+         * archived. src/lib/cpu/ already held a byte-identical, unimported copy;
+         * that copy is now the real one and carries the pipeline rewrite.
+         *
+         * Order matters: PipelineSimulator must exist before sequence-generator
+         * (which delegates to it), and every module registers itself on `window`.
+         */
+        await import('../../lib/cpu/core/cpu-state.js')
+        await import('../../lib/cpu/core/instruction-set.js')
+        await import('../../lib/cpu/core/pipeline-simulator.js')
+        await import('../../lib/cpu/core/sequence-generator.js')
 
-        await import('../../../archived/cpu-simulator/src/animation/timing-controller.js')
-        await import('../../../archived/cpu-simulator/src/animation/animation-engine.js')
+        await import('../../lib/cpu/animation/timing-controller.js')
+        await import('../../lib/cpu/animation/animation-engine.js')
 
-        await import('../../../archived/cpu-simulator/src/programs/basic-instructions.js')
-        await import('../../../archived/cpu-simulator/src/programs/fibonacci.js')
+        await import('../../lib/cpu/programs/curated-programs.js')
 
-        await import('../../../archived/cpu-simulator/src/visualization/register-view.js')
-        await import('../../../archived/cpu-simulator/src/visualization/memory-view.js')
-        await import('../../../archived/cpu-simulator/src/visualization/instruction-view.js')
-        await import('../../../archived/cpu-simulator/src/visualization/cpu-visualizer.js')
+        await import('../../lib/cpu/visualization/register-view.js')
+        await import('../../lib/cpu/visualization/memory-view.js')
+        await import('../../lib/cpu/visualization/instruction-view.js')
+        await import('../../lib/cpu/visualization/cpu-visualizer.js')
 
-        await import('../../../archived/cpu-simulator/src/ui/instruction-list.js')
-        await import('../../../archived/cpu-simulator/src/ui/control-panel.js')
-        await import('../../../archived/cpu-simulator/src/ui/program-selector.js')
+        await import('../../lib/cpu/ui/instruction-list.js')
+        await import('../../lib/cpu/ui/control-panel.js')
+        await import('../../lib/cpu/ui/program-selector.js')
 
         if (cancelled) return
         cleanup = initializeCPUSimulator()
