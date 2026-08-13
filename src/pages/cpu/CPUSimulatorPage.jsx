@@ -1,8 +1,12 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import DemoLayout from '../../components/shared/DemoLayout'
 import PipelineDiagram from '../../components/cpu/PipelineDiagram'
+import PipelineTimeline from '../../components/cpu/PipelineTimeline'
 
 function CPUSimulatorPage() {
+  /* The whole simulated run, captured when a program loads. The timeline needs
+     every cycle at once; cpu:framechange only ever carries the current one. */
+  const [sequence, setSequence] = useState(null)
   const cpuVizContainerRef = useRef(null)
   const programSelectorContainerRef = useRef(null)
   const controlPanelContainerRef = useRef(null)
@@ -88,6 +92,11 @@ function CPUSimulatorPage() {
           onProgramLoad: function(program, result) {
             instructionList.loadProgram(program, result)
             visualizer.render(result.frames[0])
+            /* The timeline needs the WHOLE run, not just the current frame -
+               it draws which instruction occupied which stage on every cycle.
+               cpu:framechange only carries one frame, so the sequence is lifted
+               into React state here, where it is already available. */
+            setSequence({ program, frames: result.frames, metadata: result.metadata })
           }
         }
       )
@@ -177,6 +186,9 @@ function CPUSimulatorPage() {
         </aside>
 
         <div className="visualization-area">
+          {/* Sits above the datapath on purpose: the timeline is the index -
+              it tells you where you are before you look at where data flows. */}
+          <PipelineTimeline sequence={sequence} />
           <PipelineDiagram />
           <div id="cpu-viz-container" ref={cpuVizContainerRef} style={{ marginTop: '2rem' }}></div>
         </div>

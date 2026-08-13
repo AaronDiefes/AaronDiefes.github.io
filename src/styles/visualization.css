@@ -532,7 +532,12 @@
 }
 
 .instruction-item.active {
-  background: #E8F5E9;  /* Light green - matches IF stage color */
+  /* The token, not the literal. #E8F5E9 IS the light-mode value of
+     --stage-if-tint, so hardcoding it meant the active row stayed light green
+     in dark mode while its text went light - 1.07:1, effectively invisible.
+     This row only exists while a program is running, which is why an earlier
+     contrast sweep of this page (taken at frame 0) did not catch it. */
+  background: var(--stage-if-tint);  /* matches the IF stage colour */
   border-left: 4px solid var(--stage-if-color);
   padding-left: 8px;
 }

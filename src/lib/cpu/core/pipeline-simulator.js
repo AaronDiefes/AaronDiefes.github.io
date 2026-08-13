@@ -164,6 +164,8 @@
 
     let pc = 0;
     let nextInstrId = 0;
+    /** Id held by the instruction currently being fetched; see the IF stage. */
+    let pendingFetchId = null;
     let multdivCounter = 0;
     /**
      * Operands are captured when the multdiv unit STARTS and held for its whole
@@ -352,9 +354,28 @@
       }
 
       // ---- IF ---------------------------------------------------------------
+      /*
+       * Identity allocation is subtler than it looks, and getting it wrong is
+       * invisible in the raw numbers - it only shows up once something draws
+       * instructions as rows.
+       *
+       * A fetch that gets DISCARDED by a branch flush was still displayed in IF
+       * for a cycle, so it needs an id of its own; if the next fetch reuses that
+       * id, the wrong-path instruction and the branch target collapse into one
+       * row, which reads as a flushed instruction that somehow reached WB.
+       *
+       * A fetch that gets FROZEN by a stall is the same instruction re-fetched,
+       * so it must KEEP its id, or one instruction becomes two rows.
+       *
+       * Hence: allocate on first fetch, hold across a freeze, release on commit
+       * or flush.
+       */
       const ifInstr = fetchable ? instructions[pc] : null;
+      if (ifInstr && pendingFetchId === null) {
+        pendingFetchId = nextInstrId++;
+      }
       const ifOut = ifInstr
-        ? { instrId: nextInstrId, instr: ifInstr, pc }
+        ? { instrId: pendingFetchId, instr: ifInstr, pc }
         : BUBBLE;
 
       // ---- Frame (the machine as it stands THIS cycle) ----------------------
@@ -369,6 +390,7 @@
       // above, never each other.
       if (multdivBusy) {
         // Freeze everything behind the multdiv unit; EX/MEM takes a bubble.
+        // The fetch repeats next cycle, so it keeps pendingFetchId.
         mw = memOut;
         xm = BUBBLE;
         // dx, fd, pc unchanged
@@ -380,18 +402,21 @@
         dx = BUBBLE;
         fd = BUBBLE;
         pc = branchTarget;
+        // The discarded fetch keeps the id it was shown with; the next fetch is
+        // a different instruction and must get its own.
+        pendingFetchId = null;
       } else if (loadUseStall) {
         mw = memOut;
         xm = exOut;
         dx = BUBBLE;   // bubble into ID/EX
-        // fd and pc frozen
+        // fd and pc frozen - the fetch repeats, so pendingFetchId is held.
       } else {
         mw = memOut;
         xm = exOut;
         dx = idOut;
         fd = ifOut;
-        if (ifOut) nextInstrId++;
         pc = fetchable ? pc + 1 : pc;
+        pendingFetchId = null;   // latched; the next fetch allocates afresh
       }
     }
 

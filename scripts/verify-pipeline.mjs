@@ -258,6 +258,63 @@ function eventsOf(result, kind) {
   }
 }
 
+// =============================================================================
+// 10. Instruction IDENTITY. Every assertion above passes even when two different
+//     instructions share an id - registers and cycle counts simply do not see
+//     it. It only surfaces once something draws instructions as rows, where a
+//     flushed instruction appears to march on to WB. So check it directly.
+// =============================================================================
+{
+  const programs = globalThis.CPU_PROGRAMS
+
+  for (const [id, prog] of Object.entries(programs)) {
+    const r = Sim.simulate(prog)
+
+    // An instrId must refer to exactly one instruction, at one address, forever.
+    const seen = new Map()   // instrId -> pc
+    let collisions = 0
+    for (const f of r.frames) {
+      for (const st of ['IF', 'ID', 'EX', 'MEM', 'WB']) {
+        const slot = f.stages[st]
+        if (!slot || slot.bubble || slot.instrId == null) continue
+        if (!seen.has(slot.instrId)) seen.set(slot.instrId, slot.pc)
+        else if (seen.get(slot.instrId) !== slot.pc) collisions++
+      }
+    }
+    check(`${id}: no instrId is reused by a different instruction`, collisions, 0)
+
+    // A flushed instruction is on the wrong path: it must never reach WB, and
+    // must never write a register.
+    const killed = new Set()
+    r.frames.forEach((f) => f.events.forEach((e) => {
+      if (e.kind === 'flush') (e.killed || []).forEach((k) => killed.add(k))
+    }))
+    let flushedReachedWb = 0
+    for (const f of r.frames) {
+      const wb = f.stages.WB
+      if (wb && !wb.bubble && killed.has(wb.instrId)) flushedReachedWb++
+    }
+    check(`${id}: no flushed instruction reaches write-back`, flushedReachedWb, 0)
+
+    // Every instruction that retires must have passed through all five stages.
+    let brokenJourney = 0
+    const journeys = new Map()
+    for (const f of r.frames) {
+      for (const st of ['IF', 'ID', 'EX', 'MEM', 'WB']) {
+        const slot = f.stages[st]
+        if (!slot || slot.bubble || slot.instrId == null) continue
+        if (!journeys.has(slot.instrId)) journeys.set(slot.instrId, new Set())
+        journeys.get(slot.instrId).add(st)
+      }
+    }
+    for (const [instrId, stages] of journeys) {
+      if (killed.has(instrId)) continue           // wrong-path: stops early by design
+      if (stages.size !== 5) brokenJourney++
+    }
+    check(`${id}: every surviving instruction visits all five stages`, brokenJourney, 0)
+  }
+}
+
 // ---- report -----------------------------------------------------------------
 console.log(`\n  ${passed} passed, ${failures.length} failed\n`)
 if (failures.length) {

@@ -1,0 +1,245 @@
+/**
+ * Pipeline occupancy grid.
+ *
+ * Colour approach, and why it is not the obvious one: the --stage-*-color tokens
+ * (#4CAF50, #FF9800, …) are saturated and are NOT theme-aware - they are the same
+ * in light and dark. Using them as cell backgrounds would mean picking a
+ * foreground that works on all five in both themes, and orange in particular
+ * fails badly (white on #FF9800 is about 2.1:1).
+ *
+ * So the cell takes the theme-aware --stage-*-tint as its ground and
+ * --color-text as its ink: both invert together, so contrast is guaranteed in
+ * either theme by construction. The stage's identity is carried by a
+ * full-saturation bottom border, where contrast does not apply.
+ */
+
+.pipeline-timeline {
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.ptl-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.ptl-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-heading);
+}
+
+.ptl-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ptl-cycle {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.ptl-sep { opacity: 0.5; }
+
+.ptl-stall-note {
+  color: var(--status-warn-fg);
+  font-weight: 600;
+}
+
+.ptl-empty {
+  margin: 0;
+  padding: 1.25rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+/* Wide content scrolls inside its own container, never the page. */
+.ptl-scroller {
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.ptl-grid {
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-size: 0.78rem;
+  margin: 0 0.5rem;
+}
+
+.ptl-corner,
+.ptl-label {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+  min-width: 9.5rem;
+  max-width: 13rem;
+}
+
+.ptl-corner {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.ptl-label {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.ptl-label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ptl-flag {
+  font-family: var(--font-body, inherit);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--status-err-fg);
+  border: 1px solid var(--status-err-border);
+  border-radius: 3px;
+  padding: 0 0.25rem;
+  flex: none;
+}
+
+/* Cycle numbers */
+.ptl-cyc {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-align: center;
+  min-width: 2.4rem;
+  padding: 0.2rem 0;
+}
+
+.ptl-cyc.is-current {
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+/* Cells */
+.ptl-cell {
+  text-align: center;
+  min-width: 2.4rem;
+  height: 1.75rem;
+  padding: 0 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-radius: 3px;
+  border-bottom: 3px solid transparent;
+}
+
+.ptl-cell.is-empty {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+/* Ground from the theme-aware tint; identity from the saturated border. */
+.ptl-cell.stage-if  { background: var(--stage-if-tint);  border-bottom-color: var(--stage-if-color); }
+.ptl-cell.stage-id  { background: var(--stage-id-tint);  border-bottom-color: var(--stage-id-color); }
+.ptl-cell.stage-ex  { background: var(--stage-ex-tint);  border-bottom-color: var(--stage-ex-color); }
+.ptl-cell.stage-mem { background: var(--stage-mem-tint); border-bottom-color: var(--stage-mem-color); }
+.ptl-cell.stage-wb  { background: var(--stage-wb-tint);  border-bottom-color: var(--stage-wb-color); }
+
+/* A repeated stage means the instruction did not advance. Same amber vocabulary
+   the Hazards documentation page uses for an inserted bubble. */
+.ptl-cell.is-stalled {
+  background: var(--status-warn-bg);
+  color: var(--status-warn-fg);
+  border-bottom-color: var(--status-warn-border);
+  letter-spacing: 0.1em;
+}
+
+.ptl-cell.is-current {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -1px;
+}
+
+/* On an empty cell the playhead should read as a guide running down the column,
+   not as an empty box waiting to be filled in. */
+.ptl-cell.is-empty.is-current {
+  outline-width: 1px;
+  outline-style: dashed;
+  opacity: 0.4;
+}
+
+/* Wrong-path instructions: still shown, because seeing them get discarded is
+   the lesson, but visibly not part of the real execution. */
+.ptl-row.is-flushed .ptl-cell {
+  opacity: 0.45;
+}
+
+.ptl-row.is-flushed .ptl-label-text {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Legend */
+.ptl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0.75rem;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.ptl-key {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  color: var(--color-text);
+  border-bottom: 3px solid transparent;
+}
+
+.ptl-key.stage-if  { background: var(--stage-if-tint);  border-bottom-color: var(--stage-if-color); }
+.ptl-key.stage-id  { background: var(--stage-id-tint);  border-bottom-color: var(--stage-id-color); }
+.ptl-key.stage-ex  { background: var(--stage-ex-tint);  border-bottom-color: var(--stage-ex-color); }
+.ptl-key.stage-mem { background: var(--stage-mem-tint); border-bottom-color: var(--stage-mem-color); }
+.ptl-key.stage-wb  { background: var(--stage-wb-tint);  border-bottom-color: var(--stage-wb-color); }
+
+.ptl-key.is-stalled {
+  background: var(--status-warn-bg);
+  color: var(--status-warn-fg);
+  border-bottom-color: var(--status-warn-border);
+}
+
+.ptl-key.is-flushed {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  border: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 768px) {
+  .ptl-corner,
+  .ptl-label { min-width: 7rem; max-width: 8.5rem; }
+  .ptl-label { font-size: 0.68rem; }
+}
