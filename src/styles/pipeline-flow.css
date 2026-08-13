@@ -7,17 +7,14 @@
 
 .rf-cpu-wrapper {
   /*
-   * Was 1020px, matching the board's own height back when the canvas was meant
-   * to be viewed 1:1. Fitted into the demo column the whole board is only about
-   * 250px tall, so a 1020px box left roughly 750px of empty grid under it and
-   * pushed everything below off the screen.
-   *
-   * 560px is chosen for the FOCUSED view, which is the one that has to be
-   * readable: the widest stage (EX, ~1410px with its channels) fits a ~900px
-   * column at around 0.64 zoom and needs ~540px of height. The whole-datapath
-   * overview then sits comfortably inside the same box.
+   * Sized for the FOCUSED view, which is the one that has to be readable, not
+   * for the board's own height. Every stage frame is 878px tall (the bands plus
+   * the feedback lanes above and below them), so height is what limits the zoom
+   * on four of the five stages - each extra 80px here buys about 12% scale on
+   * the port labels, which is the whole reason the schematic is drawn at
+   * signal-name detail. The whole-datapath overview fits inside the same box.
    */
-  height: 560px;
+  height: 640px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-surface);
@@ -118,15 +115,24 @@
   font-family: var(--font-mono);
   font-size: 10.5px;
   color: var(--color-text);
-  background: var(--color-surface);
+  /*
+   * No opaque background. It painted a solid surface-coloured bar behind every
+   * port name, and at overview zoom those bars read as objects in their own
+   * right - or worse, as wire segments. A doubled text-shadow gives the same
+   * legibility where a wire passes behind a label without boxing anything out.
+   */
+  text-shadow:
+    0 0 3px var(--color-surface),
+    0 0 3px var(--color-surface),
+    0 0 2px var(--color-surface);
   padding: 1px 4px;
   white-space: nowrap;
   line-height: 1;
   z-index: 2;
 }
 
-.rf-ic-port-label-in  { left: 10px; }
-.rf-ic-port-label-out { right: 10px; }
+.rf-ic-port-label-in  { left: 8px; }
+.rf-ic-port-label-out { right: 8px; }
 
 /* Stage-color headers for components inside each stage */
 .rf-ic.stage-if  .rf-ic-header { background: var(--stage-if-color); }
@@ -220,6 +226,15 @@
   text-transform: uppercase;
 }
 
+/* Lead lines carrying each port from the node boundary to the symbol. The
+   handles sit on the boundary so an incoming wire terminates where the node
+   does, instead of descending through the trapezoid to reach an inboard port. */
+.rf-classic-mux-lead {
+  stroke: var(--color-text-heading);
+  stroke-width: 1.5;
+  fill: none;
+}
+
 .rf-classic-mux.stage-if  .rf-classic-mux-polygon { stroke: var(--stage-if-color); }
 .rf-classic-mux.stage-if  .rf-classic-mux-glyph   { fill: var(--stage-if-color); }
 .rf-classic-mux.stage-id  .rf-classic-mux-polygon { stroke: var(--stage-id-color); }
@@ -230,6 +245,12 @@
 .rf-classic-mux.stage-mem .rf-classic-mux-glyph   { fill: var(--stage-mem-color); }
 .rf-classic-mux.stage-wb  .rf-classic-mux-polygon { stroke: var(--stage-wb-color); }
 .rf-classic-mux.stage-wb  .rf-classic-mux-glyph   { fill: var(--stage-wb-color); }
+
+.rf-classic-mux.stage-if  .rf-classic-mux-lead { stroke: var(--stage-if-color); }
+.rf-classic-mux.stage-id  .rf-classic-mux-lead { stroke: var(--stage-id-color); }
+.rf-classic-mux.stage-ex  .rf-classic-mux-lead { stroke: var(--stage-ex-color); }
+.rf-classic-mux.stage-mem .rf-classic-mux-lead { stroke: var(--stage-mem-color); }
+.rf-classic-mux.stage-wb  .rf-classic-mux-lead { stroke: var(--stage-wb-color); }
 
 .rf-classic-mux.active .rf-classic-mux-polygon {
   stroke-width: 3;
@@ -243,15 +264,19 @@
   font-family: var(--font-mono);
   font-size: 10.5px;
   color: var(--color-text);
-  background: var(--color-surface);
-  padding: 1px 2px;
+  text-shadow:
+    0 0 3px var(--color-surface),
+    0 0 3px var(--color-surface);
+  padding: 0 2px;
   white-space: nowrap;
   line-height: 1;
 }
 
+/* Rides above its own lead line rather than sitting on the wire. */
 .rf-classic-mux-in-label {
-  left: 4px;
-  text-align: right;
+  left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rf-classic-mux-sel-label {
@@ -295,8 +320,15 @@
   box-shadow: 0 0 0 3px var(--color-pipeline-fill), 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
+/* 50px tall, matching PIPEREG_HEADER_H — the port geometry is measured from
+   the bottom of this box, so the two must agree. */
 .rf-pipereg-header {
-  padding: 0.4rem 0.25rem;
+  height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -356,10 +388,15 @@
   stroke-dasharray: 4 3;
 }
 
+/* Dotted, not dashed. The legend swatch has always been dotted while the wire
+   rendered `6 4`, and against the control wires' `4 3` in the same colour the
+   two categories were indistinguishable at overview zoom — two of five legend
+   entries collapsing into one. Dotted vs dashed separates them by shape. */
 .react-flow__edge.rf-edge-feedback .react-flow__edge-path {
   stroke: var(--color-text-muted);
-  stroke-width: 1.25;
-  stroke-dasharray: 6 4;
+  stroke-width: 1.5;
+  stroke-dasharray: 1.5 3.5;
+  stroke-linecap: round;
 }
 
 .react-flow__edge.rf-edge-forward .react-flow__edge-path {
@@ -513,6 +550,34 @@
   opacity: 0.55;
 }
 
+/*
+ * Edges dim too. There was no rule for them at all, so focusing a stage faded
+ * the chips to 18% and left every wire on the board at full strength on top -
+ * the one view meant to isolate a stage was the one that read as a wire nest.
+ * Wires are thin, so they fade less far than the chips do; 0.12 is where a
+ * 1.5px line stops registering as a line.
+ */
+.rf-cpu-wrapper[data-focus] .react-flow__edge.rf-edge-dim {
+  opacity: 0.12;
+  transition: opacity 250ms var(--easing-standard, ease);
+}
+
+/* Feedback-wire labels ride just above their lane. They used to sit on it with
+   an opaque background, so each label boxed out the wire it was labelling. */
+.rf-feedback-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-shadow:
+    0 0 3px var(--color-surface),
+    0 0 3px var(--color-surface),
+    0 0 3px var(--color-surface);
+  padding: 0 3px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* ---- Legend ------------------------------------------------------------- */
 
 .rf-legend {
@@ -543,7 +608,7 @@
 .rf-swatch.is-data     { border-top-color: var(--color-text); }
 .rf-swatch.is-control  { border-top-color: var(--color-text-muted); border-top-style: dashed; }
 .rf-swatch.is-forward  { border-top-color: var(--stage-ex-color); border-top-style: dashed; }
-.rf-swatch.is-feedback { border-top-color: var(--color-text-muted); border-top-style: dotted; }
+.rf-swatch.is-feedback { border-top-color: var(--color-text-muted); border-top-style: dotted; border-top-width: 3px; }
 .rf-swatch.is-live     { border-top-color: var(--color-primary); border-top-width: 3px; }
 
 .rf-legend-note {

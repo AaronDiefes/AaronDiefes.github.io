@@ -14,8 +14,8 @@ import { useCpuState } from '../../hooks/useCpuFrame'
  *
  * Long backward feedback wires (forwarding paths, write-back loop,
  * branch-target loop) use a custom FeedbackEdge that routes via the top or
- * bottom of the canvas with a configurable routeY, so they don't cut
- * through node bodies.
+ * bottom of the canvas, with a short horizontal stub off the port so the
+ * vertical run never lies along a chip's own border.
  */
 
 // ---------- Custom node components ----------------------------------------
@@ -32,23 +32,28 @@ function StageBandNode({ data }) {
   )
 }
 
+const IC_HEADER_H = 52
+const IC_PORT_STEP = 32
+const IC_PAD_BOTTOM = 22
+
+/** Chip height is a pure function of its port count — used by the layout audit. */
+const icHeight = (data) =>
+  IC_HEADER_H +
+  Math.max((data.inputs || []).length, (data.outputs || []).length, 1) * IC_PORT_STEP +
+  IC_PAD_BOTTOM
+
 function IcNode({ data }) {
   const stageClass = data.stage ? `stage-${data.stage}` : ''
   const variantClass = data.variant ? `variant-${data.variant}` : ''
   const inputs = data.inputs || []
   const outputs = data.outputs || []
-  const PORT_STEP = 32
-  const HEADER_H = 52
-  const PAD_BOTTOM = 22
-  const numPorts = Math.max(inputs.length, outputs.length, 1)
-  const chipHeight = HEADER_H + numPorts * PORT_STEP + PAD_BOTTOM
   // Each port's vertical centre, relative to the chip's top.
-  const portY = (i) => HEADER_H + (i + 0.5) * PORT_STEP
+  const portY = (i) => IC_HEADER_H + (i + 0.5) * IC_PORT_STEP
 
   return (
     <div
       className={`rf-ic ${stageClass} ${variantClass} ${data.active ? 'active' : ''}`}
-      style={{ width: data.width ?? 260, height: chipHeight }}
+      style={{ width: data.width ?? 200, height: icHeight(data) }}
     >
       <div className="rf-ic-header">
         <span className="rf-ic-title">{data.label}</span>
@@ -98,17 +103,32 @@ function IcNode({ data }) {
 }
 
 /**
- * Pipeline register chip — partitioned-width input port column on the left,
- * output port column on the right. Each input port matches one partition of
- * the latch's writeIn vector (e.g., IF/ID takes {PC, instruction}; EX/MEM
- * takes {xm_data, xm_b, xm_ins}).
- */
-/**
  * ClassicMuxNode — textbook trapezoidal MUX symbol. Data inputs on the wide
- * (left) edge, output on the narrow (right) edge, select input on top. Used
- * for muxes where the schematic-style shape adds clarity over a labeled
- * rectangle. Input port ids: any non-'sel' id is treated as a data input.
+ * (left) edge, output on the narrow (right) edge, select input on top.
+ *
+ * Handles sit on the NODE's own edges, not on the trapezoid, and a drawn lead
+ * line carries each one across to the symbol. Putting the handles inboard (at
+ * left: 130) meant an incoming wire had to descend *through* the node to reach
+ * its port — the two branch feedback wires ran straight down over the trapezoid
+ * fill and the title text. With the handle on the boundary, a wire terminates
+ * where the node terminates, which is the only place a wire can arrive cleanly.
  */
+const MUX_LEAD_W = 130
+const MUX_TRAPEZOID_W = 70
+const MUX_RIGHT_W = 84
+const MUX_IN_SPACING = 40
+const MUX_TOP = 34
+
+const muxSize = (data) => {
+  const dataInputs = (data.inputs || []).filter((p) => p.id !== 'sel')
+  const trapezoidHeight = Math.max(dataInputs.length * MUX_IN_SPACING + 34, 110)
+  return {
+    width: MUX_LEAD_W + MUX_TRAPEZOID_W + MUX_RIGHT_W,
+    height: trapezoidHeight + MUX_TOP + 18,
+    trapezoidHeight,
+  }
+}
+
 function ClassicMuxNode({ data }) {
   const stageClass = data.stage ? `stage-${data.stage}` : ''
   const inputs = data.inputs || []
@@ -116,26 +136,23 @@ function ClassicMuxNode({ data }) {
   const dataInputs = inputs.filter((p) => p.id !== 'sel')
   const selInput = inputs.find((p) => p.id === 'sel')
 
-  const LEFT_LABEL_W = 130
-  const TRAPEZOID_W = 70
-  const RIGHT_LABEL_W = 90
-  const totalWidth = LEFT_LABEL_W + TRAPEZOID_W + RIGHT_LABEL_W
-  const inputSpacing = 38
-  const trapezoidHeight = Math.max(dataInputs.length * inputSpacing + 30, 110)
-  const trapezoidTop = 32
-  const totalHeight = trapezoidHeight + trapezoidTop + 18
+  const { width: totalWidth, height: totalHeight, trapezoidHeight } = muxSize(data)
   const narrowOffset = trapezoidHeight * 0.18
-  const trapezoidLeftX = LEFT_LABEL_W
-  const trapezoidRightX = LEFT_LABEL_W + TRAPEZOID_W
+  const leftX = MUX_LEAD_W
+  const rightX = MUX_LEAD_W + MUX_TRAPEZOID_W
+  const selX = leftX + MUX_TRAPEZOID_W / 2
 
   const points = [
-    [trapezoidLeftX, trapezoidTop],
-    [trapezoidRightX, trapezoidTop + narrowOffset],
-    [trapezoidRightX, trapezoidTop + trapezoidHeight - narrowOffset],
-    [trapezoidLeftX, trapezoidTop + trapezoidHeight],
+    [leftX, MUX_TOP],
+    [rightX, MUX_TOP + narrowOffset],
+    [rightX, MUX_TOP + trapezoidHeight - narrowOffset],
+    [leftX, MUX_TOP + trapezoidHeight],
   ]
     .map((p) => p.join(','))
     .join(' ')
+
+  const inY = (i) => MUX_TOP + (trapezoidHeight / (dataInputs.length + 1)) * (i + 1)
+  const outY = MUX_TOP + trapezoidHeight / 2
 
   return (
     <div
@@ -144,107 +161,81 @@ function ClassicMuxNode({ data }) {
     >
       <svg width={totalWidth} height={totalHeight} className="rf-classic-mux-svg">
         <polygon points={points} className="rf-classic-mux-polygon" />
-        <text
-          x={trapezoidLeftX + TRAPEZOID_W / 2}
-          y={trapezoidTop + trapezoidHeight / 2}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="rf-classic-mux-glyph"
-        >
+        {/* Lead lines from the node boundary to the symbol. */}
+        {dataInputs.map((p, i) => (
+          <line key={`lead-${p.id}`} className="rf-classic-mux-lead" x1={0} y1={inY(i)} x2={leftX} y2={inY(i)} />
+        ))}
+        <line className="rf-classic-mux-lead" x1={rightX} y1={outY} x2={totalWidth} y2={outY} />
+        {selInput && <line className="rf-classic-mux-lead" x1={selX} y1={0} x2={selX} y2={MUX_TOP + narrowOffset / 2} />}
+
+        <text x={selX} y={MUX_TOP + trapezoidHeight / 2} textAnchor="middle" dominantBaseline="middle" className="rf-classic-mux-glyph">
           MUX
         </text>
-        <text
-          x={trapezoidLeftX + TRAPEZOID_W / 2}
-          y={14}
-          textAnchor="middle"
-          className="rf-classic-mux-title"
-        >
+        <text x={selX} y={totalHeight - 4} textAnchor="middle" className="rf-classic-mux-title">
           {data.label}
         </text>
       </svg>
 
-      {/* Sel input (top edge of trapezoid) */}
+      {/* Sel — handle on the node's top edge, label beside the lead line. */}
       {selInput && (
         <>
-          <div
-            className="rf-classic-mux-sel-label"
-            style={{ top: trapezoidTop - 14, left: trapezoidRightX + 6 }}
-          >
+          <div className="rf-classic-mux-sel-label" style={{ top: 2, left: selX + 6 }}>
             {selInput.label}
           </div>
-          <Handle
-            type="target"
-            position={Position.Top}
-            id={selInput.id}
-            style={{ left: trapezoidLeftX + TRAPEZOID_W / 2, top: trapezoidTop }}
-          />
+          <Handle type="target" position={Position.Top} id={selInput.id} style={{ left: selX, top: 0 }} />
         </>
       )}
 
-      {/* Data inputs (left edge) */}
-      {dataInputs.map((p, i) => {
-        const portY = trapezoidTop + (trapezoidHeight / (dataInputs.length + 1)) * (i + 1)
-        return (
-          <React.Fragment key={p.id}>
-            <div
-              className="rf-classic-mux-in-label"
-              style={{ top: portY - 8, width: LEFT_LABEL_W - 8 }}
-            >
-              {p.label}
-            </div>
-            <Handle
-              type="target"
-              position={Position.Left}
-              id={p.id}
-              style={{ top: portY, left: trapezoidLeftX }}
-            />
-          </React.Fragment>
-        )
-      })}
+      {/* Data inputs — handle on the node's left edge, label riding above its lead. */}
+      {dataInputs.map((p, i) => (
+        <React.Fragment key={p.id}>
+          <div className="rf-classic-mux-in-label" style={{ top: inY(i) - 15, maxWidth: MUX_LEAD_W - 8 }}>
+            {p.label}
+          </div>
+          <Handle type="target" position={Position.Left} id={p.id} style={{ top: inY(i), left: 0 }} />
+        </React.Fragment>
+      ))}
 
-      {/* Output (right edge) */}
-      {outputs.map((p) => {
-        const portY = trapezoidTop + trapezoidHeight / 2
-        return (
-          <React.Fragment key={p.id}>
-            <div
-              className="rf-classic-mux-out-label"
-              style={{ top: portY - 8, left: trapezoidRightX + 4 }}
-            >
-              {p.label}
-            </div>
-            <Handle
-              type="source"
-              position={Position.Right}
-              id={p.id}
-              style={{ top: portY, left: trapezoidRightX }}
-            />
-          </React.Fragment>
-        )
-      })}
+      {/* Output — handle on the node's right edge. */}
+      {outputs.map((p) => (
+        <React.Fragment key={p.id}>
+          <div className="rf-classic-mux-out-label" style={{ top: outY - 15, left: rightX + 4 }}>
+            {p.label}
+          </div>
+          <Handle type="source" position={Position.Right} id={p.id} style={{ top: outY, left: totalWidth }} />
+        </React.Fragment>
+      ))}
     </div>
   )
 }
 
+const PIPEREG_HEADER_H = 50
+const PIPEREG_PAD_BOTTOM = 14
+
+/**
+ * Pipeline register — a compact latch between two stages.
+ *
+ * It used to be a 130×700 slab, which made it the largest object on the board
+ * and forced every cross-stage wire into a 300–500px vertical run just to reach
+ * a port at the far end of it. At 110×~220 the ports are grouped where the
+ * wires already are, and the latch reads as a divider rather than a component.
+ */
 function PipelineRegisterNode({ data }) {
   const inputs = data.inputs || [{ id: 'in', label: 'in' }]
   const outputs = data.outputs || [{ id: 'out', label: 'out' }]
-  const headerHeight = 56
-  const padBottom = 20
-  const totalHeight = data.height ?? 640
-  const portsAreaHeight = totalHeight - headerHeight - padBottom
+  const totalHeight = data.height ?? 220
+  const portsAreaHeight = totalHeight - PIPEREG_HEADER_H - PIPEREG_PAD_BOTTOM
 
   // Distribute input ports and output ports independently across the ports
-  // area so each side fills the full height of the pipereg, regardless of
-  // how many ports it has.
-  const inStep  = portsAreaHeight / inputs.length
+  // area so each side fills the full height, regardless of how many it has.
+  const inStep = portsAreaHeight / inputs.length
   const outStep = portsAreaHeight / outputs.length
-  const portY = (step, i) => headerHeight + step * (i + 0.5)
+  const portY = (step, i) => PIPEREG_HEADER_H + step * (i + 0.5)
 
   return (
     <div
       className={`rf-pipereg ${data.active ? 'active' : ''}`}
-      style={{ height: totalHeight, width: data.width ?? 130 }}
+      style={{ height: totalHeight, width: data.width ?? 110 }}
     >
       <div className="rf-pipereg-header">
         <div className="rf-pipereg-label">{data.label}</div>
@@ -313,31 +304,46 @@ const nodeTypes = {
 // ---------- Custom feedback edge ------------------------------------------
 
 /**
- * FeedbackEdge — orthogonal 4-segment route for long backward wires.
- * Path: source → vertical to routeY → horizontal across canvas → vertical
- * to target. Each feedback wire gets a unique routeY so they don't overlap.
+ * FeedbackEdge — orthogonal route for long backward wires, out to a lane above
+ * or below the board and back.
+ *
+ * The stub matters. Without it the path went straight up from the source
+ * handle, and since a Right handle sits exactly on the node's right edge and a
+ * Left handle on its left edge, every vertical ran precisely along a chip's
+ * border — under an opaque chip, which paints above the edges. Four of these
+ * were stacked on the same border at once. Stepping 26px clear first puts the
+ * vertical in open canvas where it can actually be seen.
  */
+const FEEDBACK_STUB = 26
+
 function FeedbackEdge({ id, sourceX, sourceY, targetX, targetY, data, label, labelStyle, markerEnd, style }) {
   const routeY = data?.routeY ?? 40
-  const path = `M ${sourceX} ${sourceY} L ${sourceX} ${routeY} L ${targetX} ${routeY} L ${targetX} ${targetY}`
+  const sx = sourceX + FEEDBACK_STUB
+  // A Top-position handle is entered vertically; a Left handle horizontally.
+  const enterTop = !!data?.enterTop
+  const tx = enterTop ? targetX : targetX - FEEDBACK_STUB
+
+  const path = enterTop
+    ? `M ${sourceX} ${sourceY} L ${sx} ${sourceY} L ${sx} ${routeY} L ${tx} ${routeY} L ${tx} ${targetY}`
+    : `M ${sourceX} ${sourceY} L ${sx} ${sourceY} L ${sx} ${routeY} L ${tx} ${routeY} L ${tx} ${targetY} L ${targetX} ${targetY}`
+
   return (
     <>
       <BaseEdge id={id} path={path} markerEnd={markerEnd} style={style} />
       {label && (
         <EdgeLabelRenderer>
           <div
+            /*
+             * Sat directly on the lane with an opaque surface background, so
+             * every label boxed out the wire it was labelling. It rides just
+             * above the lane now, and uses a soft scrim rather than a solid
+             * rectangle so the wire stays continuous underneath.
+             */
+            className="nodrag nopan rf-feedback-label"
             style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${(sourceX + targetX) / 2}px, ${routeY - 8}px)`,
-              fontSize: 10,
-              fontFamily: 'Monaco, Menlo, monospace',
-              color: 'var(--color-text-muted)',
-              background: 'var(--color-surface)',
-              padding: '0 4px',
-              pointerEvents: 'none',
+              transform: `translate(-50%, -100%) translate(${(sourceX + targetX) / 2}px, ${routeY - 4}px)`,
               ...labelStyle,
             }}
-            className="nodrag nopan"
           >
             {label}
           </div>
@@ -353,98 +359,109 @@ const edgeTypes = {
 
 // ---------- Static layout --------------------------------------------------
 
-// Canvas: ~3300 × 1020. Five stage bands separated by 180-wide channels that
-// contain only the pipeline-register pill. Chips widened so every port label
-// fits within the chip body without colliding with the opposite-side labels.
+/*
+ * Canvas ~2780 × 880, down from 3300 × 1020.
+ *
+ * The board is laid out for the FOCUSED stage, not the overview: 22 chips with
+ * 4–6 labelled ports each cannot be legible all at once in a ~680px column, and
+ * chasing that produces a diagram that is bad at everything. So the overview
+ * carries shape, stage colour and flow direction, and each stage is sized to be
+ * readable when it is the thing on screen.
+ *
+ * Widths are no longer round numbers; each chip is sized to its own widest
+ * in/out label pair. The old 320px ALU was about 40% air, which read as "these
+ * parts are far apart" when they are adjacent in the Verilog.
+ */
 
-const BAND_TOP = 110
-const BAND_HEIGHT = 810
-const PIPE_HEIGHT = 700
-const PIPE_TOP = 165
-const PIPE_WIDTH = 130
+const BAND_TOP = 120
+const BAND_HEIGHT = 660
+const BAND_BOTTOM = BAND_TOP + BAND_HEIGHT   // 780
+const PIPE_WIDTH = 110
+
+// Feedback lanes, 18px apart: enough for a 10px label to ride above its own
+// wire without touching the lane above it.
+const LANE = {
+  // Above the board: the write-back loop and the branch loop.
+  wbReg: 26, wbEn: 44, wbData: 62, brTarget: 80, brSel: 98,
+  // Below it: every bypass. The WM bypass is the shortest of them, so it takes
+  // the shallowest lane rather than diving past the other four.
+  wmBypass: 792, mxA: 810, mxB: 828, wxA: 846, wxB: 864, mdStall: 882,
+}
 
 const initialNodes = [
   /*
    * zIndex -1 puts the bands BELOW the edges. React Flow's viewport layers in a
    * fixed order - edges, then edgelabel-renderer, then nodes - so nodes paint
-   * last. These bands are opaque rectangles up to 1080x810, which meant every
-   * wire routed inside a stage was drawn and then covered by its own band. Only
-   * the wires in the channels between bands were ever visible.
+   * last. These bands are opaque rectangles, which meant every wire routed
+   * inside a stage was drawn and then covered by its own band.
    */
-  // ---- Stage band backgrounds (wider; channels between them are 180 px) ----
-  { id: 'band-if',  type: 'band', zIndex: -1, position: { x: 0,    y: BAND_TOP }, data: { stage: 'if',  name: 'INSTRUCTION FETCH',  short: 'IF',  width: 480,  height: BAND_HEIGHT } },
-  { id: 'band-id',  type: 'band', zIndex: -1, position: { x: 660,  y: BAND_TOP }, data: { stage: 'id',  name: 'INSTRUCTION DECODE', short: 'ID',  width: 380,  height: BAND_HEIGHT } },
-  { id: 'band-ex',  type: 'band', zIndex: -1, position: { x: 1220, y: BAND_TOP }, data: { stage: 'ex',  name: 'EXECUTE',            short: 'EX',  width: 1080, height: BAND_HEIGHT } },
-  { id: 'band-mem', type: 'band', zIndex: -1, position: { x: 2480, y: BAND_TOP }, data: { stage: 'mem', name: 'MEMORY ACCESS',      short: 'MEM', width: 320,  height: BAND_HEIGHT } },
-  { id: 'band-wb',  type: 'band', zIndex: -1, position: { x: 2980, y: BAND_TOP }, data: { stage: 'wb',  name: 'WRITE BACK',         short: 'WB',  width: 320,  height: BAND_HEIGHT } },
+  { id: 'band-if',  type: 'band', zIndex: -1, position: { x: 0,    y: BAND_TOP }, data: { stage: 'if',  name: 'INSTRUCTION FETCH',  short: 'IF',  width: 480, height: BAND_HEIGHT } },
+  { id: 'band-id',  type: 'band', zIndex: -1, position: { x: 630,  y: BAND_TOP }, data: { stage: 'id',  name: 'INSTRUCTION DECODE', short: 'ID',  width: 420, height: BAND_HEIGHT } },
+  { id: 'band-ex',  type: 'band', zIndex: -1, position: { x: 1200, y: BAND_TOP }, data: { stage: 'ex',  name: 'EXECUTE',            short: 'EX',  width: 760, height: BAND_HEIGHT } },
+  { id: 'band-mem', type: 'band', zIndex: -1, position: { x: 2110, y: BAND_TOP }, data: { stage: 'mem', name: 'MEMORY ACCESS',      short: 'MEM', width: 260, height: BAND_HEIGHT } },
+  { id: 'band-wb',  type: 'band', zIndex: -1, position: { x: 2520, y: BAND_TOP }, data: { stage: 'wb',  name: 'WRITE BACK',         short: 'WB',  width: 260, height: BAND_HEIGHT } },
 
   // ==== IF stage (band 0–480) ====
-  // PC_MUX uses the classic trapezoidal MUX symbol; selects between PC+1
-  // (default) and the branch/jump target.
-  { id: 'PC_MUX', type: 'mux-classic', position: { x: 30, y: 200 }, data: {
+  { id: 'PC_MUX', type: 'mux-classic', position: { x: 30, y: 160 }, data: {
     label: 'PC Source Mux', stage: 'if',
     inputs: [
-      { id: 'sel', label: 'sel = take_branch' },
+      { id: 'sel', label: 'take_branch' },
       { id: 'in0', label: 'PC+1' },
       { id: 'in1', label: 'br/jmp target' },
     ],
     outputs: [{ id: 'out', label: 'PC_In' }],
   } },
-  // PC drops the writeEnable port from the diagram (writeEnable = ~any_stall,
-  // sourced from stall logic in EX — covered by docs, not drawn here).
-  { id: 'PC', type: 'ic', position: { x: 30, y: 440 }, data: {
-    label: 'PC', subtitle: 'reg_32bit · stallable', stage: 'if', width: 240,
+  { id: 'PC', type: 'ic', position: { x: 30, y: 370 }, data: {
+    label: 'PC', subtitle: 'reg_32bit · stallable', stage: 'if', width: 200,
     inputs: [
       { id: 'writeIn', label: 'writeIn' },
-      { id: 'writeEnable', label: 'writeEnable = ~stall' },
+      { id: 'writeEnable', label: 'wren = ~stall' },
     ],
     outputs: [{ id: 'readOut', label: 'PC_Out' }],
   } },
-  { id: 'IMEM', type: 'ic', position: { x: 310, y: 440 }, data: {
-    label: 'Instruction Memory', subtitle: 'ROM', variant: 'external', stage: 'if', width: 160,
+  { id: 'IMEM', type: 'ic', position: { x: 280, y: 370 }, data: {
+    label: 'Instruction Memory', subtitle: 'ROM', variant: 'external', stage: 'if', width: 170,
     inputs: [{ id: 'address', label: 'address' }],
     outputs: [{ id: 'q', label: 'q_imem' }],
   } },
-  // PC+1 ALU drops the B=1 and op=ADD ports — those are tied to constants
-  // in the Verilog instance, not wires; subtitle calls out the operation.
-  { id: 'PC_INC', type: 'ic', position: { x: 30, y: 680 }, data: {
-    label: 'PC+1 ALU', subtitle: 'alu · A + 1 (ADD)', variant: 'alu', stage: 'if', width: 240,
-    inputs: [
-      { id: 'A', label: 'A = PC_Out' },
-    ],
+  // PC+1 ALU drops the B=1 and op=ADD ports — those are tied to constants in
+  // the Verilog instance, not wires; the subtitle carries the operation.
+  { id: 'PC_INC', type: 'ic', position: { x: 30, y: 580 }, data: {
+    label: 'PC+1 ALU', subtitle: 'alu · A + 1 (ADD)', variant: 'alu', stage: 'if', width: 190,
+    inputs: [{ id: 'A', label: 'A = PC_Out' }],
     outputs: [{ id: 'result', label: 'PC_plus_one' }],
   } },
 
-  // ==== IF/ID pipeline register (channel x=480-660) ====
-  { id: 'IFID', type: 'pipereg', position: { x: 515, y: PIPE_TOP }, data: {
-    label: 'IF/ID', instruction: '—', height: PIPE_HEIGHT, width: PIPE_WIDTH,
+  // ==== IF/ID pipeline register (channel 480–630) ====
+  { id: 'IFID', type: 'pipereg', position: { x: 500, y: 350 }, data: {
+    label: 'IF/ID', instruction: '—', height: 200, width: PIPE_WIDTH,
     inputs: [
       { id: 'in-pc',  label: 'PC' },
       { id: 'in-ins', label: 'ins' },
     ],
     outputs: [
       { id: 'pc',  label: 'PC' },
-      { id: 'ins', label: 'instruction' },
+      { id: 'ins', label: 'ins' },
     ],
   } },
 
-  // ==== ID stage (band 660–1040) ====
-  { id: 'READADDR', type: 'ic', position: { x: 700, y: 240 }, data: {
-    label: 'Read Address Logic', subtitle: 'combinational', variant: 'logic', stage: 'id', width: 300,
+  // ==== ID stage (band 630–1050) ====
+  { id: 'READADDR', type: 'ic', position: { x: 660, y: 230 }, data: {
+    label: 'Read Address Logic', subtitle: 'combinational', variant: 'logic', stage: 'id', width: 200,
     inputs: [{ id: 'ins', label: 'fd_ins' }],
     outputs: [
       { id: 'readA', label: 'ctrl_readRegA' },
       { id: 'readB', label: 'ctrl_readRegB' },
     ],
   } },
-  { id: 'REGFILE', type: 'ic', position: { x: 700, y: 520 }, data: {
-    label: 'Register File', subtitle: '32 × 32-bit', variant: 'external', stage: 'id', width: 300,
+  { id: 'REGFILE', type: 'ic', position: { x: 660, y: 460 }, data: {
+    label: 'Register File', subtitle: '32 × 32-bit', variant: 'external', stage: 'id', width: 220,
     inputs: [
       { id: 'readA',       label: 'ctrl_readRegA' },
       { id: 'readB',       label: 'ctrl_readRegB' },
       { id: 'writeReg',    label: 'ctrl_writeReg' },
       { id: 'writeData',   label: 'data_writeReg' },
-      { id: 'writeEnable', label: 'ctrl_writeEnable' },
+      { id: 'writeEnable', label: 'ctrl_writeEn' },
     ],
     outputs: [
       { id: 'dataA', label: 'data_readRegA' },
@@ -452,9 +469,9 @@ const initialNodes = [
     ],
   } },
 
-  // ==== ID/EX pipeline register (channel x=1040-1220) ====
-  { id: 'IDEX', type: 'pipereg', position: { x: 1075, y: PIPE_TOP }, data: {
-    label: 'ID/EX', instruction: '—', height: PIPE_HEIGHT, width: PIPE_WIDTH,
+  // ==== ID/EX pipeline register (channel 1050–1200) ====
+  { id: 'IDEX', type: 'pipereg', position: { x: 1070, y: 325 }, data: {
+    label: 'ID/EX', instruction: '—', height: 250, width: PIPE_WIDTH,
     inputs: [
       { id: 'in-pc',    label: 'PC' },
       { id: 'in-readA', label: 'readA' },
@@ -465,41 +482,41 @@ const initialNodes = [
       { id: 'pc',    label: 'PC' },
       { id: 'readA', label: 'readA' },
       { id: 'readB', label: 'readB' },
-      { id: 'ins',   label: 'instruction' },
+      { id: 'ins',   label: 'ins' },
     ],
   } },
 
-  // ==== EX stage (band 1220–2300, 3 columns) ====
-  // Column 1 (left, x=1260): forwarding muxes + sign extend
-  { id: 'FWDA', type: 'ic', position: { x: 1260, y: 210 }, data: {
-    label: 'Fwd Mux A (3:1)', subtitle: 'forwarded_A', variant: 'mux', stage: 'ex', width: 280,
+  // ==== EX stage (band 1200–1960, three columns) ====
+  // Column A (x 1230): operand selection
+  { id: 'FWDA', type: 'ic', position: { x: 1230, y: 150 }, data: {
+    label: 'Fwd Mux A (3:1)', subtitle: 'forwarded_A', variant: 'mux', stage: 'ex', width: 200,
     inputs: [
       { id: 'sel',    label: 'sel = mx/wx' },
-      { id: 'in_reg', label: 'in0 = dx_readA' },
-      { id: 'in_xm',  label: 'in1 = xm_o (MX)' },
-      { id: 'in_mw',  label: 'in2 = mw_data (WX)' },
+      { id: 'in_reg', label: '0 = dx_readA' },
+      { id: 'in_xm',  label: '1 = xm_o (MX)' },
+      { id: 'in_mw',  label: '2 = mw_data (WX)' },
     ],
     outputs: [{ id: 'out', label: 'forwarded_A' }],
   } },
-  { id: 'FWDB', type: 'ic', position: { x: 1260, y: 430 }, data: {
-    label: 'Fwd Mux B (3:1)', subtitle: 'forwarded_B', variant: 'mux', stage: 'ex', width: 280,
+  { id: 'FWDB', type: 'ic', position: { x: 1230, y: 378 }, data: {
+    label: 'Fwd Mux B (3:1)', subtitle: 'forwarded_B', variant: 'mux', stage: 'ex', width: 200,
     inputs: [
       { id: 'sel',    label: 'sel = mx/wx' },
-      { id: 'in_reg', label: 'in0 = dx_readB' },
-      { id: 'in_xm',  label: 'in1 = xm_o (MX)' },
-      { id: 'in_mw',  label: 'in2 = mw_data (WX)' },
+      { id: 'in_reg', label: '0 = dx_readB' },
+      { id: 'in_xm',  label: '1 = xm_o (MX)' },
+      { id: 'in_mw',  label: '2 = mw_data (WX)' },
     ],
     outputs: [{ id: 'out', label: 'forwarded_B' }],
   } },
-  { id: 'SIGNEXT', type: 'ic', position: { x: 1260, y: 680 }, data: {
-    label: 'Sign Extend', subtitle: '17 → 32 bit', variant: 'logic', stage: 'ex', width: 280,
-    inputs: [{ id: 'imm17', label: 'imm17 = ins[16:0]' }],
+  { id: 'SIGNEXT', type: 'ic', position: { x: 1230, y: 606 }, data: {
+    label: 'Sign Extend', subtitle: '17 → 32 bit', variant: 'logic', stage: 'ex', width: 200,
+    inputs: [{ id: 'imm17', label: 'ins[16:0]' }],
     outputs: [{ id: 'out', label: 'signext_imm' }],
   } },
 
-  // Column 2 (middle, x=1620): ALU / ALU Source Mux / MultDiv
-  { id: 'ALU', type: 'ic', position: { x: 1620, y: 200 }, data: {
-    label: 'Main ALU', subtitle: 'alu execute_alu', variant: 'alu', stage: 'ex', width: 320,
+  // Column B (x 1470): the functional units
+  { id: 'ALU', type: 'ic', position: { x: 1470, y: 150 }, data: {
+    label: 'Main ALU', subtitle: 'alu execute_alu', variant: 'alu', stage: 'ex', width: 210,
     inputs: [
       { id: 'A',     label: 'data_operandA' },
       { id: 'B',     label: 'data_operandB' },
@@ -513,44 +530,47 @@ const initialNodes = [
       { id: 'overflow',   label: 'overflow' },
     ],
   } },
-  { id: 'ALUSRC', type: 'ic', position: { x: 1620, y: 460 }, data: {
-    label: 'ALU Source Mux', subtitle: 'mux_2', variant: 'mux', stage: 'ex', width: 300,
+  { id: 'ALUSRC', type: 'ic', position: { x: 1470, y: 378 }, data: {
+    label: 'ALU Source Mux', subtitle: 'mux_2', variant: 'mux', stage: 'ex', width: 210,
     inputs: [
       { id: 'sel', label: 'sel = is_i_type' },
-      { id: 'in0', label: 'in0 = forwarded_B' },
-      { id: 'in1', label: 'in1 = signext_imm' },
+      { id: 'in0', label: '0 = forwarded_B' },
+      { id: 'in1', label: '1 = signext_imm' },
     ],
-    outputs: [{ id: 'out', label: 'data_operandB' }],
+    outputs: [{ id: 'out', label: 'operandB' }],
   } },
-  { id: 'MULTDIV', type: 'ic', position: { x: 1620, y: 680 }, data: {
-    label: 'MultDiv Unit', subtitle: 'multdiv md_unit', variant: 'multdiv', stage: 'ex', width: 300,
+  { id: 'MULTDIV', type: 'ic', position: { x: 1470, y: 574 }, data: {
+    label: 'MultDiv Unit', subtitle: 'multdiv md_unit', variant: 'multdiv', stage: 'ex', width: 210,
     inputs: [
-      { id: 'A',     label: 'data_operandA' },
-      { id: 'B',     label: 'data_operandB' },
-      { id: 'mult',  label: 'ctrl_MULT' },
-      { id: 'div',   label: 'ctrl_DIV' },
+      { id: 'A',    label: 'data_operandA' },
+      { id: 'B',    label: 'data_operandB' },
+      { id: 'mult', label: 'ctrl_MULT' },
+      { id: 'div',  label: 'ctrl_DIV' },
     ],
     outputs: [
       { id: 'result',    label: 'data_result' },
-      { id: 'exception', label: 'data_exception' },
-      { id: 'rdy',       label: 'data_resultRDY' },
+      { id: 'exception', label: 'exception' },
+      { id: 'rdy',       label: 'resultRDY' },
     ],
   } },
 
-  // Column 3 (right, x=1980): XM Data Mux + Branch Target Calc
-  { id: 'XMDATA', type: 'ic', position: { x: 1980, y: 200 }, data: {
-    label: 'XM Data Mux', subtitle: 'select EX output', variant: 'mux', stage: 'ex', width: 280,
+  // Column C (x 1710): what leaves the stage
+  { id: 'XMDATA', type: 'ic', position: { x: 1710, y: 150 }, data: {
+    label: 'XM Data Mux', subtitle: 'select EX output', variant: 'mux', stage: 'ex', width: 220,
     inputs: [
-      { id: 'sel', label: 'sel (instr type)' },
-      { id: 'alu', label: 'alu_out' },
-      { id: 'md',  label: 'multdiv_result' },
-      { id: 'jal', label: 'dx_PC+1 (jal)' },
-      { id: 'exc', label: 'exception_status' },
+      { id: 'sel',    label: 'sel (instr type)' },
+      { id: 'alu',    label: 'alu_out' },
+      { id: 'md',     label: 'multdiv_result' },
+      { id: 'jal',    label: 'dx_PC+1 (jal)' },
+      // The overflow and multdiv-exception paths used to share one `exc` port,
+      // so the two wires rendered as a single line with two tails.
+      { id: 'exc',    label: 'alu overflow' },
+      { id: 'exc_md', label: 'md exception' },
     ],
     outputs: [{ id: 'out', label: 'xm_data_in' }],
   } },
-  { id: 'BRTGT', type: 'ic', position: { x: 1980, y: 580 }, data: {
-    label: 'Branch Target Calc', subtitle: '2× ALU + target mux', variant: 'logic', stage: 'ex', width: 280,
+  { id: 'BRTGT', type: 'ic', position: { x: 1710, y: 450 }, data: {
+    label: 'Branch Target Calc', subtitle: '2× ALU + target mux', variant: 'logic', stage: 'ex', width: 210,
     inputs: [
       { id: 'pc',      label: 'dx_PC' },
       { id: 'imm',     label: 'signext_imm' },
@@ -560,14 +580,17 @@ const initialNodes = [
       { id: 'lt',      label: 'less_than' },
     ],
     outputs: [
-      { id: 'target',      label: 'branch_jump_target' },
+      { id: 'target',      label: 'branch_target' },
       { id: 'take_branch', label: 'take_branch' },
+      // processor.v:343 computes dx_PC_plus_one inside this block, and :363
+      // feeds it to xm_data_in for jal. It is not carried by the ID/EX latch.
+      { id: 'pc_plus_one', label: 'dx_PC+1' },
     ],
   } },
 
-  // ==== EX/MEM pipeline register (channel x=2300-2480) ====
-  { id: 'EXMEM', type: 'pipereg', position: { x: 2335, y: PIPE_TOP }, data: {
-    label: 'EX/MEM', instruction: '—', height: PIPE_HEIGHT, width: PIPE_WIDTH,
+  // ==== EX/MEM pipeline register (channel 1960–2110) ====
+  { id: 'EXMEM', type: 'pipereg', position: { x: 1980, y: 340 }, data: {
+    label: 'EX/MEM', instruction: '—', height: 220, width: PIPE_WIDTH,
     inputs: [
       { id: 'in-data', label: 'xm_data' },
       { id: 'in-b',    label: 'xm_b' },
@@ -580,38 +603,38 @@ const initialNodes = [
     ],
   } },
 
-  // ==== MEM stage (band 2480–2800) ====
-  { id: 'WMFWD', type: 'ic', position: { x: 2510, y: 220 }, data: {
-    label: 'WM Forward Mux', subtitle: 'mw_data → store?', variant: 'mux', stage: 'mem', width: 280,
+  // ==== MEM stage (band 2110–2370) ====
+  { id: 'WMFWD', type: 'ic', position: { x: 2140, y: 190 }, data: {
+    label: 'WM Forward Mux', subtitle: 'mw_data → store?', variant: 'mux', stage: 'mem', width: 200,
     inputs: [
-      { id: 'sel', label: 'sel = wm_forward' },
-      { id: 'in0', label: 'in0 = xm_b' },
-      { id: 'in1', label: 'in1 = mw_data' },
+      { id: 'sel', label: 'sel = wm_fwd' },
+      { id: 'in0', label: '0 = xm_b' },
+      { id: 'in1', label: '1 = mw_data' },
     ],
-    outputs: [{ id: 'out', label: 'data → DMEM' }],
+    outputs: [{ id: 'out', label: 'to DMEM' }],
   } },
-  { id: 'DMEM', type: 'ic', position: { x: 2510, y: 460 }, data: {
-    label: 'Data Memory', subtitle: 'RAM (external)', variant: 'external', stage: 'mem', width: 280,
+  { id: 'DMEM', type: 'ic', position: { x: 2140, y: 410 }, data: {
+    label: 'Data Memory', subtitle: 'RAM (external)', variant: 'external', stage: 'mem', width: 200,
     inputs: [
       { id: 'address', label: 'address_dmem' },
       { id: 'data',    label: 'data' },
-      { id: 'wren',    label: 'wren = mem_is_sw' },
+      { id: 'wren',    label: 'wren = is_sw' },
     ],
     outputs: [{ id: 'q', label: 'q_dmem' }],
   } },
-  { id: 'MEMMUX', type: 'ic', position: { x: 2510, y: 700 }, data: {
-    label: 'MEM Data Mux', subtitle: 'lw → memory data', variant: 'mux', stage: 'mem', width: 280,
+  { id: 'MEMMUX', type: 'ic', position: { x: 2140, y: 600 }, data: {
+    label: 'MEM Data Mux', subtitle: 'lw → memory data', variant: 'mux', stage: 'mem', width: 200,
     inputs: [
       { id: 'sel', label: 'sel = is_lw' },
-      { id: 'in0', label: 'in0 = xm_o' },
-      { id: 'in1', label: 'in1 = q_dmem' },
+      { id: 'in0', label: '0 = xm_o' },
+      { id: 'in1', label: '1 = q_dmem' },
     ],
     outputs: [{ id: 'out', label: 'mw_data_in' }],
   } },
 
-  // ==== MEM/WB pipeline register (channel x=2800-2980) ====
-  { id: 'MEMWB', type: 'pipereg', position: { x: 2835, y: PIPE_TOP }, data: {
-    label: 'MEM/WB', instruction: '—', height: PIPE_HEIGHT, width: PIPE_WIDTH,
+  // ==== MEM/WB pipeline register (channel 2370–2520) ====
+  { id: 'MEMWB', type: 'pipereg', position: { x: 2390, y: 340 }, data: {
+    label: 'MEM/WB', instruction: '—', height: 220, width: PIPE_WIDTH,
     inputs: [
       { id: 'in-data', label: 'mw_data' },
       { id: 'in-b',    label: 'xm_b' },
@@ -623,16 +646,16 @@ const initialNodes = [
     ],
   } },
 
-  // ==== WB stage (band 2980–3300) ====
-  { id: 'WBLOGIC', type: 'ic', position: { x: 3010, y: 410 }, data: {
-    label: 'WB Mux + Enable', subtitle: 'jal→$r31, setx→$r30, …', variant: 'logic', stage: 'wb', width: 280,
+  // ==== WB stage (band 2520–2780) ====
+  { id: 'WBLOGIC', type: 'ic', position: { x: 2550, y: 410 }, data: {
+    label: 'WB Mux + Enable', subtitle: 'jal→$r31, setx→$r30, …', variant: 'logic', stage: 'wb', width: 210,
     inputs: [
       { id: 'mw_data', label: 'mw_data' },
       { id: 'mw_ins',  label: 'mw_ins' },
     ],
     outputs: [
       { id: 'writeReg',    label: 'ctrl_writeReg' },
-      { id: 'writeEnable', label: 'ctrl_writeEnable' },
+      { id: 'writeEnable', label: 'ctrl_writeEn' },
       { id: 'writeData',   label: 'data_writeReg' },
     ],
   } },
@@ -640,16 +663,18 @@ const initialNodes = [
 
 // ---------- Edges ---------------------------------------------------------
 
-// Convention: `type: 'feedback'` + `data.routeY` for long backward wires
-// that should route via the top (low routeY) or bottom (high routeY) of the
-// canvas. `routeY` values are deliberately staggered so parallel feedback
-// wires don't overlap each other.
+/*
+ * `data.path` names the stage whose occupancy lights the wire. EVERY edge now
+ * carries one: 26 of 59 previously did not, so in any live stage roughly half
+ * its wires stayed grey while the rest animated — which read as "those aren't
+ * part of the flow" rather than "those are structural".
+ */
 
 const initialEdges = [
   // ---------- IF stage primary datapath ----------
   { id: 'pcmux-pc',    source: 'PC_MUX', sourceHandle: 'out',     target: 'PC',     targetHandle: 'writeIn',  type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
-  { id: 'pc-inc',      source: 'PC',     sourceHandle: 'readOut', target: 'PC_INC', targetHandle: 'A',        type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'pcinc-pcmux', source: 'PC_INC', sourceHandle: 'result',  target: 'PC_MUX', targetHandle: 'in0',      type: 'smoothstep', className: 'rf-edge-data' },
+  { id: 'pc-inc',      source: 'PC',     sourceHandle: 'readOut', target: 'PC_INC', targetHandle: 'A',        type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
+  { id: 'pcinc-pcmux', source: 'PC_INC', sourceHandle: 'result',  target: 'PC_MUX', targetHandle: 'in0',      type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
   { id: 'pc-imem',     source: 'PC',     sourceHandle: 'readOut', target: 'IMEM',   targetHandle: 'address',  type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
   { id: 'pc-ifid',     source: 'PC',     sourceHandle: 'readOut', target: 'IFID',   targetHandle: 'in-pc',    type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
   { id: 'imem-ifid',   source: 'IMEM',   sourceHandle: 'q',       target: 'IFID',   targetHandle: 'in-ins',   type: 'smoothstep', className: 'rf-edge-data', data: { path: 'IF' } },
@@ -660,8 +685,8 @@ const initialEdges = [
   { id: 'rdaddr-rfB',  source: 'READADDR', sourceHandle: 'readB', target: 'REGFILE',  targetHandle: 'readB', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'ID' } },
   { id: 'rf-idex-a',   source: 'REGFILE',  sourceHandle: 'dataA', target: 'IDEX',     targetHandle: 'in-readA', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'ID' } },
   { id: 'rf-idex-b',   source: 'REGFILE',  sourceHandle: 'dataB', target: 'IDEX',     targetHandle: 'in-readB', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'ID' } },
-  { id: 'ifid-idex-pc',  source: 'IFID', sourceHandle: 'pc',  target: 'IDEX', targetHandle: 'in-pc',  type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'ifid-idex-ins', source: 'IFID', sourceHandle: 'ins', target: 'IDEX', targetHandle: 'in-ins', type: 'smoothstep', className: 'rf-edge-data' },
+  { id: 'ifid-idex-pc',  source: 'IFID', sourceHandle: 'pc',  target: 'IDEX', targetHandle: 'in-pc',  type: 'smoothstep', className: 'rf-edge-data', data: { path: 'ID' } },
+  { id: 'ifid-idex-ins', source: 'IFID', sourceHandle: 'ins', target: 'IDEX', targetHandle: 'in-ins', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'ID' } },
 
   // ---------- EX stage — primary datapath ----------
   { id: 'idex-fwda',   source: 'IDEX', sourceHandle: 'readA', target: 'FWDA',    targetHandle: 'in_reg', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
@@ -673,19 +698,19 @@ const initialEdges = [
   { id: 'alusrc-alu',  source: 'ALUSRC',  sourceHandle: 'out', target: 'ALU',    targetHandle: 'B',   type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
 
   // ---------- EX stage — MultDiv parallel path ----------
-  { id: 'fwda-md',   source: 'FWDA',   sourceHandle: 'out', target: 'MULTDIV', targetHandle: 'A', type: 'smoothstep', className: 'rf-edge-multdiv' },
-  { id: 'alusrc-md', source: 'ALUSRC', sourceHandle: 'out', target: 'MULTDIV', targetHandle: 'B', type: 'smoothstep', className: 'rf-edge-multdiv' },
+  { id: 'fwda-md',   source: 'FWDA',   sourceHandle: 'out', target: 'MULTDIV', targetHandle: 'A', type: 'smoothstep', className: 'rf-edge-multdiv', data: { path: 'EX' } },
+  { id: 'alusrc-md', source: 'ALUSRC', sourceHandle: 'out', target: 'MULTDIV', targetHandle: 'B', type: 'smoothstep', className: 'rf-edge-multdiv', data: { path: 'EX' } },
 
   // ---------- EX stage — Branch target calc ----------
-  { id: 'idex-brpc',   source: 'IDEX',    sourceHandle: 'pc',  target: 'BRTGT', targetHandle: 'pc',      type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'sx-brtgt',    source: 'SIGNEXT', sourceHandle: 'out', target: 'BRTGT', targetHandle: 'imm',     type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'fwda-brtgt',  source: 'FWDA',    sourceHandle: 'out', target: 'BRTGT', targetHandle: 'opa',     type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'idex-brsel',  source: 'IDEX',    sourceHandle: 'ins', target: 'BRTGT', targetHandle: 'sel_ins', type: 'smoothstep', className: 'rf-edge-control' },
+  { id: 'idex-brpc',   source: 'IDEX',    sourceHandle: 'pc',  target: 'BRTGT', targetHandle: 'pc',      type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'sx-brtgt',    source: 'SIGNEXT', sourceHandle: 'out', target: 'BRTGT', targetHandle: 'imm',     type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'fwda-brtgt',  source: 'FWDA',    sourceHandle: 'out', target: 'BRTGT', targetHandle: 'opa',     type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'idex-brsel',  source: 'IDEX',    sourceHandle: 'ins', target: 'BRTGT', targetHandle: 'sel_ins', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
 
   // ---------- EX stage — XM Data Mux ----------
   { id: 'alu-xmdata', source: 'ALU',     sourceHandle: 'result', target: 'XMDATA', targetHandle: 'alu', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
-  { id: 'md-xmdata',  source: 'MULTDIV', sourceHandle: 'result', target: 'XMDATA', targetHandle: 'md',  type: 'smoothstep', className: 'rf-edge-multdiv' },
-  { id: 'idex-xmsel', source: 'IDEX',    sourceHandle: 'ins',    target: 'XMDATA', targetHandle: 'sel', type: 'smoothstep', className: 'rf-edge-control' },
+  { id: 'md-xmdata',  source: 'MULTDIV', sourceHandle: 'result', target: 'XMDATA', targetHandle: 'md',  type: 'smoothstep', className: 'rf-edge-multdiv', data: { path: 'EX' } },
+  { id: 'idex-xmsel', source: 'IDEX',    sourceHandle: 'ins',    target: 'XMDATA', targetHandle: 'sel', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
 
   // ---------- EX → EX/MEM ----------
   { id: 'xmdata-exmem', source: 'XMDATA', sourceHandle: 'out', target: 'EXMEM', targetHandle: 'in-data', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
@@ -698,50 +723,49 @@ const initialEdges = [
   { id: 'exmem-dmem-a',  source: 'EXMEM', sourceHandle: 'o',   target: 'DMEM',   targetHandle: 'address', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
   { id: 'exmem-memmux',  source: 'EXMEM', sourceHandle: 'o',   target: 'MEMMUX', targetHandle: 'in0',     type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
   { id: 'dmem-memmux',   source: 'DMEM',  sourceHandle: 'q',   target: 'MEMMUX', targetHandle: 'in1',     type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
-  { id: 'exmem-memmuxsel', source: 'EXMEM', sourceHandle: 'ins', target: 'MEMMUX', targetHandle: 'sel',   type: 'smoothstep', className: 'rf-edge-control' },
+  { id: 'exmem-memmuxsel', source: 'EXMEM', sourceHandle: 'ins', target: 'MEMMUX', targetHandle: 'sel',   type: 'smoothstep', className: 'rf-edge-control', data: { path: 'MEM' } },
 
   // ---------- MEM → MEM/WB ----------
   { id: 'memmux-memwb',   source: 'MEMMUX', sourceHandle: 'out', target: 'MEMWB', targetHandle: 'in-data', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
-  { id: 'exmem-memwb-b',  source: 'EXMEM',  sourceHandle: 'b',   target: 'MEMWB', targetHandle: 'in-b',    type: 'smoothstep', className: 'rf-edge-data' },
-  { id: 'exmem-memwb-ins', source: 'EXMEM', sourceHandle: 'ins', target: 'MEMWB', targetHandle: 'in-ins',  type: 'smoothstep', className: 'rf-edge-data' },
+  { id: 'exmem-memwb-b',  source: 'EXMEM',  sourceHandle: 'b',   target: 'MEMWB', targetHandle: 'in-b',    type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
+  { id: 'exmem-memwb-ins', source: 'EXMEM', sourceHandle: 'ins', target: 'MEMWB', targetHandle: 'in-ins',  type: 'smoothstep', className: 'rf-edge-data', data: { path: 'MEM' } },
 
   // ---------- WB stage ----------
   { id: 'memwb-wb-data', source: 'MEMWB', sourceHandle: 'data', target: 'WBLOGIC', targetHandle: 'mw_data', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'WB' } },
   { id: 'memwb-wb-ins',  source: 'MEMWB', sourceHandle: 'ins',  target: 'WBLOGIC', targetHandle: 'mw_ins',  type: 'smoothstep', className: 'rf-edge-data', data: { path: 'WB' } },
 
-  // ====== Long backward feedback wires (custom FeedbackEdge) ======
-
-  // Forwarding feedback — route via BOTTOM of canvas with staggered routeY
-  { id: 'xm-fwda', type: 'feedback', source: 'EXMEM', sourceHandle: 'o',     target: 'FWDA', targetHandle: 'in_xm', className: 'rf-edge-forward', data: { routeY: 950 } },
-  { id: 'xm-fwdb', type: 'feedback', source: 'EXMEM', sourceHandle: 'o',     target: 'FWDB', targetHandle: 'in_xm', className: 'rf-edge-forward', data: { routeY: 965 }, label: 'EX/MEM → Fwd Muxes (MX bypass)' },
-  { id: 'mw-fwda', type: 'feedback', source: 'MEMWB', sourceHandle: 'data',  target: 'FWDA', targetHandle: 'in_mw', className: 'rf-edge-forward', data: { routeY: 980 } },
-  { id: 'mw-fwdb', type: 'feedback', source: 'MEMWB', sourceHandle: 'data',  target: 'FWDB', targetHandle: 'in_mw', className: 'rf-edge-forward', data: { routeY: 995 }, label: 'MEM/WB → Fwd Muxes (WX bypass)' },
-
-  // WM bypass (MEM/WB → WM Forward Mux for sw)
-  { id: 'mw-wmfwd', type: 'feedback', source: 'MEMWB', sourceHandle: 'data', target: 'WMFWD', targetHandle: 'in1', className: 'rf-edge-forward', data: { routeY: 65 }, label: 'WM bypass' },
-
-  // Branch target + take_branch back to PC Source Mux — route via TOP
   // ---------- Status wires: the branch decision and the exception path ------
-  // These ports were drawn but unwired. They carry real signals: processor.v
-  // derives do_bne from not_equal and do_blt from less_than, and an ALU
-  // overflow is turned into a fake setx that writes $r30. Without them the
-  // branch loop was drawn with no visible cause - BRTGT fed PC_MUX, but
-  // nothing showed what made take_branch true.
+  // processor.v derives do_bne from not_equal and do_blt from less_than, and an
+  // ALU overflow is turned into a fake setx that writes $r30. Without them the
+  // branch loop was drawn with no visible cause.
   { id: 'alu-ne-brtgt', source: 'ALU', sourceHandle: 'isNotEqual', target: 'BRTGT', targetHandle: 'ne', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
   { id: 'alu-lt-brtgt', source: 'ALU', sourceHandle: 'isLessThan', target: 'BRTGT', targetHandle: 'lt', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
-  { id: 'alu-ovf-xm',   source: 'ALU', sourceHandle: 'overflow',   target: 'XMDATA', targetHandle: 'exc', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
-  { id: 'md-exc-xm',    source: 'MULTDIV', sourceHandle: 'exception', target: 'XMDATA', targetHandle: 'exc', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
-  // jal links PC+1 into $r31, and that value rides the ID/EX latch.
-  { id: 'idex-jal-xm',  source: 'IDEX', sourceHandle: 'pc', target: 'XMDATA', targetHandle: 'jal', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
+  { id: 'alu-ovf-xm',   source: 'ALU', sourceHandle: 'overflow',   target: 'XMDATA', targetHandle: 'exc',    type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
+  { id: 'md-exc-xm',    source: 'MULTDIV', sourceHandle: 'exception', target: 'XMDATA', targetHandle: 'exc_md', type: 'smoothstep', className: 'rf-edge-control', data: { path: 'EX' } },
+  // jal links PC+1 into $r31. processor.v:343 computes that PC+1 inside the
+  // branch-target block, so it comes from BRTGT — it used to be drawn from the
+  // ID/EX latch, whose port carries plain dx_PC.
+  { id: 'brtgt-jal-xm', source: 'BRTGT', sourceHandle: 'pc_plus_one', target: 'XMDATA', targetHandle: 'jal', type: 'smoothstep', className: 'rf-edge-data', data: { path: 'EX' } },
 
-  { id: 'md-stall-pc', type: 'feedback', source: 'MULTDIV', sourceHandle: 'rdy', target: 'PC', targetHandle: 'writeEnable', className: 'rf-edge-forward', data: { routeY: 935 }, label: 'multdiv stall -> freeze PC' },
-  { id: 'brtgt-pcmux', type: 'feedback', source: 'BRTGT', sourceHandle: 'target',      target: 'PC_MUX', targetHandle: 'in1', className: 'rf-edge-feedback', data: { routeY: 50 }, label: 'branch/jump target' },
-  { id: 'brtgt-sel',   type: 'feedback', source: 'BRTGT', sourceHandle: 'take_branch', target: 'PC_MUX', targetHandle: 'sel', className: 'rf-edge-feedback', data: { routeY: 80 } },
+  // ====== Long backward feedback wires (custom FeedbackEdge) ======
+  // Forwarding feedback — out to a lane BELOW the board and back.
+  { id: 'xm-fwda', type: 'feedback', source: 'EXMEM', sourceHandle: 'o',    target: 'FWDA', targetHandle: 'in_xm', className: 'rf-edge-forward', data: { routeY: LANE.mxA, path: 'EX' } },
+  { id: 'xm-fwdb', type: 'feedback', source: 'EXMEM', sourceHandle: 'o',    target: 'FWDB', targetHandle: 'in_xm', className: 'rf-edge-forward', data: { routeY: LANE.mxB, path: 'EX' }, label: 'EX/MEM → Fwd Muxes (MX bypass)' },
+  { id: 'mw-fwda', type: 'feedback', source: 'MEMWB', sourceHandle: 'data', target: 'FWDA', targetHandle: 'in_mw', className: 'rf-edge-forward', data: { routeY: LANE.wxA, path: 'EX' } },
+  { id: 'mw-fwdb', type: 'feedback', source: 'MEMWB', sourceHandle: 'data', target: 'FWDB', targetHandle: 'in_mw', className: 'rf-edge-forward', data: { routeY: LANE.wxB, path: 'EX' }, label: 'MEM/WB → Fwd Muxes (WX bypass)' },
+  { id: 'md-stall-pc', type: 'feedback', source: 'MULTDIV', sourceHandle: 'rdy', target: 'PC', targetHandle: 'writeEnable', className: 'rf-edge-forward', data: { routeY: LANE.mdStall, path: 'EX' }, label: 'multdiv stall → freeze PC' },
 
-  // Write-back to RegFile — route via TOP
-  { id: 'wb-rf-wreg',  type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeReg',    target: 'REGFILE', targetHandle: 'writeReg',    className: 'rf-edge-feedback', data: { routeY: 25 }, label: 'write-back' },
-  { id: 'wb-rf-wen',   type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeEnable', target: 'REGFILE', targetHandle: 'writeEnable', className: 'rf-edge-feedback', data: { routeY: 35 } },
-  { id: 'wb-rf-wdata', type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeData',   target: 'REGFILE', targetHandle: 'writeData',   className: 'rf-edge-feedback', data: { routeY: 45 } },
+  // WM bypass (MEM/WB → WM Forward Mux for sw) — short hop above the board.
+  { id: 'mw-wmfwd', type: 'feedback', source: 'MEMWB', sourceHandle: 'data', target: 'WMFWD', targetHandle: 'in1', className: 'rf-edge-forward', data: { routeY: LANE.wmBypass, path: 'MEM' }, label: 'WM bypass' },
+
+  // Branch target + take_branch back to the PC Source Mux — via the TOP.
+  { id: 'brtgt-pcmux', type: 'feedback', source: 'BRTGT', sourceHandle: 'target',      target: 'PC_MUX', targetHandle: 'in1', className: 'rf-edge-feedback', data: { routeY: LANE.brTarget, path: 'EX' }, label: 'branch/jump target' },
+  { id: 'brtgt-sel',   type: 'feedback', source: 'BRTGT', sourceHandle: 'take_branch', target: 'PC_MUX', targetHandle: 'sel', className: 'rf-edge-feedback', data: { routeY: LANE.brSel, path: 'EX', enterTop: true } },
+
+  // Write-back to RegFile — via the TOP.
+  { id: 'wb-rf-wreg',  type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeReg',    target: 'REGFILE', targetHandle: 'writeReg',    className: 'rf-edge-feedback', data: { routeY: LANE.wbReg, path: 'WB' }, label: 'write-back' },
+  { id: 'wb-rf-wen',   type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeEnable', target: 'REGFILE', targetHandle: 'writeEnable', className: 'rf-edge-feedback', data: { routeY: LANE.wbEn, path: 'WB' } },
+  { id: 'wb-rf-wdata', type: 'feedback', source: 'WBLOGIC', sourceHandle: 'writeData',   target: 'REGFILE', targetHandle: 'writeData',   className: 'rf-edge-feedback', data: { routeY: LANE.wbData, path: 'WB' } },
 ]
 
 
@@ -764,20 +788,21 @@ const initialEdges = [
  * value, labelled as the comparison they really are.
  */
 const controlEdges = [
-  { id: 'ctrl-aluop',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'op',    label: 'ALUopcode' },
-  { id: 'ctrl-shamt',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'shamt', label: 'shiftamt' },
-  { id: 'ctrl-alusrc',  source: 'IDEX', sourceHandle: 'ins', target: 'ALUSRC',  targetHandle: 'sel',   label: 'is_i_type' },
-  { id: 'ctrl-mult',    source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'mult',  label: 'is_mul' },
-  { id: 'ctrl-div',     source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'div',   label: 'is_div' },
-  { id: 'ctrl-wren',    source: 'EXMEM', sourceHandle: 'ins', target: 'DMEM',   targetHandle: 'wren',  label: 'is_sw' },
-  { id: 'ctrl-fwda',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDA',   targetHandle: 'sel',   label: 'rd match (MX/WX)' },
-  { id: 'ctrl-fwdb',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDB',   targetHandle: 'sel',   label: 'rd match (MX/WX)' },
-  { id: 'ctrl-wmfwd',   source: 'MEMWB', sourceHandle: 'ins', target: 'WMFWD',  targetHandle: 'sel',   label: 'rd match (WM)' },
-].map((e) => ({
+  { id: 'ctrl-aluop',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'op',    label: 'ALUopcode', path: 'EX' },
+  { id: 'ctrl-shamt',   source: 'IDEX', sourceHandle: 'ins', target: 'ALU',     targetHandle: 'shamt', label: 'shiftamt',  path: 'EX' },
+  { id: 'ctrl-alusrc',  source: 'IDEX', sourceHandle: 'ins', target: 'ALUSRC',  targetHandle: 'sel',   label: 'is_i_type', path: 'EX' },
+  { id: 'ctrl-mult',    source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'mult',  label: 'is_mul',    path: 'EX' },
+  { id: 'ctrl-div',     source: 'IDEX', sourceHandle: 'ins', target: 'MULTDIV', targetHandle: 'div',   label: 'is_div',    path: 'EX' },
+  { id: 'ctrl-wren',    source: 'EXMEM', sourceHandle: 'ins', target: 'DMEM',   targetHandle: 'wren',  label: 'is_sw',     path: 'MEM' },
+  { id: 'ctrl-fwda',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDA',   targetHandle: 'sel',   label: 'rd match (MX/WX)', path: 'EX' },
+  { id: 'ctrl-fwdb',    source: 'EXMEM', sourceHandle: 'ins', target: 'FWDB',   targetHandle: 'sel',   label: 'rd match (MX/WX)', path: 'EX' },
+  { id: 'ctrl-wmfwd',   source: 'MEMWB', sourceHandle: 'ins', target: 'WMFWD',  targetHandle: 'sel',   label: 'rd match (WM)',    path: 'MEM' },
+].map(({ path, ...e }) => ({
   ...e,
   type: 'smoothstep',
   className: 'rf-edge-control',
   labelStyle: { fontSize: 9 },
+  data: { path },
 }))
 
 // ---------- Component -----------------------------------------------------
@@ -791,21 +816,28 @@ const STAGE_ORDER = ['IF', 'ID', 'EX', 'MEM', 'WB']
 const PIPEREG_FEEDS = { IFID: 'ID', IDEX: 'EX', EXMEM: 'MEM', MEMWB: 'WB' }
 
 /**
- * Viewport bounds per stage, derived from the band nodes so they can never drift
- * from the layout. Padded sideways to take in the pipeline registers sitting in
- * the channels either side of each band.
+ * Viewport bounds per stage, derived from the band nodes so they can never
+ * drift from the layout.
+ *
+ * The vertical extent deliberately spans the WHOLE board, not just the band.
+ * The feedback lanes live above and below every band, and framing a stage to
+ * its band alone cut them off — in WB focus that meant losing the write-back
+ * loop, which is the entire point of the stage. Sideways it takes in the
+ * pipeline registers in the channels either side.
  */
+const BOARD_TOP = 12
+const BOARD_BOTTOM = 890
+
 const STAGE_BOUNDS = (() => {
   const out = {}
   initialNodes
     .filter((n) => n.type === 'band')
     .forEach((n) => {
-      const stage = n.data.short
-      out[stage] = {
-        x: n.position.x - 165,
-        y: n.position.y - 20,
-        width: n.data.width + 330,
-        height: n.data.height + 40,
+      out[n.data.short] = {
+        x: n.position.x - 155,
+        y: BOARD_TOP,
+        width: n.data.width + 310,
+        height: BOARD_BOTTOM - BOARD_TOP,
       }
     })
   return out
@@ -819,8 +851,8 @@ function PipelineDiagramInner() {
   const state = useCpuState()
 
   /*
-   * The whole board is ~3300px wide. Fitted into the demo column that lands at
-   * roughly 0.3 zoom, where the 10.5px port labels - the Verilog signal names
+   * The whole board is ~2780px wide. Fitted into the demo column that lands
+   * around 0.24 zoom, where the 10.5px port labels - the Verilog signal names
    * that are the point of drawing it at this level of detail - are unreadable.
    * Rather than simplify the schematic, the viewport focuses one stage at a
    * time, so the detail survives and becomes legible on demand.
@@ -829,11 +861,11 @@ function PipelineDiagramInner() {
 
   /*
    * Focusing alone cannot make this readable, and it is worth being clear why:
-   * the EX stage is ~1410px wide including its channels, while the demo column
-   * is around 680px. Even perfectly fitted that caps out near 0.45 zoom, so the
-   * 10.5px port labels still render at ~5px. The missing ingredient is not
+   * the EX stage is ~1070px wide including its channels, while the demo column
+   * is around 680px. Even perfectly fitted that caps out near 0.64 zoom, so the
+   * 10.5px port labels still render at ~7px. The missing ingredient is not
    * framing, it is space - hence expanding to the full viewport, where EX fits
-   * at close to 1:1 and the Verilog signal names finally read.
+   * above 1:1 and the Verilog signal names finally read.
    */
   const [expanded, setExpanded] = useState(false)
   const [showControl, setShowControl] = useState(false)
@@ -844,7 +876,7 @@ function PipelineDiagramInner() {
     if (focus === 'ALL') {
       fitView({ padding: 0.04, duration: 300 })
     } else if (STAGE_BOUNDS[focus]) {
-      fitBounds(STAGE_BOUNDS[focus], { padding: 0.08, duration: 300 })
+      fitBounds(STAGE_BOUNDS[focus], { padding: 0.05, duration: 300 })
     }
   }, [focus, fitBounds, fitView])
 
@@ -961,12 +993,18 @@ function PipelineDiagramInner() {
   const edges = useMemo(() => {
     const base = showControl ? [...initialEdges, ...controlEdges] : initialEdges
     return base.map((e) => {
-      if (e.data?.path && occupied[e.data.path]) {
-        return { ...e, animated: true }
-      }
-      return e
+      const live = e.data?.path && occupied[e.data.path]
+      /*
+       * `rf-edge-dim` rather than opacity on a wrapper: during stage focus the
+       * chips drop to 0.18 but the wires had no dimming rule at all, so a
+       * focused stage read as a wire nest laid over ghosts. Tagging the edge
+       * lets the stylesheet fade everything that is not in the focused stage.
+       */
+      const inFocus = focus === 'ALL' || e.data?.path === focus
+      const cls = `${e.className || ''}${inFocus ? '' : ' rf-edge-dim'}`
+      return live ? { ...e, className: cls, animated: true } : { ...e, className: cls }
     })
-  }, [occupied, showControl])
+  }, [occupied, showControl, focus])
 
   return (
     <section className={`rf-cpu-panel${expanded ? ' is-expanded' : ''}`} aria-label="Datapath">
@@ -1064,3 +1102,4 @@ function PipelineDiagram() {
 }
 
 export default PipelineDiagram
+export { initialNodes, initialEdges, controlEdges, icHeight, muxSize, STAGE_BOUNDS }
