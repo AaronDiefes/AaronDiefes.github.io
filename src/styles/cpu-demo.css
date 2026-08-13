@@ -74,7 +74,7 @@
   background: var(--color-danger-hover);
 }
 
-.demo-layout-wrapper.cpu-demo .control-panel .speed-control {
+.demo-layout-wrapper.cpu-demo .control-panel .speed-controls {
   flex: 1 1 100%;
   display: flex;
   align-items: center;
@@ -85,14 +85,14 @@
   border-radius: 4px;
 }
 
-.demo-layout-wrapper.cpu-demo .control-panel .speed-control label {
+.demo-layout-wrapper.cpu-demo .control-panel .speed-controls label {
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--color-text-heading);
   white-space: nowrap;
 }
 
-.demo-layout-wrapper.cpu-demo .control-panel .speed-control select {
+.demo-layout-wrapper.cpu-demo .control-panel .speed-controls select {
   flex: 1;
   padding: 0.25rem;
   border: 1px solid var(--color-border-light);

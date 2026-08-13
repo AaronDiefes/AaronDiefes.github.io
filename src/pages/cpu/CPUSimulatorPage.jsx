@@ -9,6 +9,22 @@ function CPUSimulatorPage() {
   const instructionListContainerRef = useRef(null)
 
   useEffect(() => {
+    /*
+     * `cleanup` is assigned asynchronously, so the effect cannot simply return
+     * it - by the time the dynamic imports resolve, the effect has long since
+     * returned. Capturing it in a closure and invoking it from the real cleanup
+     * is what makes the teardown actually run.
+     *
+     * `cancelled` guards the other half of the race: the visitor can navigate
+     * away while those chunks are still in flight, which is more likely now
+     * that routes are code-split. Initialising after that point would build a
+     * simulator into a detached DOM and bind listeners nothing owns. It also
+     * fixes the StrictMode double-mount in development, which was constructing
+     * two engines (visible as the program loading twice in the console).
+     */
+    let cleanup = null
+    let cancelled = false
+
     const loadScripts = async () => {
       try {
         await import('../../../archived/cpu-simulator/src/core/cpu-state.js')
@@ -30,7 +46,8 @@ function CPUSimulatorPage() {
         await import('../../../archived/cpu-simulator/src/ui/control-panel.js')
         await import('../../../archived/cpu-simulator/src/ui/program-selector.js')
 
-        initializeCPUSimulator()
+        if (cancelled) return
+        cleanup = initializeCPUSimulator()
       } catch (error) {
         console.error('Failed to load CPU simulator scripts:', error)
       }
@@ -95,11 +112,30 @@ function CPUSimulatorPage() {
       document.addEventListener('keydown', handleKeyDown)
 
       return () => {
+        /*
+         * This listener is document-level and calls preventDefault() on Space.
+         * Left attached, it kept swallowing Space on every other page for the
+         * rest of the session - so Space stopped scrolling the documentation
+         * once a visitor had opened the demo, and every return visit added
+         * another copy.
+         */
         document.removeEventListener('keydown', handleKeyDown)
+
+        /*
+         * Cancels the requestAnimationFrame loop. Without this, navigating away
+         * mid-playback leaves the engine animating against a visualiser whose
+         * DOM React has already removed.
+         */
+        engine.pause()
       }
     }
 
     loadScripts()
+
+    return () => {
+      cancelled = true
+      if (cleanup) cleanup()
+    }
   }, [])
 
   return (

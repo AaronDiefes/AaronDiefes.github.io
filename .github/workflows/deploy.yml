@@ -24,7 +24,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          # Node 18 reached end-of-life in April 2025. 22 is the active LTS and
+          # matches the local toolchain the build is actually verified against.
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
