@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import DemoLayout from '../../components/shared/DemoLayout'
 import PipelineDiagram from '../../components/cpu/PipelineDiagram'
-import PipelineTimeline from '../../components/cpu/PipelineTimeline'
 import PipelineNarration from '../../components/cpu/PipelineNarration'
+import StatePanels from '../../components/cpu/StatePanels'
 
 function CPUSimulatorPage() {
   /* The whole simulated run, captured when a program loads. The timeline needs
@@ -164,37 +164,55 @@ function CPUSimulatorPage() {
       title="CPU Pipeline Simulator"
       subtitle="Interactive 5-stage RISC pipeline visualization with step-through execution"
     >
+      {/*
+        Order is the whole point of this arrangement.
+
+        Everything used to live in one <aside> that came FIRST in the DOM, so on
+        any screen below the breakpoint you scrolled 1268px of sidebar before
+        reaching the datapath - it started at y 2428 on a phone. The sidebar is
+        split in two around the visualization instead: what you need in order to
+        drive the simulator goes above it, and what you read once goes below.
+        On a wide screen named grid areas put both back in the left column, so
+        the familiar layout is unchanged.
+      */}
       <div className="demo-layout">
-        <aside className="sidebar">
+        <aside className="sidebar sidebar-primary">
           <div id="program-selector-container" ref={programSelectorContainerRef}></div>
           <div id="control-panel-container" ref={controlPanelContainerRef}></div>
-          <div id="instruction-list-container" ref={instructionListContainerRef}></div>
-
-          <div className="c-code-equivalent">
-            <h3>C Code Equivalent</h3>
-            <pre><code id="c-code-display"></code></pre>
-          </div>
-
-          <div className="keyboard-shortcuts">
-            <h3>Keyboard Shortcuts</h3>
-            <dl>
-              <dt><kbd>Space</kbd></dt><dd>Play / Pause</dd>
-              <dt><kbd>&larr;</kbd></dt><dd>Step Back</dd>
-              <dt><kbd>&rarr;</kbd></dt><dd>Step Forward</dd>
-              <dt><kbd>R</kbd></dt><dd>Reset</dd>
-            </dl>
-          </div>
         </aside>
 
         <div className="visualization-area">
-          {/* Sits above the datapath on purpose: the timeline is the index -
-              it tells you where you are before you look at where data flows. */}
-          <PipelineTimeline sequence={sequence} />
-          {/* When (timeline) -> why (narration) -> where (datapath). */}
+          {/* Why (narration) -> where (datapath) -> when + what (tabbed). */}
           <PipelineNarration />
           <PipelineDiagram />
-          <div id="cpu-viz-container" ref={cpuVizContainerRef} style={{ marginTop: '2rem' }}></div>
+          <StatePanels sequence={sequence} vizContainerRef={cpuVizContainerRef} />
         </div>
+
+        <aside className="sidebar sidebar-reference">
+          <div id="instruction-list-container" ref={instructionListContainerRef}></div>
+
+          {/* Reference, not instrumentation: read once, then never again. Open
+              on wide screens where the column is free anyway, closed on narrow
+              ones where they were 457px between you and the end of the page. */}
+          <details className="demo-details">
+            <summary>C Code Equivalent</summary>
+            <div className="c-code-equivalent">
+              <pre><code id="c-code-display"></code></pre>
+            </div>
+          </details>
+
+          <details className="demo-details">
+            <summary>Keyboard Shortcuts</summary>
+            <div className="keyboard-shortcuts">
+              <dl>
+                <dt><kbd>Space</kbd></dt><dd>Play / Pause</dd>
+                <dt><kbd>&larr;</kbd></dt><dd>Step Back</dd>
+                <dt><kbd>&rarr;</kbd></dt><dd>Step Forward</dd>
+                <dt><kbd>R</kbd></dt><dd>Reset</dd>
+              </dl>
+            </div>
+          </details>
+        </aside>
       </div>
     </DemoLayout>
   )

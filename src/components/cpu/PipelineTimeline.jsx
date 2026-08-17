@@ -77,7 +77,11 @@ function buildStalls(frames) {
   return byCycle
 }
 
-function PipelineTimeline({ sequence }) {
+/* `embedded` = the panel already has a heading (the tab it lives behind names
+   it), so the <h3> would say "Pipeline Timeline" directly under a tab reading
+   "Timeline". The meta line stays either way — cycle count and stall reason are
+   information, not decoration. */
+function PipelineTimeline({ sequence, embedded = false }) {
   const detail = useCpuFrame()
   const currentCycle = detail ? detail.index : 0
   const scrollerRef = useRef(null)
@@ -117,9 +121,11 @@ function PipelineTimeline({ sequence }) {
   if (!frames || rows.length === 0) {
     return (
       <section className="pipeline-timeline" aria-label="Pipeline occupancy over time">
-        <header className="ptl-head">
-          <h3 className="ptl-title">Pipeline Timeline</h3>
-        </header>
+        {!embedded && (
+          <header className="ptl-head">
+            <h3 className="ptl-title">Pipeline Timeline</h3>
+          </header>
+        )}
         <p className="ptl-empty">Choose a program to see instructions move through the stages.</p>
       </section>
     )
@@ -135,7 +141,7 @@ function PipelineTimeline({ sequence }) {
   return (
     <section className="pipeline-timeline" aria-label="Pipeline occupancy over time">
       <header className="ptl-head">
-        <h3 className="ptl-title">Pipeline Timeline</h3>
+        {!embedded && <h3 className="ptl-title">Pipeline Timeline</h3>}
         <p className="ptl-meta">
           <span className="ptl-cycle">Cycle {currentCycle}</span>
           <span className="ptl-sep">·</span>
@@ -148,6 +154,16 @@ function PipelineTimeline({ sequence }) {
               </span>
             </>
           )}
+        </p>
+
+        {/* The legend used to be a footer under the grid, costing a whole row of
+            vertical space to say five things that fit beside the cycle count. */}
+        <p className="ptl-legend">
+          {STAGES.map((s) => (
+            <span key={s} className={`ptl-key stage-${s.toLowerCase()}`}>{s}</span>
+          ))}
+          <span className="ptl-key is-stalled">•• stalled</span>
+          <span className="ptl-key is-flushed">flushed</span>
         </p>
       </header>
 
@@ -203,14 +219,6 @@ function PipelineTimeline({ sequence }) {
           </tbody>
         </table>
       </div>
-
-      <footer className="ptl-legend">
-        {STAGES.map((s) => (
-          <span key={s} className={`ptl-key stage-${s.toLowerCase()}`}>{s}</span>
-        ))}
-        <span className="ptl-key is-stalled">•• stalled</span>
-        <span className="ptl-key is-flushed">flushed</span>
-      </footer>
     </section>
   )
 }

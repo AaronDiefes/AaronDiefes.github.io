@@ -280,10 +280,13 @@
  * REGISTER GRID
  * ============================================ */
 
+/* 130px fell to two columns on a phone, which made 32 registers 767px tall -
+   the largest single block on the demo page. A register cell holds "$12" and a
+   value; 96px is enough for that and gives four columns at the same width. */
 .register-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
 }
 
 .register-cell {

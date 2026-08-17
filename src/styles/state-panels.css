@@ -1,0 +1,85 @@
+/*
+ * Tabbed host for the timeline and the register/memory views.
+ *
+ * The chrome deliberately matches .rf-cpu-panel and .rf-focus-btn in
+ * pipeline-flow.css: this panel sits directly under the datapath, and two
+ * different segmented controls stacked on each other would read as two
+ * different mechanisms rather than one.
+ */
+
+.state-panels {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.sp-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.sp-tab {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--color-text-light);
+  cursor: pointer;
+}
+
+.sp-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.sp-tab.is-on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  /* Foreground from the page ground so it inverts with the theme — white text
+     scores about 2.2:1 on the pale green the accent becomes in dark mode. */
+  color: var(--color-surface);
+}
+
+.sp-tab:focus-visible {
+  outline: 2px solid var(--color-text-heading);
+  outline-offset: 2px;
+}
+
+/*
+ * The panel scrolls internally rather than setting the page height. Without
+ * this the register grid — 32 cells, which fall to two columns on a phone —
+ * was 767px on its own, and the page grew to fit it.
+ */
+.sp-panel {
+  padding: 0.85rem;
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
+}
+
+/* The vanilla CPUVisualizer adds its own top margin assuming it was the last
+   block on the page; inside a padded panel that is a double gap. */
+.sp-panel #cpu-viz-container {
+  margin-top: 0 !important;
+}
+
+.sp-panel .pipeline-timeline,
+.sp-panel .info-section {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+@media (max-width: 680px) {
+  .sp-panel {
+    padding: 0.6rem;
+    max-height: min(65vh, 420px);
+  }
+}

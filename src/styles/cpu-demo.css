@@ -3,24 +3,51 @@
  * Scoped under .demo-layout-wrapper.cpu-demo so nothing leaks to other routes.
  */
 
+/*
+ * Two grid areas in the left column, one tall area on the right. The sidebar is
+ * two elements - drive-the-simulator above the visualization in the DOM,
+ * read-once below it - so that the single-column layout puts the datapath near
+ * the top instead of behind 1268px of preamble. Named areas pull both back into
+ * the left column here, where the horizontal space exists.
+ */
 .demo-layout-wrapper.cpu-demo .demo-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-areas:
+    "primary   viz"
+    "reference viz";
+  /* align-ITEMS, not align-content. The viz area spans both rows and is far
+     taller than the two sidebar cards, so with the default `stretch` each card
+     was inflated to fill its share of that height - the primary card measured
+     767px to hold 382px of controls. */
+  align-items: start;
+  gap: 1.25rem 1.75rem;
+  padding: 1.5rem 0;
 }
+
+.demo-layout-wrapper.cpu-demo .sidebar-primary   { grid-area: primary; }
+.demo-layout-wrapper.cpu-demo .sidebar-reference { grid-area: reference; }
+.demo-layout-wrapper.cpu-demo .visualization-area { grid-area: viz; }
 
 .demo-layout-wrapper.cpu-demo .sidebar {
   background: var(--color-surface-alt);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 8px;
-  overflow-y: auto;
-  max-height: calc(100vh - 200px);
+  min-width: 0;
+}
+
+/* The cap belongs on the instruction list, which is the only thing here that
+   grows without bound - not on the whole column, which used to get its own
+   scrollbar and hide whatever sat at the bottom of it. */
+.demo-layout-wrapper.cpu-demo .sidebar .instruction-list-container {
+  max-height: 260px;
 }
 
 .demo-layout-wrapper.cpu-demo .visualization-area {
-  padding: 1.5rem;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .demo-layout-wrapper.cpu-demo .program-selector {
@@ -100,18 +127,53 @@
   font-size: 0.85rem;
 }
 
-.demo-layout-wrapper.cpu-demo .keyboard-shortcuts {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: var(--color-surface);
-  border-radius: 4px;
+/* ---- Collapsible reference blocks --------------------------------------- */
+
+.demo-layout-wrapper.cpu-demo .demo-details {
+  margin-top: 0.75rem;
   border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  background: var(--color-surface);
 }
 
-.demo-layout-wrapper.cpu-demo .keyboard-shortcuts h3 {
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
+.demo-layout-wrapper.cpu-demo .demo-details > summary {
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: var(--weight-semibold, 600);
   color: var(--color-text-heading);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Own disclosure triangle, so it can rotate and so Safari's default marker
+   (which ::marker cannot style) is out of the way. */
+.demo-layout-wrapper.cpu-demo .demo-details > summary::-webkit-details-marker { display: none; }
+.demo-layout-wrapper.cpu-demo .demo-details > summary::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 150ms var(--easing-standard, ease);
+  flex: none;
+}
+
+.demo-layout-wrapper.cpu-demo .demo-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.demo-layout-wrapper.cpu-demo .demo-details > summary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.demo-layout-wrapper.cpu-demo .keyboard-shortcuts {
+  padding: 0 0.85rem 0.85rem;
 }
 
 .demo-layout-wrapper.cpu-demo .keyboard-shortcuts dl {
@@ -141,20 +203,12 @@
 }
 
 .demo-layout-wrapper.cpu-demo .c-code-equivalent {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: var(--color-surface);
-  border-radius: 4px;
-  border: 1px solid var(--color-border-light);
-}
-
-.demo-layout-wrapper.cpu-demo .c-code-equivalent h3 {
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
-  color: var(--color-text-heading);
+  padding: 0 0.85rem 0.85rem;
 }
 
 .demo-layout-wrapper.cpu-demo .c-code-equivalent pre {
+  max-height: 220px;
+  overflow-y: auto;
   margin: 0;
   padding: 0.75rem;
   background: var(--color-surface-alt);
@@ -169,23 +223,48 @@
   color: var(--color-text-heading);
 }
 
+/* Three tracks for two panels: the register file - 32 cells - was being given a
+   third of the width while a third track sat empty. */
 .demo-layout-wrapper.cpu-demo .info-panels {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
 }
 
-@media (max-width: 1024px) {
+/*
+ * 860px, not 1024px. The two-column layout needs 300 + 24 gap + a viz column;
+ * it fits comfortably from about 860px up, and the old threshold pushed every
+ * window between 860 and 1024 - including a half-screen browser on a 1920px
+ * display - onto the stacked path for no reason.
+ */
+@media (max-width: 860px) {
   .demo-layout-wrapper.cpu-demo .demo-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .demo-layout-wrapper.cpu-demo .sidebar {
-    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "primary"
+      "viz"
+      "reference";
+    padding: 1rem 0;
   }
 
   .demo-layout-wrapper.cpu-demo .info-panels {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
+
+  /* Stacked, the instruction list sits below the demo, so it can afford to be
+     taller than it is when squeezed into a fixed-width column. */
+  .demo-layout-wrapper.cpu-demo .sidebar .instruction-list-container {
+    max-height: 320px;
+  }
+
+  /*
+   * Stacked, the narration sits between the controls and the datapath, pushing
+   * the diagram off the first screen on a phone. The diagram is the anchor of
+   * the page, so it goes first here and the commentary follows it. On a wide
+   * screen the original reading order stands, because both are visible at once
+   * and "why then where" is the better sequence when you are not scrolling.
+   */
+  .demo-layout-wrapper.cpu-demo .visualization-area > .rf-cpu-panel   { order: 1; }
+  .demo-layout-wrapper.cpu-demo .visualization-area > .pipeline-narration { order: 2; }
+  .demo-layout-wrapper.cpu-demo .visualization-area > .state-panels   { order: 3; }
 }

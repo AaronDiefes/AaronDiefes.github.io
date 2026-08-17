@@ -13,6 +13,10 @@
    * on four of the five stages - each extra 80px here buys about 12% scale on
    * the port labels, which is the whole reason the schematic is drawn at
    * signal-name detail. The whole-datapath overview fits inside the same box.
+   *
+   * Responsive, because 640px was a hard number on every device: on a 431px-tall
+   * phone viewport it claimed a screen and a half for a board too small to read
+   * there anyway, where Expand is the real answer. Desktop is unchanged.
    */
   height: 640px;
   border: 1px solid var(--color-border);
@@ -616,9 +620,29 @@
   font-style: italic;
 }
 
+/*
+ * 640px was a hard number on every device. A single clamp() was the obvious fix
+ * and the wrong one: tying the height to vh shrank the desktop board too, and
+ * the desktop height is exactly what the redraw was sized against. So the
+ * default stands and only the cases that need to give way do.
+ */
+
+/* Short window on a wide screen — a laptop with browser chrome and a dock. */
+@media (min-width: 861px) and (max-height: 820px) {
+  .rf-cpu-wrapper { height: min(640px, 76vh); }
+}
+
+/* Phones and small tablets. The board is too small to read at this width
+   whatever height it gets — Expand is the answer there — so it stops claiming
+   a screen and a half of a page the visitor is trying to scroll. */
+@media (max-width: 860px) {
+  .rf-cpu-wrapper { height: clamp(340px, 58vh, 520px); }
+}
+
 @media (max-width: 768px) {
-  .rf-panel-head { align-items: flex-start; flex-direction: column; }
-  .rf-legend { gap: 0.6rem; font-size: 0.68rem; }
+  .rf-panel-head { align-items: flex-start; flex-direction: column; gap: 0.5rem; padding: 0.6rem 0.8rem; }
+  .rf-legend { gap: 0.6rem; font-size: 0.68rem; padding: 0.5rem 0.8rem 0.55rem; }
+  .rf-focus-btn { padding: 0.26rem 0.5rem; }
 }
 
 /* ---- Expanded view ------------------------------------------------------

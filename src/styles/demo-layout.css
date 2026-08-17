@@ -35,13 +35,15 @@
   overflow: visible;
 }
 
+/* 142px of title and subtitle above a tool the visitor came to operate. The
+   type sizes are unchanged; this is padding and margin only. */
 .demo-layout-wrapper .demo-header {
   background: transparent;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
-  padding: 30px 0 24px;
+  padding: 20px 0 16px;
   text-align: left;
-  margin-bottom: 26px;
+  margin-bottom: 0;
 }
 
 .demo-layout-wrapper .demo-header h1 {
