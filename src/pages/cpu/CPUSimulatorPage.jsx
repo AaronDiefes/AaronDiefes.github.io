@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import DemoLayout from '../../components/shared/DemoLayout'
-import PipelineDiagram from '../../components/cpu/PipelineDiagram'
 import PipelineNarration from '../../components/cpu/PipelineNarration'
 import StatePanels from '../../components/cpu/StatePanels'
 
@@ -182,10 +181,11 @@ function CPUSimulatorPage() {
         </aside>
 
         <div className="visualization-area">
-          {/* Why (narration) -> where (datapath) -> when + what (tabbed). */}
-          <PipelineNarration />
-          <PipelineDiagram />
+          {/* One viewer, then its caption. The narration reads as commentary on
+              whichever view is open, so it sits below it at every width - it
+              used to swap sides between desktop and mobile. */}
           <StatePanels sequence={sequence} vizContainerRef={cpuVizContainerRef} />
+          <PipelineNarration />
         </div>
 
         <aside className="sidebar sidebar-reference">

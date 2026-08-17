@@ -16,6 +16,14 @@
   grid-template-areas:
     "primary   viz"
     "reference viz";
+  /*
+   * Without this the two rows split the visualization's height between them,
+   * because the viz area spans both - so the reference card started 226px below
+   * where the primary card ended, and the left column read as broken. Row one
+   * takes its content's height; row two absorbs whatever the tall column has
+   * left over.
+   */
+  grid-template-rows: auto 1fr;
   /* align-ITEMS, not align-content. The viz area spans both rows and is far
      taller than the two sidebar cards, so with the default `stretch` each card
      was inflated to fill its share of that height - the primary card measured
@@ -40,7 +48,7 @@
    grows without bound - not on the whole column, which used to get its own
    scrollbar and hide whatever sat at the bottom of it. */
 .demo-layout-wrapper.cpu-demo .sidebar .instruction-list-container {
-  max-height: 260px;
+  max-height: 380px;
 }
 
 .demo-layout-wrapper.cpu-demo .visualization-area {
@@ -50,43 +58,86 @@
   gap: 1rem;
 }
 
+/* ---- Toolbar -------------------------------------------------------------
+ * 478px for a dropdown, a paragraph, four buttons and a speed select, all of it
+ * above the demo. The markup comes from the vanilla program-selector.js and
+ * control-panel.js; everything below is spacing and type on what they build.
+ * ------------------------------------------------------------------------ */
+
 .demo-layout-wrapper.cpu-demo .program-selector {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
 }
 
 .demo-layout-wrapper.cpu-demo .program-selector label {
   display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--color-text-heading);
+  margin-bottom: 0.3rem;
+  color: var(--color-text-muted);
 }
 
 .demo-layout-wrapper.cpu-demo .program-selector select {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.4rem 0.5rem;
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
+}
+
+.demo-layout-wrapper.cpu-demo .program-description {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--color-text-light);
 }
 
 .demo-layout-wrapper.cpu-demo .control-panel {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/*
+ * The buttons live inside a .control-group wrapper, which was a plain block, so
+ * the old `flex: 1 1 calc(50% - 0.25rem)` on them never applied - they were
+ * inline-blocks wrapping on width alone, which is why Step Fwd (the one you
+ * press most) ended up alone on a third row. Making the wrapper the flex
+ * container puts them on a deliberate 2x2 instead of a ragged 3+1.
+ */
+.demo-layout-wrapper.cpu-demo .control-panel .playback-controls {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .demo-layout-wrapper.cpu-demo .control-panel button {
-  flex: 1 1 calc(50% - 0.25rem);
-  padding: 0.75rem;
+  flex: 1 1 calc(50% - 0.18rem);
+  padding: 0.45rem 0.6rem;
   background: var(--color-primary);
   color: var(--color-surface);
   border: none;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
+}
+
+/* A readout, not a paragraph dangling under the controls. */
+.demo-layout-wrapper.cpu-demo .control-panel .status-display {
+  flex: 1 1 100%;
+}
+
+.demo-layout-wrapper.cpu-demo .control-panel .frame-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
 }
 
 .demo-layout-wrapper.cpu-demo .control-panel button:hover {
@@ -257,14 +308,8 @@
     max-height: 320px;
   }
 
-  /*
-   * Stacked, the narration sits between the controls and the datapath, pushing
-   * the diagram off the first screen on a phone. The diagram is the anchor of
-   * the page, so it goes first here and the commentary follows it. On a wide
-   * screen the original reading order stands, because both are visible at once
-   * and "why then where" is the better sequence when you are not scrolling.
-   */
-  .demo-layout-wrapper.cpu-demo .visualization-area > .rf-cpu-panel   { order: 1; }
-  .demo-layout-wrapper.cpu-demo .visualization-area > .pipeline-narration { order: 2; }
-  .demo-layout-wrapper.cpu-demo .visualization-area > .state-panels   { order: 3; }
+  /* Four transport buttons fit one row at full width. */
+  .demo-layout-wrapper.cpu-demo .control-panel button {
+    flex: 1 1 auto;
+  }
 }

@@ -1,33 +1,37 @@
 import React, { useRef, useState } from 'react'
 import PipelineTimeline from './PipelineTimeline'
+import PipelineDiagram from './PipelineDiagram'
 
 /**
- * The two detail views — the cycle grid, and the machine's actual state — behind
- * one segmented control.
+ * One viewer: the three ways of looking at the machine, behind one tab bar.
  *
- * They used to be stacked, and together they were 1320px tall on a phone: the
- * timeline (391), the register grid (767, because 32 registers fall to two
- * columns) and data memory (162). That is three screens of panels you read one
- * at a time, sitting between the datapath and the bottom of the page. Tabbing
- * them costs nothing — nobody was comparing the register file against the cycle
- * grid at a glance, because you could never see both at once anyway.
+ * The datapath belongs in here rather than in a panel of its own. It used to
+ * sit directly above this control with its own row of segmented buttons - the
+ * stage focus - so the page showed two near-identical button strips stacked on
+ * each other doing unrelated jobs. They are not the same kind of thing: the
+ * tabs choose WHICH VIEW, the stage buttons choose what part of ONE view. That
+ * relationship is now expressed by nesting, with the stage buttons a level down
+ * inside the datapath panel.
  *
- * Registers and memory share a tab rather than getting one each: they are the
- * same question ("what does the machine hold right now"), and on a wide screen
- * .info-panels already sits them side by side.
+ * Registers and memory share a tab: same question ("what does the machine hold
+ * right now"), and .info-panels already sits them side by side on a wide screen.
  *
  * The vanilla CPUVisualizer owns the DOM inside #cpu-viz-container, so that
- * container is rendered unconditionally and only hidden — unmounting it would
- * pull the element out from under a class that has already bound to it.
+ * container is rendered unconditionally and only hidden - unmounting it would
+ * pull the element out from under a class that has already bound to it. Same
+ * for the datapath: React Flow cannot measure a display:none container, so it
+ * stays mounted and re-fits itself when its tab comes back (its ResizeObserver
+ * fires on the 0x0 -> sized transition).
  */
 
 const TABS = [
+  { id: 'datapath', label: 'Datapath' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'state', label: 'Registers & Memory' },
 ]
 
 function StatePanels({ sequence, vizContainerRef }) {
-  const [active, setActive] = useState('timeline')
+  const [active, setActive] = useState('datapath')
   const tabRefs = useRef({})
 
   /* A tablist is a single tab stop: Left/Right move between tabs rather than
@@ -46,9 +50,16 @@ function StatePanels({ sequence, vizContainerRef }) {
     if (el) el.focus()
   }
 
+  const panelProps = (id) => ({
+    role: 'tabpanel',
+    id: `sp-panel-${id}`,
+    'aria-labelledby': `sp-tab-${id}`,
+    hidden: active !== id,
+  })
+
   return (
-    <section className="state-panels" aria-label="Machine detail">
-      <div className="sp-tablist" role="tablist" aria-label="Detail view" onKeyDown={onKeyDown}>
+    <section className="state-panels" aria-label="Machine views">
+      <div className="sp-tablist" role="tablist" aria-label="View" onKeyDown={onKeyDown}>
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -67,23 +78,17 @@ function StatePanels({ sequence, vizContainerRef }) {
         ))}
       </div>
 
-      <div
-        role="tabpanel"
-        id="sp-panel-timeline"
-        aria-labelledby="sp-tab-timeline"
-        className="sp-panel"
-        hidden={active !== 'timeline'}
-      >
+      {/* The datapath brings its own chrome and sizes itself, so it gets no
+          panel padding and no height cap. */}
+      <div {...panelProps('datapath')} className="sp-panel sp-panel-datapath">
+        <PipelineDiagram />
+      </div>
+
+      <div {...panelProps('timeline')} className="sp-panel">
         <PipelineTimeline sequence={sequence} embedded />
       </div>
 
-      <div
-        role="tabpanel"
-        id="sp-panel-state"
-        aria-labelledby="sp-tab-state"
-        className="sp-panel"
-        hidden={active !== 'state'}
-      >
+      <div {...panelProps('state')} className="sp-panel">
         <div id="cpu-viz-container" ref={vizContainerRef}></div>
       </div>
     </section>

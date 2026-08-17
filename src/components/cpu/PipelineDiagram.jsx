@@ -906,9 +906,19 @@ function PipelineDiagramInner() {
     const el = wrapperRef.current
     if (!el || !ready || typeof ResizeObserver === 'undefined') return
     let timer
+
+    /* The diagram lives in a tab. A hidden tab is display:none, so it reports
+       0x0 - and fitting into that would both fail and consume the callback that
+       should have re-framed the board when the tab came back. */
+    const run = () => {
+      const r = el.getBoundingClientRect()
+      if (r.width < 10 || r.height < 10) return
+      applyFocus()
+    }
+
     const ro = new ResizeObserver(() => {
       clearTimeout(timer)
-      timer = setTimeout(applyFocus, 120)
+      timer = setTimeout(run, 120)
     })
     ro.observe(el)
     return () => {

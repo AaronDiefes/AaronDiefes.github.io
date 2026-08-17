@@ -285,7 +285,7 @@
    value; 96px is enough for that and gives four columns at the same width. */
 .register-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   gap: 6px;
 }
 
@@ -297,7 +297,11 @@
   transition: background-color 0.3s ease-out;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  /* space-between leaves no room at all once the contents exactly fill the
+     cell, which ran "$10" straight into its value: "$100x00000000". */
+  gap: 6px;
+  overflow: hidden;
 }
 
 .register-cell.changed {
@@ -312,12 +316,14 @@
 .register-label {
   font-weight: bold;
   font-size: 12px;
+  flex: none;
 }
 
 .register-value {
   font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
 /* ============================================

@@ -64,6 +64,45 @@
   overflow-y: auto;
 }
 
+/*
+ * The datapath is the exception. It brings its own header, legend and height
+ * rule, so it gets no padding, no cap and no scroller - wrapping it in one
+ * would put a scrollbar around a pannable canvas, which is two ways of moving
+ * the same thing.
+ */
+.sp-panel-datapath {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Already inside the tab panel's box; a second border draws a line 1px from
+   the first one. */
+.sp-panel-datapath .rf-cpu-panel {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.sp-panel-datapath .rf-cpu-wrapper {
+  border-inline: 0;
+  border-radius: 0;
+}
+
+/* The stage focus is a sub-control of this one view, so it reads a step
+   quieter than the tabs above it. */
+.sp-panel-datapath .rf-panel-head {
+  padding: 0.5rem 0.75rem;
+}
+
+.sp-panel-datapath .rf-panel-title {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
 /* The vanilla CPUVisualizer adds its own top margin assuming it was the last
    block on the page; inside a padded panel that is a double gap. */
 .sp-panel #cpu-viz-container {
@@ -75,6 +114,26 @@
   border: 0;
   padding: 0;
   background: transparent;
+}
+
+/* The vanilla views were written as standalone page sections, so their headings
+   are page-heading sized. Inside a tab panel — under a tab that already names
+   the view — they only need to separate Registers from Data Memory. */
+.sp-panel .registers-section h2,
+.sp-panel .memory-section h2,
+.sp-panel .memory-section h3 {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 0.6rem;
+}
+
+.sp-panel .cpu-visualizer {
+  padding: 0;
+  gap: 0;
 }
 
 @media (max-width: 680px) {
