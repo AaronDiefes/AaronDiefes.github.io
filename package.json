@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify:cpu": "node scripts/verify-pipeline.mjs",
-    "verify:datapath": "node scripts/verify-datapath.mjs"
+    "verify:datapath": "node scripts/verify-datapath.mjs",
+    "verify:assets": "node scripts/verify-assets.mjs"
   },
   "dependencies": {
     "@xyflow/react": "^12.10.2",

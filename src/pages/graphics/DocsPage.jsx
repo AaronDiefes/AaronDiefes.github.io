@@ -99,51 +99,51 @@ function DocsPage() {
 
           <div className="gallery-grid">
             <div className="gallery-item">
-              <img src="/docs/assets/images/gradient_blendmodes.png" alt="Gradient blend modes" />
+              <img src="/projects/graphics-engine/docs/assets/images/gradient_blendmodes.png" alt="Gradient blend modes" />
               <div className="caption">Porter-Duff Blend Modes</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/color_clock.png" alt="Color clock gradient" />
+              <img src="/projects/graphics-engine/docs/assets/images/color_clock.png" alt="Color clock gradient" />
               <div className="caption">Radial Gradient with Color Stops</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/cubic_fan.png" alt="Cubic bezier fan" />
+              <img src="/projects/graphics-engine/docs/assets/images/cubic_fan.png" alt="Cubic bezier fan" />
               <div className="caption">Cubic Bezier Curve Tessellation</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/both_mesh.png" alt="Triangle mesh rendering" />
+              <img src="/projects/graphics-engine/docs/assets/images/both_mesh.png" alt="Triangle mesh rendering" />
               <div className="caption">Triangle Mesh with Texture Mapping</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/bitmap_tiling.png" alt="Bitmap tiling modes" />
+              <img src="/projects/graphics-engine/docs/assets/images/bitmap_tiling.png" alt="Bitmap tiling modes" />
               <div className="caption">Bitmap Shader Tile Modes</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/wheel.png" alt="Color wheel" />
+              <img src="/projects/graphics-engine/docs/assets/images/wheel.png" alt="Color wheel" />
               <div className="caption">Sweep Gradient Color Wheel</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/spock_quad.png" alt="Spock quad rendering" />
+              <img src="/projects/graphics-engine/docs/assets/images/spock_quad.png" alt="Spock quad rendering" />
               <div className="caption">Quad Rendering with Bilinear Interpolation</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/stars.png" alt="Star polygons" />
+              <img src="/projects/graphics-engine/docs/assets/images/stars.png" alt="Star polygons" />
               <div className="caption">Path Winding Fill Algorithm</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/rings.png" alt="Concentric rings" />
+              <img src="/projects/graphics-engine/docs/assets/images/rings.png" alt="Concentric rings" />
               <div className="caption">Stroke Rendering with Transformations</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/poly.png" alt="Polygon rendering" />
+              <img src="/projects/graphics-engine/docs/assets/images/poly.png" alt="Polygon rendering" />
               <div className="caption">Convex Polygon Rasterization</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/sweep_mesh.png" alt="Sweep gradient mesh" />
+              <img src="/projects/graphics-engine/docs/assets/images/sweep_mesh.png" alt="Sweep gradient mesh" />
               <div className="caption">Mesh with Sweep Gradient Shader</div>
             </div>
             <div className="gallery-item">
-              <img src="/docs/assets/images/lion_head.png" alt="Lion head texture" />
+              <img src="/projects/graphics-engine/docs/assets/images/lion_head.png" alt="Lion head texture" />
               <div className="caption">Bitmap Texture with Mirror Tiling</div>
             </div>
           </div>

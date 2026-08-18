@@ -759,7 +759,14 @@ function GraphicsWasmPage() {
 
       // Load image if not already loaded
       if (!window.bitmapLoaded) {
-        fetch('spock.png')
+        /*
+         * Absolute, not relative. `fetch('spock.png')` resolved against the
+         * current route - /projects/graphics-engine/spock.png - which never
+         * existed, so this preset fed the 404 page to the WASM module as if it
+         * were a PNG and drew nothing. A relative asset URL silently depends on
+         * the shape of the route that happens to be showing.
+         */
+        fetch('/projects/graphics-engine/spock.png')
           .then(response => response.arrayBuffer())
           .then(arrayBuffer => {
             const uint8Array = new Uint8Array(arrayBuffer)
