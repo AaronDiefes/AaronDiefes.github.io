@@ -32,6 +32,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # These gate the deploy. Pushing to main publishes, so this is the last
+      # place anything can be caught, and each of the three guards exists
+      # because something already shipped past a green build:
+      #
+      #   assets   - twelve doc images 404'd in production for weeks. A broken
+      #              URL fails nothing: the build succeeds and the page renders.
+      #   cpu      - pipeline behaviour, not arithmetic. Caught an instruction
+      #              identity bug that let a flushed instruction reach write-back.
+      #   datapath - the 59 datapath edges were validated against processor.v
+      #              once; this re-checks that wiring on every push.
+      #
+      # They run before the build so a failure is attributable and fast. If one
+      # fails the deploy job never runs, and Pages keeps serving the last good
+      # build - a failure here is a blocked release, not an outage.
+      - name: Verify assets resolve
+        run: npm run verify:assets
+
+      - name: Verify CPU pipeline model
+        run: npm run verify:cpu
+
+      - name: Verify datapath schematic
+        run: npm run verify:datapath
+
       - name: Build React app
         run: npm run build
 
