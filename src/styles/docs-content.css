@@ -79,3 +79,26 @@
   color: var(--color-code-string);
 }
 
+
+/* ---------------------------------------------------------------------------
+ * Tables on narrow screens.
+ *
+ * Thirteen tables are spread across eight documentation pages, each styled by
+ * its own page-local <style> block, and none of them could shrink below their
+ * content: a comparison table 459px wide pushed a 371px phone viewport 132px
+ * sideways, which scrolls the WHOLE page horizontally, not just the table.
+ *
+ * `display: block` turns the table itself into the scroll container, so the
+ * overflow is contained and swipeable instead of dragging the page with it.
+ * The trade is that the table stops stretching to fill the column and sizes to
+ * its content, which is the right way round on a phone. Desktop is untouched.
+ * ------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .docs-layout .docs-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

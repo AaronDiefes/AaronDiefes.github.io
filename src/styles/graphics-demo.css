@@ -4,9 +4,16 @@
  * generic selectors don't leak (in particular, the Navigation hamburger button).
  */
 
+/*
+ * minmax(0, 1fr), not 1fr. A `1fr` track carries an automatic minimum of its
+ * content's min-content width, and this column contains an 800px canvas - so
+ * the track could never shrink below 800px and the page scrolled sideways at
+ * every width under about 1150px. On a 390px phone the content was 836px wide
+ * in a 371px viewport: 515px of horizontal scroll.
+ */
 .demo-layout-wrapper.graphics-demo .content {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 320px minmax(0, 1fr);
   gap: 2rem;
   padding: 2rem;
 }
@@ -90,6 +97,12 @@
 }
 
 .demo-layout-wrapper.graphics-demo #canvas {
+  /* The 800x600 attributes stay - they are the engine's drawing resolution, and
+     the C++ side renders at that size regardless. These two lines only scale
+     the presented surface down to fit a narrow column, which is safe here
+     because nothing hit-tests against the canvas; it is display-only. */
+  max-width: 100%;
+  height: auto;
   /* Stays literally white in both themes, on purpose - this is the drawing
      surface the C++ engine renders onto, not page chrome. It reads as a sheet
      of paper on a dark page, which is what a canvas should look like, and
@@ -238,11 +251,20 @@
 
 @media (max-width: 900px) {
   .demo-layout-wrapper.graphics-demo .content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    padding: 1rem 0;
   }
 
   .demo-layout-wrapper.graphics-demo .controls {
     max-height: none;
     overflow-y: visible;
+  }
+
+  /* 600px of reserved box is most of a phone screen, and the canvas scales to
+     the column width now, so the container no longer needs to hold its place. */
+  .demo-layout-wrapper.graphics-demo .canvas-container {
+    min-height: 0;
+    padding: 0.5rem;
   }
 }

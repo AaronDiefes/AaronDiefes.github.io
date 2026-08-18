@@ -765,7 +765,10 @@ function UberAlgorithmPage() {
         </div>
 
         <h3>What Changed vs. What Didn't</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
+        {/* auto-fit rather than a hardcoded '1fr 1fr': this is an inline style, so
+            no media query can reach it, and two fixed columns forced 194px of
+            prose into a 371px phone viewport - 131px of horizontal scroll. */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem', marginTop: '1.5rem' }}>
           <div style={{ background: 'var(--status-ok-bg)', padding: '1.5rem', borderRadius: '8px', border: '2px solid var(--status-ok-border)' }}>
             <h4 style={{ color: 'var(--status-ok-fg)', marginTop: 0 }}>What Changed (Computation Only)</h4>
             <ul style={{ color: 'var(--status-ok-fg)', lineHeight: 1.8 }}>
