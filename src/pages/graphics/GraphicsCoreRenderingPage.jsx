@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import DocsLayout from '../../components/docs/DocsLayout'
 import DocsSection from '../../components/docs/DocsSection'
+import EngineFigure from '../../components/docs/EngineFigure'
 
 function GraphicsCoreRenderingPage() {
   const [activeTab, setActiveTab] = useState('edge')
@@ -137,6 +138,12 @@ function GraphicsCoreRenderingPage() {
           {/* Tab 1: Edge Rasterization */}
           <div id="edge" className={`tab-panel ${activeTab === 'edge' ? 'active' : ''}`}>
             <h3>Edge-Based Rendering</h3>
+            <EngineFigure
+              src="poly.png"
+              alt="Nested translucent polygons filled by the scanline rasterizer"
+              caption="Nested convex polygons, every one filled by the edge-walking scanline algorithm."
+              demo="fill"
+            />
             <p>
               The graphics engine uses an edge-based scanline algorithm for all shape rendering. Every shape—rectangle, triangle, polygon, path—is first converted into a list of edges. Each edge represents one side of the shape, storing the top and bottom Y coordinates, the X position, and the slope (how X changes as Y increments).
             </p>
@@ -268,6 +275,13 @@ function GraphicsCoreRenderingPage() {
           {/* Tab 3: Porter-Duff Blending */}
           <div id="blend" className={`tab-panel ${activeTab === 'blend' ? 'active' : ''}`}>
             <h3>Alpha Compositing with Porter-Duff</h3>
+            <EngineFigure
+              src="gradient_blendmodes.png"
+              alt="A grid of the twelve Porter-Duff blend modes over gradient sources"
+              caption="The twelve Porter-Duff operators, each compositing a gradient source over a gradient destination."
+              demo="blend"
+              wide
+            />
             <p>
               The graphics engine implements the complete Porter-Duff compositing model with 12 blend modes. Porter-Duff blending defines how source pixels (S) combine with destination pixels (D) based on their alpha values, using the formula: <code>result = S_coef * S + D_coef * D</code>.
             </p>
@@ -376,6 +390,11 @@ function GraphicsCoreRenderingPage() {
           {/* Tab 4: Polygon Clipping */}
           <div id="clip" className={`tab-panel ${activeTab === 'clip' ? 'active' : ''}`}>
             <h3>Viewport Clipping</h3>
+            <EngineFigure
+              src="wheels_clipped.png"
+              alt="Four line fans clipped against the canvas edges"
+              caption="Edges are clipped analytically against the device bounds, not merely scissored away."
+            />
             <p>
               Clipping ensures that shapes extending outside the viewport boundaries are properly trimmed before rasterization. Without clipping, edge calculations could produce invalid memory accesses or visual artifacts. The engine clips each edge of a polygon against the viewport's four boundaries: top, bottom, left, and right.
             </p>

@@ -102,3 +102,46 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ---- engine renders in the technique pages ---------------------------
+   The six technique pages had no images at all: prose and C++ listings describing
+   output the reader could not see. These are the engine's own renders, which already
+   existed in the repo but were wired into a single gallery on the docs hub. */
+
+.docs-layout .docs-content .engine-figure {
+  margin: var(--space-md) 0;
+  max-width: 380px;
+}
+
+.docs-layout .docs-content .engine-figure.is-wide {
+  max-width: 520px;
+}
+
+.docs-layout .docs-content .engine-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  /* These are renders onto a white surface; a tinted ground in dark mode would read
+     as part of the image rather than as page chrome. */
+  background: #fff;
+}
+
+.docs-layout .docs-content .engine-figure figcaption {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.docs-layout .docs-content .engine-figure-demo {
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.docs-layout .docs-content .engine-figure-demo:hover {
+  border-bottom-color: var(--color-primary);
+}

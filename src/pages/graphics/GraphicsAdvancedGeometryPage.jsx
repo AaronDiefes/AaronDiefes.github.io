@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import DocsLayout from '../../components/docs/DocsLayout'
 import DocsSection from '../../components/docs/DocsSection'
+import EngineFigure from '../../components/docs/EngineFigure'
+
+const DEMO_HREF = '/projects/graphics-engine/demo'
 
 function GraphicsAdvancedGeometryPage() {
   const [activeTab, setActiveTab] = useState('bezier')
@@ -280,6 +284,12 @@ function GraphicsAdvancedGeometryPage() {
             {/* Tab Panel 2: Triangle Meshes */}
             <div id="mesh" className={`tab-panel ${activeTab === 'mesh' ? 'active' : ''}`}>
               <h3>Triangle Mesh Rendering</h3>
+            <EngineFigure
+              src="tri_color.png"
+              alt="A triangle shaded by interpolating three vertex colours"
+              caption="One triangle, Gouraud-shaded by barycentric interpolation of its vertex colours."
+              demo="mesh"
+            />
 
               <h4>Algorithm Overview</h4>
               <p>
@@ -377,15 +387,22 @@ function GraphicsAdvancedGeometryPage() {
 
               <h4>Interactive Demo</h4>
               <p className="demo-instruction">
-                <strong>Mesh with Texture Mapping:</strong> The mesh demo shows triangles with interpolated texture
-                coordinates. Drag vertices to see how the mesh deforms while maintaining texture mapping. The texture
-                follows the geometry, demonstrating correct barycentric interpolation.
+                <strong>Gouraud shading:</strong> the{' '}
+                <Link to={`${DEMO_HREF}?scene=mesh`}>Mesh shading demo</Link> draws indexed triangles with a colour at
+                each vertex. Drag the vertices and the colour field follows the geometry, which is what tells you the
+                interpolation is barycentric per fragment rather than a fixed gradient.
               </p>
             </div>
 
             {/* Tab Panel 3: Quad Rendering */}
             <div id="quad" className={`tab-panel ${activeTab === 'quad' ? 'active' : ''}`}>
               <h3>Quad Patch Rendering</h3>
+            <EngineFigure
+              src="spock_quad.png"
+              alt="A textured quad patch subdivided into triangles"
+              caption="A four-corner patch subdivided into a grid, with texture coordinates interpolated at every point."
+              demo="quad"
+            />
 
               <h4>Algorithm Overview</h4>
               <p>
@@ -515,17 +532,24 @@ function GraphicsAdvancedGeometryPage() {
   &#125;
               </pre>
 
-              <h4>Demo Note</h4>
+              <h4>Interactive Demo</h4>
               <p className="demo-instruction">
-                <strong>Quad rendering uses the mesh demo:</strong> The mesh demo can display quad patches subdivided
-                into triangles. Higher subdivision levels produce smoother color and texture interpolation across
-                non-planar surfaces.
+                <strong>Watch it converge:</strong> the{' '}
+                <Link to={`${DEMO_HREF}?scene=quad`}>Patch subdivision demo</Link> exposes the subdivision level directly.
+                At level 1 the patch is visibly two flat triangles; raising it refines the grid to (level+1)² cells
+                and the interpolation smooths out across the non-planar surface.
               </p>
             </div>
 
             {/* Tab Panel 4: Shader Composition */}
             <div id="shader" className={`tab-panel ${activeTab === 'shader' ? 'active' : ''}`}>
               <h3>Shader Composition Patterns</h3>
+            <EngineFigure
+              src="both_mesh.png"
+              alt="A star mesh carrying both vertex colours and a texture"
+              caption="Vertex colours and a texture on the same mesh, combined by a ComposeShader."
+              demo="shaders"
+            />
 
               <h4>Algorithm Overview</h4>
               <p>
@@ -656,11 +680,13 @@ function GraphicsAdvancedGeometryPage() {
   <span className="signal">drawConvexPolygon</span>(<span className="signal">points</span>, <span className="number">3</span>, <span className="signal">p</span>);
               </pre>
 
-              <h4>Demo Note</h4>
+              <h4>Interactive Demo</h4>
               <p className="demo-instruction">
-                <strong>Shader composition in action:</strong> The mesh demo uses ProxyShader for texture mapping.
-                When both colors and textures are provided, it uses ComposeShader to combine interpolated vertex
-                colors with the texture pattern, creating rich visual effects.
+                <strong>Composition in action:</strong> <code>drawMesh</code> builds these internally to map a texture
+                per triangle, and the{' '}
+                <Link to={`${DEMO_HREF}?scene=shaders`}>Combining shaders demo</Link> calls them directly &mdash; a
+                ProxyShader gives the overlay its own matrix, and a ComposeShader multiplies it with the texture
+                beneath.
               </p>
             </div>
           </div>

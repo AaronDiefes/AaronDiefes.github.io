@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import DocsLayout from '../../components/docs/DocsLayout'
 import DocsSection from '../../components/docs/DocsSection'
+import EngineFigure from '../../components/docs/EngineFigure'
 
 function GraphicsFinalFeaturesPage() {
   const [activeTab, setActiveTab] = useState('sweep')
@@ -146,6 +147,12 @@ function GraphicsFinalFeaturesPage() {
             {/* Tab 1: Sweep Gradient */}
             <div id="sweep" className={`tab-panel ${activeTab === 'sweep' ? 'active' : ''}`}>
               <h3>Sweep Gradient (Angle-Based)</h3>
+            <EngineFigure
+              src="wheel.png"
+              alt="A colour wheel produced by an angle-based gradient"
+              caption="Colours distributed by angle around a centre point."
+              demo="gradients"
+            />
 
               <h4>What is a Sweep Gradient?</h4>
               <p>
@@ -239,6 +246,12 @@ function GraphicsFinalFeaturesPage() {
             {/* Tab 2: Position-Based Gradient */}
             <div id="position" className={`tab-panel ${activeTab === 'position' ? 'active' : ''}`}>
               <h3>Position-Controlled Linear Gradient</h3>
+            <EngineFigure
+              src="final_linearpos.png"
+              alt="Six horizontal bands, each with its colour stops at different fractions"
+              caption="The same three colours in every band, with the stops placed at different fractions of the line."
+              demo="gradients"
+            />
 
               <h4>What is Position-Based Control?</h4>
               <p>
@@ -354,6 +367,13 @@ function GraphicsFinalFeaturesPage() {
             {/* Tab 3: Coons Patches */}
             <div id="coons" className={`tab-panel ${activeTab === 'coons' ? 'active' : ''}`}>
               <h3>Quadratic Coons Patches</h3>
+            <EngineFigure
+              src="final_coons.png"
+              alt="A texture mapped across a patch bounded by four quadratic curves"
+              caption="A Coons patch: four quadratic boundary curves with the interior blended between them."
+              demo="coons"
+              wide
+            />
 
               <h4>What is a Coons Patch?</h4>
               <p>

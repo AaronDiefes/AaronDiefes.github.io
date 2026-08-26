@@ -153,7 +153,7 @@ function DocsPage() {
         <section className="section">
           <h2>Explore the Implementation</h2>
           <p>
-            Each documentation page explains the algorithms, shows the C++ implementation, and provides interactive demos for different aspects of the rendering engine.
+            Each page explains one part of the engine, shows the C++ that implements it, and links through to the demo where you can drive it.
           </p>
 
           <div className="doc-cards">

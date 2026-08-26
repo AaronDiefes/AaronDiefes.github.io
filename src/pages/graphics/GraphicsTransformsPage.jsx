@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import DocsLayout from '../../components/docs/DocsLayout'
 import DocsSection from '../../components/docs/DocsSection'
+import EngineFigure from '../../components/docs/EngineFigure'
 
 function GraphicsTransformsPage() {
   const [activeTab, setActiveTab] = useState('matrix')
@@ -216,6 +217,12 @@ function GraphicsTransformsPage() {
             {/* Tab 2: CTM Stack */}
             <div id="ctm" className={`tab-panel ${activeTab === 'ctm' ? 'active' : ''}`}>
               <h3>Current Transform Matrix (CTM) Stack</h3>
+            <EngineFigure
+              src="spock_clock.png"
+              alt="A texture drawn seven times, rotated around a centre"
+              caption="One texture, drawn repeatedly through save/rotate/restore on the CTM stack."
+              demo="transforms"
+            />
 
               <h4>The Transformation Stack Concept</h4>
               <p>
@@ -289,6 +296,12 @@ function GraphicsTransformsPage() {
             {/* Tab 3: Bitmap Shader */}
             <div id="bitmap" className={`tab-panel ${activeTab === 'bitmap' ? 'active' : ''}`}>
               <h3>Bitmap Shader & Tile Modes</h3>
+            <EngineFigure
+              src="bitmap_tiling.png"
+              alt="A texture tiled with the repeat and mirror modes, one half sheared"
+              caption="The bitmap shader tiling a texture, with a sheared local matrix on one half."
+              demo="texture"
+            />
 
               <h4>Texture Mapping Concept</h4>
               <p>

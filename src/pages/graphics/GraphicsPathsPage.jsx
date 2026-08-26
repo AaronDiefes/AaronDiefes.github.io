@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import DocsLayout from '../../components/docs/DocsLayout'
 import DocsSection from '../../components/docs/DocsSection'
+import EngineFigure from '../../components/docs/EngineFigure'
 
 function GraphicsPathsPage() {
   const [activeTab, setActiveTab] = useState('construction')
@@ -154,6 +155,12 @@ function GraphicsPathsPage() {
             {/* Tab 1: Path Construction */}
             <div id="construction" className={`tab-panel ${activeTab === 'construction' ? 'active' : ''}`}>
               <h3>GPath: Command-Based Path Construction</h3>
+            <EngineFigure
+              src="cubic_fan.png"
+              alt="A fan of cubic Bezier petals"
+              caption="Cubic Beziers, flattened to line segments by the rasterizer before filling."
+              demo="curves"
+            />
               <p>
                 The <code>GPath</code> class represents complex vector shapes as a sequence of drawing commands.
                 Rather than storing only final geometry, it maintains a command buffer that can be transformed,
@@ -266,6 +273,12 @@ function GraphicsPathsPage() {
             {/* Tab 2: Winding Fill Rule */}
             <div id="winding" className={`tab-panel ${activeTab === 'winding' ? 'active' : ''}`}>
               <h3>The Winding Number Fill Rule</h3>
+            <EngineFigure
+              src="stars.png"
+              alt="Self-intersecting stars filled by the nonzero winding rule"
+              caption="Self-intersecting paths resolved by the nonzero winding rule."
+              demo="winding"
+            />
               <p>
                 Given a complex path, how do we determine which pixels are "inside" the shape? The <strong>winding number
                 algorithm</strong> provides the answer. As we scan across each row of pixels, we track a winding count
@@ -348,6 +361,12 @@ function GraphicsPathsPage() {
             {/* Tab 3: Linear Gradient */}
             <div id="linear" className={`tab-panel ${activeTab === 'linear' ? 'active' : ''}`}>
               <h3>Linear Gradient Shader</h3>
+            <EngineFigure
+              src="mirror_ramp.png"
+              alt="Colour ramps repeated with the mirror tile mode"
+              caption="A short gradient extended across the surface with the Mirror tile mode."
+              demo="gradients"
+            />
               <p>
                 A <strong>linear gradient</strong> interpolates colors along a line defined by two points. Each pixel's
                 color is determined by projecting it onto the gradient line—pixels at the start point receive the
@@ -441,6 +460,12 @@ function GraphicsPathsPage() {
             {/* Tab 4: Radial Gradient */}
             <div id="radial" className={`tab-panel ${activeTab === 'radial' ? 'active' : ''}`}>
               <h3>Radial Gradient Shader</h3>
+            <EngineFigure
+              src="color_clock.png"
+              alt="A radial gradient rotated around a centre point"
+              caption="A radial gradient with multiple colour stops, rotated through the CTM."
+              demo="gradients"
+            />
               <p>
                 A <strong>radial gradient</strong> creates concentric circles of color radiating from a center point.
                 Unlike linear gradients that project onto a line, radial gradients measure distance from the center—pixels
