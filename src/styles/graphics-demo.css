@@ -1,270 +1,378 @@
 /**
- * Graphics WASM demo page styles.
- * Scoped under .demo-layout-wrapper.graphics-demo so the raw `button` and other
- * generic selectors don't leak (in particular, the Navigation hamburger button).
+ * Graphics engine demo page.
+ *
+ * Scoped under .demo-layout-wrapper.graphics-demo so generic `button` and `input`
+ * selectors cannot leak into the site chrome - in particular the Navigation hamburger,
+ * which this file caught before.
+ *
+ * Rewritten alongside the demo rebuild. The previous version hardcoded 2rem / 1.5rem /
+ * 8px / 6px / 4px throughout and left the range inputs and selects entirely unstyled,
+ * so they rendered as browser-default blue against a green design system. Everything
+ * here goes through the design tokens.
+ *
+ * The old 800x600-canvas rationale is gone with it: each demo now declares its own
+ * logical size, the canvas is sized by JS to fit both axes, and it IS hit-tested -
+ * the drag handles sit in an SVG overlay above it.
  */
 
-/*
- * minmax(0, 1fr), not 1fr. A `1fr` track carries an automatic minimum of its
- * content's min-content width, and this column contains an 800px canvas - so
- * the track could never shrink below 800px and the page scrolled sideways at
- * every width under about 1150px. On a 390px phone the content was 836px wide
- * in a 371px viewport: 515px of horizontal scroll.
- */
-.demo-layout-wrapper.graphics-demo .content {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 2rem;
-  padding: 2rem;
+.demo-layout-wrapper.graphics-demo .graphics-demo-body {
+  padding: var(--space-md) 0 var(--space-lg);
 }
 
-.demo-layout-wrapper.graphics-demo .controls {
-  background: var(--color-surface-alt);
-  padding: 1.5rem;
-  border-radius: 8px;
-  max-height: calc(100vh - 250px);
-  overflow-y: auto;
+/* ---- demo picker ---------------------------------------------------- */
+
+.demo-layout-wrapper.graphics-demo .scene-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: var(--space-md);
 }
 
-.demo-layout-wrapper.graphics-demo .control-group {
-  margin-bottom: 1.5rem;
-}
-
-.demo-layout-wrapper.graphics-demo .control-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--color-text-heading);
-}
-
-.demo-layout-wrapper.graphics-demo .control-group select {
-  width: 100%;
-  padding: 0.5rem;
+.demo-layout-wrapper.graphics-demo .scene-picker button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-light);
   border: 1px solid var(--color-border-light);
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.demo-layout-wrapper.graphics-demo .controls button {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--color-primary);
-  color: var(--color-surface);
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
-  margin-bottom: 0.5rem;
+  transition: color var(--timing-standard) var(--easing-standard),
+              border-color var(--timing-standard) var(--easing-standard);
 }
 
-.demo-layout-wrapper.graphics-demo .controls button:hover:not(:disabled) {
-  background: var(--color-primary-dark);
+.demo-layout-wrapper.graphics-demo .scene-picker button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
-.demo-layout-wrapper.graphics-demo .controls button:focus-visible {
-  /* outline-offset puts this ring OUTSIDE the button, on the .controls panel -
-     not on the button's green fill. A white ring was therefore invisible
-     against the light panel in light mode. --color-text-heading contrasts with
-     the panel in both themes. */
+.demo-layout-wrapper.graphics-demo .scene-picker button[aria-pressed='true'] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  /* --color-surface, not white: in dark mode the accent is light, so the label has to
+     flip with it or the chip becomes unreadable. */
+  color: var(--color-surface);
+  font-weight: var(--weight-medium);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-picker button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- layout --------------------------------------------------------- */
+
+.demo-layout-wrapper.graphics-demo .graphics-columns {
+  display: grid;
+  /* minmax(0, …) so a wide canvas cannot force the track past the viewport. A bare
+     1fr carries the content's min-content width, which is what made the old page
+     scroll sideways at every width below about 1150px. */
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+/* ---- stage ---------------------------------------------------------- */
+
+.demo-layout-wrapper.graphics-demo .graphics-stage {
+  position: relative;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-surface {
+  position: relative;
+  line-height: 0;
+  max-width: 100%;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-surface canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  /* Stays literally white in both themes, on purpose: this is the drawing surface the
+     C++ engine renders onto, not page chrome. Tokenizing it would tint the output. */
+  background: #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-handles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Without this a drag on touch scrolls the page instead of moving the handle. */
+  touch-action: none;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-handles circle {
+  cursor: grab;
+  fill: var(--color-primary);
+  fill-opacity: 0.85;
+  stroke: #fff;
+  stroke-width: 2.5;
+  transition: fill-opacity var(--timing-instant) var(--easing-standard);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-handles circle:hover { fill-opacity: 1; }
+.demo-layout-wrapper.graphics-demo .scene-handles circle:active { cursor: grabbing; }
+
+.demo-layout-wrapper.graphics-demo .scene-handles polyline {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-opacity: 0.4;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-labels span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  /* Fixed dark-on-light: these sit over the canvas, which is white in both themes. */
+  color: #2b2f33;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-hint {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  grid-auto-flow: column;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  animation: graphics-demo-spin 0.8s linear infinite;
+}
+
+@keyframes graphics-demo-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-layout-wrapper.graphics-demo .graphics-spinner { animation-duration: 2.4s; }
+  .demo-layout-wrapper.graphics-demo .scene-handles circle { transition: none; }
+}
+
+/* ---- side panel ----------------------------------------------------- */
+
+.demo-layout-wrapper.graphics-demo .graphics-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-panel h2 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  margin: 0 0 10px;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-concepts {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-docs-link {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-docs-link:hover {
+  border-bottom-color: var(--color-primary);
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-fixed-note {
+  margin: 14px 0 0;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+/* ---- controls ------------------------------------------------------- */
+
+.demo-layout-wrapper.graphics-demo .scene-controls {
+  margin-top: var(--space-sm);
+  display: grid;
+  gap: 14px;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-control label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--color-text-light);
+  margin-bottom: 6px;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-control label span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-layout-wrapper.graphics-demo .scene-control input[type='range'] {
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-control input[type='range']:disabled { opacity: 0.45; }
+
+.demo-layout-wrapper.graphics-demo .scene-segmented { display: flex; gap: 4px; }
+.demo-layout-wrapper.graphics-demo .scene-segmented.is-wrapped { flex-wrap: wrap; }
+
+.demo-layout-wrapper.graphics-demo .scene-segmented button {
+  flex: 1 1 auto;
+  min-width: 60px;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 6px;
+  cursor: pointer;
+  background: var(--color-surface-alt);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-segmented button[aria-pressed='true'] {
+  background: var(--color-accent-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: var(--weight-medium);
+}
+
+.demo-layout-wrapper.graphics-demo .scene-segmented button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: var(--space-sm);
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-actions button {
+  font: inherit;
+  font-size: 12.5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  background: var(--color-surface-alt);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.demo-layout-wrapper.graphics-demo .graphics-actions button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* The focus ring lands on the panel behind these controls, not on a green fill, so it
+   needs a colour that contrasts with the panel in both themes. */
+.demo-layout-wrapper.graphics-demo button:focus-visible,
+.demo-layout-wrapper.graphics-demo input:focus-visible {
   outline: 2px solid var(--color-text-heading);
   outline-offset: 2px;
 }
 
-.demo-layout-wrapper.graphics-demo .controls button:disabled {
-  background: var(--color-border-light);
-  cursor: not-allowed;
-}
+/* ---- errors --------------------------------------------------------- */
 
-.demo-layout-wrapper.graphics-demo .controls button.secondary {
-  background: var(--color-danger);
-}
-
-.demo-layout-wrapper.graphics-demo .controls button.secondary:hover:not(:disabled) {
-  background: var(--color-danger-hover);
-}
-
-.demo-layout-wrapper.graphics-demo .canvas-container {
-  background: var(--color-surface-alt);
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 600px;
-}
-
-.demo-layout-wrapper.graphics-demo #canvas {
-  /* The 800x600 attributes stay - they are the engine's drawing resolution, and
-     the C++ side renders at that size regardless. These two lines only scale
-     the presented surface down to fit a narrow column, which is safe here
-     because nothing hit-tests against the canvas; it is display-only. */
-  max-width: 100%;
-  height: auto;
-  /* Stays literally white in both themes, on purpose - this is the drawing
-     surface the C++ engine renders onto, not page chrome. It reads as a sheet
-     of paper on a dark page, which is what a canvas should look like, and
-     tokenizing it would tint whatever the engine draws. */
-  background: white;
-  border: 2px solid var(--color-border-light);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.demo-layout-wrapper.graphics-demo #status {
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-weight: 600;
-}
-
-.demo-layout-wrapper.graphics-demo #status.loading {
-  background: var(--status-warn-bg);
-  border: 2px solid var(--status-warn-border);
-  color: var(--status-warn-fg);
-}
-
-.demo-layout-wrapper.graphics-demo #status.success {
-  background: var(--status-ok-bg);
-  border: 2px solid var(--status-ok-border);
-  color: var(--status-ok-fg);
-}
-
-.demo-layout-wrapper.graphics-demo #status.error {
+.demo-layout-wrapper.graphics-demo .graphics-error {
   background: var(--status-err-bg);
-  border: 2px solid var(--status-err-border);
   color: var(--status-err-fg);
-}
-
-.demo-layout-wrapper.graphics-demo .info {
-  background: var(--color-surface-alt);
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  border: 1px solid var(--status-err-border);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  margin: 0 0 var(--space-sm);
   font-size: 0.9rem;
-  line-height: 1.6;
 }
 
-.demo-layout-wrapper.graphics-demo .demo-description {
-  background: var(--color-surface);
-  padding: 1rem;
-  border-radius: 6px;
-  border-left: 4px solid var(--color-primary);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
+/* ---- narrow screens -------------------------------------------------- */
 
-.demo-layout-wrapper.graphics-demo .demo-description h3 {
-  margin-bottom: 0.5rem;
-  color: var(--color-primary);
-}
-
-.demo-layout-wrapper.graphics-demo .spinner {
-  border: 4px solid var(--color-surface-alt);
-  border-top: 4px solid var(--color-primary);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: graphics-demo-spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes graphics-demo-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.demo-layout-wrapper.graphics-demo .param-group {
-  background: var(--color-surface);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
-  border-left: 3px solid var(--color-primary);
-}
-
-.demo-layout-wrapper.graphics-demo .param-group-title {
-  margin: 0 0 0.75rem 0;
-  color: var(--color-primary);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.demo-layout-wrapper.graphics-demo .control-item {
-  margin-bottom: 0.75rem;
-}
-
-.demo-layout-wrapper.graphics-demo .control-item label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  color: var(--color-text-heading);
-}
-
-.demo-layout-wrapper.graphics-demo .range-wrapper {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.demo-layout-wrapper.graphics-demo .range-wrapper input[type="range"] {
-  flex: 1;
-}
-
-.demo-layout-wrapper.graphics-demo .range-value {
-  font-size: 0.85rem;
-  font-family: 'Monaco', monospace;
-  background: var(--color-surface-alt);
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  min-width: 50px;
-  text-align: center;
-}
-
-.demo-layout-wrapper.graphics-demo .color-wrapper {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.demo-layout-wrapper.graphics-demo .color-wrapper input[type="color"] {
-  width: 50px;
-  height: 35px;
-  border: 1px solid var(--color-border-light);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.demo-layout-wrapper.graphics-demo .color-hex {
-  flex: 1;
-  font-family: 'Monaco', monospace;
-  font-size: 0.85rem;
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border-light);
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
+/* 900px is a deliberate exception to the 480/768/1024 scale, blessed in
+   design-system.css: it is where the stage and its panel stop fitting side by side. */
 @media (max-width: 900px) {
-  .demo-layout-wrapper.graphics-demo .content {
+  .demo-layout-wrapper.graphics-demo .graphics-columns {
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Twelve chips wrap to three rows and push the image most of the way down a phone
+     screen. One scrollable row keeps the picker to a single line. */
+  .demo-layout-wrapper.graphics-demo .scene-picker {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
   }
 
-  .demo-layout-wrapper.graphics-demo .controls {
-    max-height: none;
-    overflow-y: visible;
+  .demo-layout-wrapper.graphics-demo .scene-picker::-webkit-scrollbar { display: none; }
+
+  .demo-layout-wrapper.graphics-demo .scene-picker button {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
-  /* 600px of reserved box is most of a phone screen, and the canvas scales to
-     the column width now, so the container no longer needs to hold its place. */
-  .demo-layout-wrapper.graphics-demo .canvas-container {
-    min-height: 0;
-    padding: 0.5rem;
-  }
+  .demo-layout-wrapper.graphics-demo .graphics-stage { padding: 8px; }
+  .demo-layout-wrapper.graphics-demo .graphics-panel { padding: 14px 15px; }
 }

@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "verify:cpu": "node scripts/verify-pipeline.mjs",
     "verify:datapath": "node scripts/verify-datapath.mjs",
-    "verify:assets": "node scripts/verify-assets.mjs"
+    "verify:assets": "node scripts/verify-assets.mjs",
+    "verify:snippets": "node scripts/extract-engine-snippets.mjs --check",
+    "verify:coverage": "node scripts/verify-engine-coverage.mjs"
   },
   "dependencies": {
     "@xyflow/react": "^12.10.2",

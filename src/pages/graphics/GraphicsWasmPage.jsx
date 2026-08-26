@@ -1,1170 +1,158 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import DemoLayout from '../../components/shared/DemoLayout'
+import GraphicsStage from '../../components/graphics/GraphicsStage.jsx'
+import ScenePicker from '../../components/graphics/ScenePicker.jsx'
+import SceneControls from '../../components/graphics/SceneControls.jsx'
+import { useGraphicsEngine } from '../../hooks/useGraphicsEngine.js'
+import {
+  SCENES, SCENES_BY_SLUG, defaultParams, defaultHandles,
+} from '../../lib/graphics/scenes/index.js'
 
+/**
+ * The C++ graphics engine demo.
+ *
+ * One engine concept per demo. Some are fixed renders and some can be driven; which
+ * is which is decided in the demo modules, by whether changing something is the lesson.
+ *
+ * All the drawing lives in src/lib/graphics/scenes/, framework-free, so the standalone
+ * design prototype and this page render from exactly the same source.
+ */
 function GraphicsWasmPage() {
-  const canvasRef = useRef(null)
-  const wasmCanvasRef = useRef(null)
-  const moduleRef = useRef(null)
-  const [status, setStatus] = useState({ type: 'loading', message: 'Loading WebAssembly module...' })
-  const [currentDemoState, setCurrentDemoState] = useState('shapes')  // State for UI updates
-  const currentDemoRef = useRef('shapes')  // Ref for event handlers - always current value
-  const currentParamsRef = useRef({})  // Use ref instead of state - no re-renders on param changes
-  const [controlsDisabled, setControlsDisabled] = useState(true)
-  const [demoDescription, setDemoDescription] = useState({
-    title: 'Select a Demo',
-    description: 'Choose from the presets below to explore different capabilities of the graphics engine.'
-  })
-  const renderDebounceTimerRef = useRef(null)
-
-  // Helper to access currentParams
-  const currentParams = currentParamsRef.current
-
-  // Helper to get current demo (always latest)
-  const getCurrentDemo = () => currentDemoRef.current
-
-  // Demo descriptions
-  const demoInfo = {
-    shapes: {
-      title: 'Basic Shapes',
-      description: 'Demonstrates rectangle and polygon rendering with the C++ canvas API. Uses drawRect() and drawConvexPolygon() functions.'
-    },
-    transforms: {
-      title: 'Transformations',
-      description: 'Shows matrix transformations including translate, rotate, and scale operations. Uses save/restore to manage the CTM stack.'
-    },
-    gradients: {
-      title: 'Linear Gradients',
-      description: 'Linear gradient shaders with multiple color stops and tile modes. Try Clamp (default), Repeat (tiling), or Mirror (reflecting) to see how gradients extend beyond their endpoints.'
-    },
-    'blend-modes': {
-      title: 'Blend Modes',
-      description: 'Porter-Duff compositing operators demonstrating how source and destination pixels combine. Blue circle (destination) drawn first, red circle (source) with blend mode second. Try SrcOver (normal blend), SrcIn (intersection), DstOut (erase), or Xor (exclude overlap).'
-    },
-    paths: {
-      title: 'Curved Paths',
-      description: 'GPath API with Bezier curves. Demonstrates moveTo, lineTo, quadTo, and cubicTo path operations for complex shapes.'
-    },
-    'radial-gradients': {
-      title: 'Radial Gradients',
-      description: 'Circular gradient shaders radiating from a center point. Demonstrates GCreateRadialGradientShader() with tile modes. Clamp extends the final color, Repeat tiles the gradient outward, Mirror reflects the gradient.'
-    },
-    'sweep-gradients': {
-      title: 'Sweep/Angle Gradients',
-      description: 'Conical gradients that rotate around a center point (like a color wheel). The gradient sweeps in a circle, changing colors based on angle from the center. Adjust "Angle Direction" to rotate where the gradient starts. Great for pie charts, loading spinners, and radial UI elements!'
-    },
-    'bitmap-shader': {
-      title: 'Bitmap/Texture Shader',
-      description: 'Texture mapping with PNG images. Demonstrates GCreateBitmapShader() with transformation matrices and tile modes. Clamp extends edge pixels, Repeat tiles the texture, Mirror reflects it. Scale and position the texture in real-time!'
-    },
-    mesh: {
-      title: 'Mesh Rendering',
-      description: 'Triangle mesh rendering with vertex colors. Uses drawMesh() to render indexed triangle geometry with interpolated colors.'
-    },
-    'poly-spiral': {
-      title: 'Polygon Spiral',
-      description: 'Nested polygons with increasing sides creating a mesmerizing kaleidoscope effect. Each polygon has one more side than the inner polygon (triangle→square→pentagon→hexagon...), rotated around a central axis. Demonstrates drawConvexPolygon() with save/restore and translate transformations!'
-    }
-  }
-
-  // Parameter definitions for interactive controls
-  const demoParameters = {
-    shapes: {
-      rect1: {
-        x: { type: 'range', min: 0, max: 800, default: 50, step: 10, label: 'Rectangle 1 X' },
-        y: { type: 'range', min: 0, max: 600, default: 50, step: 10, label: 'Rectangle 1 Y' },
-        width: { type: 'range', min: 10, max: 400, default: 200, step: 10, label: 'Width' },
-        height: { type: 'range', min: 10, max: 400, default: 150, step: 10, label: 'Height' },
-        color: { type: 'color', default: '#667eed', label: 'Color' },
-        alpha: { type: 'range', min: 0, max: 1, default: 1.0, step: 0.05, label: 'Opacity' }
-      },
-      rect2: {
-        x: { type: 'range', min: 0, max: 800, default: 150, step: 10, label: 'Rectangle 2 X' },
-        y: { type: 'range', min: 0, max: 600, default: 150, step: 10, label: 'Rectangle 2 Y' },
-        width: { type: 'range', min: 10, max: 400, default: 200, step: 10, label: 'Width' },
-        height: { type: 'range', min: 10, max: 400, default: 150, step: 10, label: 'Height' },
-        color: { type: 'color', default: '#ed4c38', label: 'Color' },
-        alpha: { type: 'range', min: 0, max: 1, default: 0.8, step: 0.05, label: 'Opacity' }
-      }
-    },
-
-    transforms: {
-      general: {
-        centerX: { type: 'range', min: 0, max: 800, default: 400, step: 10, label: 'Center X' },
-        centerY: { type: 'range', min: 0, max: 600, default: 300, step: 10, label: 'Center Y' },
-        rectCount: { type: 'range', min: 1, max: 12, default: 6, step: 1, label: 'Rectangles' },
-        rectWidth: { type: 'range', min: 50, max: 300, default: 200, step: 10, label: 'Width' },
-        rectHeight: { type: 'range', min: 25, max: 150, default: 100, step: 5, label: 'Height' },
-        alpha: { type: 'range', min: 0, max: 1, default: 0.7, step: 0.05, label: 'Opacity' }
-      }
-    },
-
-    gradients: {
-      gradient1: {
-        x0: { type: 'range', min: 0, max: 400, default: 100, step: 5, label: 'Start X' },
-        y0: { type: 'range', min: 0, max: 300, default: 150, step: 5, label: 'Start Y' },
-        x1: { type: 'range', min: 0, max: 400, default: 130, step: 5, label: 'End X' },
-        y1: { type: 'range', min: 0, max: 300, default: 150, step: 5, label: 'End Y' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Repeat', label: 'Tile Mode' }
-      },
-      gradient2: {
-        x0: { type: 'range', min: 400, max: 800, default: 500, step: 5, label: 'Start X' },
-        y0: { type: 'range', min: 0, max: 600, default: 300, step: 5, label: 'Start Y' },
-        x1: { type: 'range', min: 400, max: 800, default: 525, step: 5, label: 'End X' },
-        y1: { type: 'range', min: 0, max: 600, default: 300, step: 5, label: 'End Y' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Mirror', label: 'Tile Mode' }
-      }
-    },
-
-
-    'blend-modes': {
-      general: {
-        centerX: { type: 'range', min: 100, max: 700, default: 400, step: 10, label: 'Center X' },
-        centerY: { type: 'range', min: 100, max: 500, default: 300, step: 10, label: 'Center Y' },
-        radius: { type: 'range', min: 30, max: 200, default: 100, step: 5, label: 'Circle Radius' },
-        offset: { type: 'range', min: 10, max: 150, default: 50, step: 5, label: 'Circle Offset' },
-        blueAlpha: { type: 'range', min: 0, max: 1, default: 0.7, step: 0.05, label: 'Blue Alpha' },
-        redAlpha: { type: 'range', min: 0, max: 1, default: 0.7, step: 0.05, label: 'Red Alpha' }
-      },
-      blendMode: { type: 'select', options: ['SrcOver', 'Src', 'Dst', 'Clear', 'SrcIn', 'SrcOut', 'DstOver', 'DstIn', 'DstOut', 'SrcATop', 'DstATop', 'Xor'], default: 'SrcOver', label: 'Blend Mode' }
-    },
-
-    paths: {
-      heart: {
-        x: { type: 'range', min: 50, max: 350, default: 200, step: 10, label: 'Heart X' },
-        y: { type: 'range', min: 100, max: 400, default: 200, step: 10, label: 'Heart Y' },
-        scale: { type: 'range', min: 0.5, max: 2.0, default: 1.0, step: 0.1, label: 'Scale' },
-        color: { type: 'color', default: '#ed4c38', label: 'Color' }
-      },
-      star: {
-        x: { type: 'range', min: 400, max: 750, default: 550, step: 10, label: 'Star X' },
-        y: { type: 'range', min: 100, max: 400, default: 250, step: 10, label: 'Star Y' },
-        outerRadius: { type: 'range', min: 50, max: 150, default: 100, step: 5, label: 'Outer Radius' },
-        innerRadius: { type: 'range', min: 20, max: 80, default: 40, step: 5, label: 'Inner Radius' },
-        color: { type: 'color', default: '#ffd700', label: 'Color' }
-      }
-    },
-
-    'radial-gradients': {
-      circle1: {
-        centerX: { type: 'range', min: 50, max: 350, default: 200, step: 10, label: 'Center X' },
-        centerY: { type: 'range', min: 50, max: 550, default: 300, step: 10, label: 'Center Y' },
-        radius: { type: 'range', min: 30, max: 250, default: 120, step: 5, label: 'Radius' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Clamp', label: 'Tile Mode' }
-      },
-      circle2: {
-        centerX: { type: 'range', min: 450, max: 750, default: 600, step: 10, label: 'Center X' },
-        centerY: { type: 'range', min: 50, max: 550, default: 300, step: 10, label: 'Center Y' },
-        radius: { type: 'range', min: 30, max: 250, default: 100, step: 5, label: 'Radius' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Repeat', label: 'Tile Mode' }
-      }
-    },
-
-    'sweep-gradients': {
-      general: {
-        centerX: { type: 'range', min: 200, max: 600, default: 400, step: 10, label: 'Center X' },
-        centerY: { type: 'range', min: 150, max: 450, default: 300, step: 10, label: 'Center Y' },
-        angleX: { type: 'range', min: 200, max: 600, default: 500, step: 10, label: 'Start Angle X (drag to rotate)' },
-        angleY: { type: 'range', min: 150, max: 450, default: 300, step: 10, label: 'Start Angle Y (drag to rotate)' },
-        radius: { type: 'range', min: 100, max: 250, default: 180, step: 10, label: 'Circle Size' }
-      }
-    },
-
-    'bitmap-shader': {
-      texture1: {
-        x: { type: 'range', min: 0, max: 800, default: 50, step: 10, label: 'X Position' },
-        y: { type: 'range', min: 0, max: 600, default: 50, step: 10, label: 'Y Position' },
-        scale: { type: 'range', min: 0.2, max: 3.0, default: 0.5, step: 0.1, label: 'Scale' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Clamp', label: 'Tile Mode' }
-      },
-      texture2: {
-        x: { type: 'range', min: 0, max: 800, default: 450, step: 10, label: 'X Position' },
-        y: { type: 'range', min: 0, max: 600, default: 50, step: 10, label: 'Y Position' },
-        scale: { type: 'range', min: 0.2, max: 3.0, default: 0.3, step: 0.1, label: 'Scale' },
-        tileMode: { type: 'select', options: ['Clamp', 'Repeat', 'Mirror'], default: 'Repeat', label: 'Tile Mode' }
-      }
-    },
-
-    mesh: {
-      triangle: {
-        v1x: { type: 'range', min: 200, max: 600, default: 400, step: 10, label: 'Top Vertex X' },
-        v1y: { type: 'range', min: 50, max: 300, default: 100, step: 10, label: 'Top Vertex Y' },
-        v2x: { type: 'range', min: 100, max: 400, default: 200, step: 10, label: 'Left Vertex X' },
-        v2y: { type: 'range', min: 300, max: 550, default: 500, step: 10, label: 'Left Vertex Y' },
-        v3x: { type: 'range', min: 400, max: 700, default: 600, step: 10, label: 'Right Vertex X' },
-        v3y: { type: 'range', min: 300, max: 550, default: 500, step: 10, label: 'Right Vertex Y' },
-        color1: { type: 'color', default: '#ff0000', label: 'Top Color' },
-        color2: { type: 'color', default: '#00ff00', label: 'Left Color' },
-        color3: { type: 'color', default: '#0000ff', label: 'Right Color' }
-      }
-    },
-
-    // poly-spiral has no parameters - it's a static demo
-  }
-
-  // Utility: Convert hex color to RGBA
-  function hexToRGBA(hex, alpha = 1.0) {
-    const r = parseInt(hex.substr(1, 2), 16) / 255
-    const g = parseInt(hex.substr(3, 2), 16) / 255
-    const b = parseInt(hex.substr(5, 2), 16) / 255
-    return { r, g, b, a: alpha }
-  }
-
-  // Get numeric parameter value
-  function getParam(demoName, groupName, paramName, defaultValue = 0) {
-    const fullName = `${demoName}_${groupName}_${paramName}`
-    const value = currentParams[fullName]
-    return value !== undefined ? parseFloat(value) : defaultValue
-  }
-
-  // Get color parameter as RGBA object
-  function getColorParam(demoName, groupName, paramName, defaultHex = '#ffffff') {
-    const fullName = `${demoName}_${groupName}_${paramName}`
-    const hex = currentParams[fullName] || defaultHex
-    return hexToRGBA(hex)
-  }
-
-  // Get select/dropdown parameter value
-  function getSelectParam(demoName, groupName, paramName, defaultValue = '') {
-    const fullName = `${demoName}_${groupName}_${paramName}`
-    return currentParams[fullName] || defaultValue
-  }
-
-  // Convert tile mode string to numeric enum value
-  function getTileModeValue(tileModeName) {
-    const tileModeMap = {
-      'Clamp': 0,   // GTileMode::kClamp
-      'Repeat': 1,  // GTileMode::kRepeat
-      'Mirror': 2   // GTileMode::kMirror
-    }
-    return tileModeMap[tileModeName] !== undefined ? tileModeMap[tileModeName] : 0
-  }
-
-  // Format group name for display (e.g., 'blueRect' -> 'Blue Rectangle')
-  function formatGroupName(name) {
-    return name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
-  }
-
-  // Generate HTML for a single control input
-  function generateControlHTML(name, config) {
-    switch (config.type) {
-      case 'range':
-        return `
-          <div class="control-item">
-            <label for="${name}">${config.label}</label>
-            <div class="range-wrapper">
-              <input type="range" id="${name}"
-                     min="${config.min}" max="${config.max}"
-                     step="${config.step}" value="${config.default}"
-                     data-param="${name}">
-              <span class="range-value" id="${name}_value">${config.default}</span>
-            </div>
-          </div>
-        `
-
-      case 'color':
-        return `
-          <div class="control-item">
-            <label for="${name}">${config.label}</label>
-            <div class="color-wrapper">
-              <input type="color" id="${name}"
-                     value="${config.default}"
-                     data-param="${name}">
-              <input type="text" id="${name}_hex"
-                     value="${config.default}"
-                     class="color-hex" readonly>
-            </div>
-          </div>
-        `
-
-      case 'select':
-        const options = config.options.map(opt =>
-          `<option value="${opt}" ${opt === config.default ? 'selected' : ''}>${opt}</option>`
-        ).join('')
-        return `
-          <div class="control-item">
-            <label for="${name}">${config.label}</label>
-            <select id="${name}" data-param="${name}">
-              ${options}
-            </select>
-          </div>
-        `
-    }
-  }
-
-  // Initialize parameters for a demo
-  function initializeParamsForDemo(demoName) {
-    const params = demoParameters[demoName]
-    if (!params) return
-
-    // Initialize default values (direct mutation like original)
-    for (const [groupName, groupParams] of Object.entries(params)) {
-      for (const [paramName, config] of Object.entries(groupParams)) {
-        const fullName = `${demoName}_${groupName}_${paramName}`
-        if (currentParams[fullName] === undefined) {
-          currentParams[fullName] = config.default
-        }
-      }
-    }
-  }
-
-  // Generate controls HTML for a demo (NO state updates)
-  function generateControlsForDemo(demoName) {
-    const params = demoParameters[demoName]
-    if (!params) return ''
-
-    let html = ''
-
-    // Iterate through parameter groups (e.g., rect1, rect2, triangle)
-    for (const [groupName, groupParams] of Object.entries(params)) {
-      html += `<div class="param-group">`
-      html += `<h4 class="param-group-title">${formatGroupName(groupName)}</h4>`
-
-      // Iterate through individual parameters
-      for (const [paramName, config] of Object.entries(groupParams)) {
-        const fullName = `${demoName}_${groupName}_${paramName}`
-        html += generateControlHTML(fullName, config)
-      }
-
-      html += `</div>`
-    }
-
-    return html
-  }
-
-  // Schedule a debounced render
-  function scheduleRender() {
-    if (renderDebounceTimerRef.current) {
-      clearTimeout(renderDebounceTimerRef.current)
-    }
-
-    renderDebounceTimerRef.current = setTimeout(() => {
-      const demo = getCurrentDemo()  // Always get latest value from ref
-      if (demos[demo]) {
-        demos[demo]()
-      }
-    }, 16) // ~60fps
-  }
-
-  function updateStatus(message, type) {
-    setStatus({ type, message })
-  }
-
-  function updateDemoDescription(demo) {
-    const info = demoInfo[demo]
-    setDemoDescription(info)
-  }
-
-  function updateCanvasDisplay() {
-    if (!wasmCanvasRef.current || !moduleRef.current) return
-
-    const wasmCanvas = wasmCanvasRef.current
-    const Module = moduleRef.current
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-
-    try {
-      const width = wasmCanvas.getWidth()
-      const height = wasmCanvas.getHeight()
-      const pixelPtr = wasmCanvas.getPixelsPtr()
-      const pixelCount = width * height
-
-      let wasmPixels
-      if (Module.HEAPU32) {
-        wasmPixels = new Uint32Array(Module.HEAPU32.buffer, pixelPtr, pixelCount)
-      } else if (Module.HEAPU8) {
-        wasmPixels = new Uint32Array(Module.HEAPU8.buffer, pixelPtr, pixelCount)
-      }
-
-      const imageData = ctx.createImageData(width, height)
-      const data = imageData.data
-
-      // Convert premultiplied ARGB to non-premultiplied RGBA
-      for (let i = 0; i < pixelCount; i++) {
-        const argb = wasmPixels[i]
-        const a = (argb >> 24) & 0xFF
-        let r = (argb >> 16) & 0xFF
-        let g = (argb >> 8) & 0xFF
-        let b = argb & 0xFF
-
-        // Unpremultiply RGB by alpha
-        if (a > 0 && a < 255) {
-          r = Math.round((r * 255) / a)
-          g = Math.round((g * 255) / a)
-          b = Math.round((b * 255) / a)
-        }
-
-        const idx = i * 4
-        data[idx] = r
-        data[idx + 1] = g
-        data[idx + 2] = b
-        data[idx + 3] = a
-      }
-
-      ctx.putImageData(imageData, 0, 0)
-    } catch (e) {
-      console.error('Error updating canvas:', e)
-    }
-  }
-
-  // Demo implementations
-  const demos = {
-    shapes: () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.95, 0.95, 0.95, 1.0)
-
-      // Rectangle 1 - read from parameters
-      const r1x = getParam('shapes', 'rect1', 'x', 50)
-      const r1y = getParam('shapes', 'rect1', 'y', 50)
-      const r1w = getParam('shapes', 'rect1', 'width', 200)
-      const r1h = getParam('shapes', 'rect1', 'height', 150)
-      const r1c = getColorParam('shapes', 'rect1', 'color', '#667eed')
-      const r1a = getParam('shapes', 'rect1', 'alpha', 1.0)
-      wasmCanvas.drawRect(r1x, r1y, r1w, r1h, r1c.r, r1c.g, r1c.b, r1a)
-
-      // Rectangle 2 - read from parameters
-      const r2x = getParam('shapes', 'rect2', 'x', 150)
-      const r2y = getParam('shapes', 'rect2', 'y', 150)
-      const r2w = getParam('shapes', 'rect2', 'width', 200)
-      const r2h = getParam('shapes', 'rect2', 'height', 150)
-      const r2c = getColorParam('shapes', 'rect2', 'color', '#ed4c38')
-      const r2a = getParam('shapes', 'rect2', 'alpha', 0.8)
-      wasmCanvas.drawRect(r2x, r2y, r2w, r2h, r2c.r, r2c.g, r2c.b, r2a)
-
-      // Draw triangle (keep static for now)
-      const trianglePoints = new Module.VectorFloat()
-      ;[400, 50, 500, 200, 300, 200].forEach(v => trianglePoints.push_back(v))
-      wasmCanvas.drawConvexPolygon(trianglePoints, 0.2, 0.8, 0.2, 1.0) // Green
-      trianglePoints.delete()
-
-      // Draw hexagon (keep static for now)
-      const hexPoints = new Module.VectorFloat()
-      const centerX = 600, centerY = 350, radius = 80
-      for (let i = 0; i < 6; i++) {
-        const angle = (i * Math.PI * 2) / 6
-        hexPoints.push_back(centerX + radius * Math.cos(angle))
-        hexPoints.push_back(centerY + radius * Math.sin(angle))
-      }
-      wasmCanvas.drawConvexPolygon(hexPoints, 0.58, 0.4, 0.64, 1.0) // Purple
-      hexPoints.delete()
-
-      updateCanvasDisplay()
-    },
-
-    transforms: () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(1.0, 1.0, 1.0, 1.0)
-
-      // Get parameters
-      const centerX = getParam('transforms', 'general', 'centerX', 400)
-      const centerY = getParam('transforms', 'general', 'centerY', 300)
-      const rectCount = Math.round(getParam('transforms', 'general', 'rectCount', 6))
-      const rectWidth = getParam('transforms', 'general', 'rectWidth', 200)
-      const rectHeight = getParam('transforms', 'general', 'rectHeight', 100)
-      const alpha = getParam('transforms', 'general', 'alpha', 0.7)
-
-      // Draw transformed rectangles
-      for (let i = 0; i < rectCount; i++) {
-        wasmCanvas.save()
-        wasmCanvas.translate(centerX, centerY)
-        wasmCanvas.rotate((i * Math.PI * 2) / rectCount)
-        wasmCanvas.scale(1.0 - i * (0.6 / rectCount), 1.0 - i * (0.6 / rectCount))
-
-        const hue = i / rectCount
-        const r = Math.sin(hue * Math.PI * 2) * 0.5 + 0.5
-        const g = Math.sin((hue + 0.33) * Math.PI * 2) * 0.5 + 0.5
-        const b = Math.sin((hue + 0.66) * Math.PI * 2) * 0.5 + 0.5
-
-        wasmCanvas.drawRect(-rectWidth/2, -rectHeight/2, rectWidth, rectHeight, r, g, b, alpha)
-        wasmCanvas.restore()
-      }
-
-      updateCanvasDisplay()
-    },
-
-    gradients: () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.1, 0.1, 0.1, 1.0)
-
-      // Gradient 1 - VERY SHORT (30px) to show tiling clearly!
-      const g1x0 = getParam('gradients', 'gradient1', 'x0', 100)
-      const g1y0 = getParam('gradients', 'gradient1', 'y0', 150)
-      const g1x1 = getParam('gradients', 'gradient1', 'x1', 130)
-      const g1y1 = getParam('gradients', 'gradient1', 'y1', 150)
-      const g1tile = getSelectParam('gradients', 'gradient1', 'tileMode', 'Repeat')
-      const g1tileValue = getTileModeValue(g1tile)
-
-      console.log(`Gradient 1: (${g1x0},${g1y0}) -> (${g1x1},${g1y1}), length=${Math.sqrt((g1x1-g1x0)**2+(g1y1-g1y0)**2).toFixed(1)}px, tile=${g1tile}, enum=${g1tileValue}`)
-
-      const colors1 = new Module.VectorFloat()
-      ;[0.4, 0.49, 0.92, 1.0, 0.93, 0.30, 0.24, 1.0].forEach(v => colors1.push_back(v))
-      const shader1 = Module.createLinearGradient(g1x0, g1y0, g1x1, g1y1, colors1, g1tileValue)
-      const paint1 = new Module.PaintWrapper()
-      paint1.setShader(shader1.getPtr())
-      wasmCanvas.drawRectWithPaint(50, 50, 300, 200, paint1)
-
-      // Clean up WASM objects
-      colors1.delete()
-      paint1.delete()
-      shader1.delete()
-
-      // Gradient 2 - VERY SHORT (25px) to show tiling clearly!
-      const g2x0 = getParam('gradients', 'gradient2', 'x0', 500)
-      const g2y0 = getParam('gradients', 'gradient2', 'y0', 300)
-      const g2x1 = getParam('gradients', 'gradient2', 'x1', 525)
-      const g2y1 = getParam('gradients', 'gradient2', 'y1', 300)
-      const g2tile = getSelectParam('gradients', 'gradient2', 'tileMode', 'Mirror')
-      const g2tileValue = getTileModeValue(g2tile)
-
-      console.log(`Gradient 2: (${g2x0},${g2y0}) -> (${g2x1},${g2y1}), length=${Math.sqrt((g2x1-g2x0)**2+(g2y1-g2y0)**2).toFixed(1)}px, tile=${g2tile}, enum=${g2tileValue}`)
-
-      const colors2 = new Module.VectorFloat()
-      ;[1.0, 0.5, 0.0, 1.0, 0.6, 0.2, 0.8, 1.0].forEach(v => colors2.push_back(v))  // Orange to Purple
-      const shader2 = Module.createLinearGradient(g2x0, g2y0, g2x1, g2y1, colors2, g2tileValue)
-      const paint2 = new Module.PaintWrapper()
-      paint2.setShader(shader2.getPtr())
-      wasmCanvas.drawRectWithPaint(400, 50, 350, 500, paint2)
-
-      // Clean up WASM objects
-      colors2.delete()
-      paint2.delete()
-      shader2.delete()
-
-      updateCanvasDisplay()
-    },
-
-
-    'blend-modes': () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(1.0, 1.0, 1.0, 1.0)  // White background
-
-      // Get parameters
-      const centerX = getParam('blend-modes', 'general', 'centerX', 400)
-      const centerY = getParam('blend-modes', 'general', 'centerY', 300)
-      const radius = getParam('blend-modes', 'general', 'radius', 100)
-      const offset = getParam('blend-modes', 'general', 'offset', 50)
-      const blueAlpha = getParam('blend-modes', 'general', 'blueAlpha', 0.7)
-      const redAlpha = getParam('blend-modes', 'general', 'redAlpha', 0.7)
-
-      const modeName = getSelectParam('blend-modes', 'blendMode', 'blendMode', 'SrcOver')
-      const blendMode = Module.BlendMode[modeName]
-
-      // Blue circle (destination) - semi-transparent
-      const circle1 = new Module.PathWrapper()
-      circle1.addCircle(centerX - offset, centerY, radius, Module.PathDirection.CW)
-      const paint1 = new Module.PaintWrapper()
-      paint1.setColor(0.2, 0.5, 1.0, blueAlpha)
-      wasmCanvas.drawPathWithPaint(circle1, paint1)
-
-      // Red circle (source) with selected blend mode - semi-transparent
-      const circle2 = new Module.PathWrapper()
-      circle2.addCircle(centerX + offset, centerY, radius, Module.PathDirection.CW)
-      const paint2 = new Module.PaintWrapper()
-      paint2.setColor(1.0, 0.3, 0.3, redAlpha)
-      paint2.setBlendMode(blendMode)
-      wasmCanvas.drawPathWithPaint(circle2, paint2)
-
-      updateCanvasDisplay()
-    },
-
-    paths: () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(1.0, 1.0, 1.0, 1.0)
-
-      // Heart shape using cubic curves - read from parameters
-      const heartX = getParam('paths', 'heart', 'x', 200)
-      const heartY = getParam('paths', 'heart', 'y', 200)
-      const heartScale = getParam('paths', 'heart', 'scale', 1.0)
-      const heartColor = getColorParam('paths', 'heart', 'color', '#ed4c38')
-
-      const path1 = new Module.PathWrapper()
-      // Scale all path coordinates relative to heart position
-      const s = heartScale
-      path1.moveTo(heartX, heartY)
-      path1.cubicTo(heartX, heartY - 50*s, heartX - 50*s, heartY - 80*s, heartX - 80*s, heartY - 50*s)
-      path1.cubicTo(heartX - 110*s, heartY - 20*s, heartX - 110*s, heartY + 20*s, heartX - 80*s, heartY + 50*s)
-      path1.lineTo(heartX, heartY + 120*s)
-      path1.lineTo(heartX + 80*s, heartY + 50*s)
-      path1.cubicTo(heartX + 110*s, heartY + 20*s, heartX + 110*s, heartY - 20*s, heartX + 80*s, heartY - 50*s)
-      path1.cubicTo(heartX + 50*s, heartY - 80*s, heartX, heartY - 50*s, heartX, heartY)
-
-      const paint1 = new Module.PaintWrapper()
-      paint1.setColor(heartColor.r, heartColor.g, heartColor.b, 1.0)
-      wasmCanvas.drawPathWithPaint(path1, paint1)
-
-      // Star using quadratic curves - read from parameters
-      const starX = getParam('paths', 'star', 'x', 550)
-      const starY = getParam('paths', 'star', 'y', 250)
-      const outerR = getParam('paths', 'star', 'outerRadius', 100)
-      const innerR = getParam('paths', 'star', 'innerRadius', 40)
-      const starColor = getColorParam('paths', 'star', 'color', '#ffd700')
-
-      const path2 = new Module.PathWrapper()
-      for (let i = 0; i < 5; i++) {
-        const angle = (i * Math.PI * 2) / 5 - Math.PI / 2
-        const x = starX + outerR * Math.cos(angle)
-        const y = starY + outerR * Math.sin(angle)
-
-        if (i === 0) path2.moveTo(x, y)
-        else path2.lineTo(x, y)
-
-        const innerAngle = angle + Math.PI / 5
-        const ix = starX + innerR * Math.cos(innerAngle)
-        const iy = starY + innerR * Math.sin(innerAngle)
-        path2.lineTo(ix, iy)
-      }
-
-      const paint2 = new Module.PaintWrapper()
-      paint2.setColor(starColor.r, starColor.g, starColor.b, 1.0)
-      wasmCanvas.drawPathWithPaint(path2, paint2)
-
-      updateCanvasDisplay()
-    },
-
-    'radial-gradients': () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.05, 0.05, 0.05, 1.0)
-
-      // Radial gradient 1 - read from parameters
-      const c1x = getParam('radial-gradients', 'circle1', 'centerX', 200)
-      const c1y = getParam('radial-gradients', 'circle1', 'centerY', 300)
-      const c1r = getParam('radial-gradients', 'circle1', 'radius', 120)
-      const c1tile = getSelectParam('radial-gradients', 'circle1', 'tileMode', 'Clamp')
-      const c1tileValue = getTileModeValue(c1tile)
-
-      const colors1 = new Module.VectorFloat()
-      ;[1.0, 0.2, 0.5, 1.0, 0.2, 0.5, 1.0, 1.0, 1.0, 0.9, 0.2, 1.0].forEach(v => colors1.push_back(v))
-      const shader1 = Module.createRadialGradient(c1x, c1y, c1r, colors1, c1tileValue)
-      const paint1 = new Module.PaintWrapper()
-      paint1.setShader(shader1.getPtr())
-      wasmCanvas.drawRectWithPaint(50, 50, 300, 500, paint1)
-
-      // Clean up WASM objects
-      colors1.delete()
-      paint1.delete()
-      shader1.delete()
-
-      // Radial gradient 2 - read from parameters
-      const c2x = getParam('radial-gradients', 'circle2', 'centerX', 600)
-      const c2y = getParam('radial-gradients', 'circle2', 'centerY', 300)
-      const c2r = getParam('radial-gradients', 'circle2', 'radius', 100)
-      const c2tile = getSelectParam('radial-gradients', 'circle2', 'tileMode', 'Repeat')
-      const c2tileValue = getTileModeValue(c2tile)
-
-      const colors2 = new Module.VectorFloat()
-      ;[0.2, 0.8, 0.2, 1.0, 0.2, 0.2, 0.9, 1.0].forEach(v => colors2.push_back(v))
-      const shader2 = Module.createRadialGradient(c2x, c2y, c2r, colors2, c2tileValue)
-      const paint2 = new Module.PaintWrapper()
-      paint2.setShader(shader2.getPtr())
-      wasmCanvas.drawRectWithPaint(450, 50, 300, 500, paint2)
-
-      // Clean up WASM objects
-      colors2.delete()
-      paint2.delete()
-      shader2.delete()
-
-      updateCanvasDisplay()
-    },
-
-    'sweep-gradients': () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.15, 0.15, 0.15, 1.0)
-
-      // Single sweep gradient with clear color wheel effect
-      const cx = getParam('sweep-gradients', 'general', 'centerX', 400)
-      const cy = getParam('sweep-gradients', 'general', 'centerY', 300)
-      const ax = getParam('sweep-gradients', 'general', 'angleX', 500)
-      const ay = getParam('sweep-gradients', 'general', 'angleY', 300)
-      const radius = getParam('sweep-gradients', 'general', 'radius', 180)
-
-      // Rainbow color wheel: Red -> Yellow -> Green -> Cyan -> Blue -> Magenta -> Red
-      const colors = new Module.VectorFloat()
-      ;[
-        1.0, 0.0, 0.0, 1.0,  // Red
-        1.0, 1.0, 0.0, 1.0,  // Yellow
-        0.0, 1.0, 0.0, 1.0,  // Green
-        0.0, 1.0, 1.0, 1.0,  // Cyan
-        0.0, 0.0, 1.0, 1.0,  // Blue
-        1.0, 0.0, 1.0, 1.0,  // Magenta
-        1.0, 0.0, 0.0, 1.0   // Red (complete circle)
-      ].forEach(v => colors.push_back(v))
-
-      console.log(`Sweep gradient: center=(${cx},${cy}), angle point=(${ax},${ay}), radius=${radius}`)
-
-      const shader = Module.createAngleGradient(cx, cy, ax, ay, colors)
-      const paint = new Module.PaintWrapper()
-      paint.setShader(shader.getPtr())
-
-      const circle = new Module.PathWrapper()
-      circle.addCircle(cx, cy, radius, Module.PathDirection.CW)
-      wasmCanvas.drawPathWithPaint(circle, paint)
-
-      // Clean up gradient objects
-      circle.delete()
-      paint.delete()
-      shader.delete()
-      colors.delete()
-
-      // Draw a white line showing the angle direction (0 degrees)
-      wasmCanvas.save()
-      const dx = ax - cx
-      const dy = ay - cy
-      const len = Math.sqrt(dx*dx + dy*dy)
-      const lineEndX = cx + (dx/len) * radius
-      const lineEndY = cy + (dy/len) * radius
-
-      // Draw line showing rotation start point
-      const line = new Module.PathWrapper()
-      line.moveTo(cx, cy)
-      line.lineTo(lineEndX, lineEndY)
-      const linePaint = new Module.PaintWrapper()
-      linePaint.setColor(1.0, 1.0, 1.0, 0.8)
-      wasmCanvas.drawPathWithPaint(line, linePaint)
-
-      // Clean up line objects
-      line.delete()
-      linePaint.delete()
-      wasmCanvas.restore()
-
-      updateCanvasDisplay()
-    },
-
-    'bitmap-shader': () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.2, 0.2, 0.2, 1.0)
-
-      // Load image if not already loaded
-      if (!window.bitmapLoaded) {
-        /*
-         * Absolute, not relative. `fetch('spock.png')` resolved against the
-         * current route - /projects/graphics-engine/spock.png - which never
-         * existed, so this preset fed the 404 page to the WASM module as if it
-         * were a PNG and drew nothing. A relative asset URL silently depends on
-         * the shape of the route that happens to be showing.
-         */
-        fetch('/projects/graphics-engine/spock.png')
-          .then(response => response.arrayBuffer())
-          .then(arrayBuffer => {
-            const uint8Array = new Uint8Array(arrayBuffer)
-            const dataPtr = Module._malloc(uint8Array.length)
-            Module.HEAPU8.set(uint8Array, dataPtr)
-            Module.loadImageToVFS('/spock.png', dataPtr, uint8Array.length)
-            Module._free(dataPtr)
-            window.bitmapLoaded = true
-
-            // Run demo after loading
-            if (demos['bitmap-shader']) {
-              demos['bitmap-shader']()
-            }
-          })
-          .catch(err => console.error('Failed to load bitmap:', err))
-        return
-      }
-
-      // Texture 1 - read from parameters
-      const t1x = getParam('bitmap-shader', 'texture1', 'x', 50)
-      const t1y = getParam('bitmap-shader', 'texture1', 'y', 50)
-      const t1scale = getParam('bitmap-shader', 'texture1', 'scale', 0.5)
-      const t1tile = getSelectParam('bitmap-shader', 'texture1', 'tileMode', 'Clamp')
-      const t1tileValue = getTileModeValue(t1tile)
-
-      const shader1 = Module.createBitmapShaderFromFile(
-        '/spock.png',
-        t1scale, 0, t1x,
-        0, t1scale, t1y,
-        t1tileValue
-      )
-      if (shader1) {
-        const paint1 = new Module.PaintWrapper()
-        paint1.setShader(shader1.getPtr())
-        wasmCanvas.drawRectWithPaint(50, 50, 300, 250, paint1)
-
-        // Clean up WASM objects
-        paint1.delete()
-        shader1.delete()
-      }
-
-      // Texture 2 - read from parameters
-      const t2x = getParam('bitmap-shader', 'texture2', 'x', 450)
-      const t2y = getParam('bitmap-shader', 'texture2', 'y', 50)
-      const t2scale = getParam('bitmap-shader', 'texture2', 'scale', 0.3)
-      const t2tile = getSelectParam('bitmap-shader', 'texture2', 'tileMode', 'Repeat')
-      const t2tileValue = getTileModeValue(t2tile)
-
-      const shader2 = Module.createBitmapShaderFromFile(
-        '/spock.png',
-        t2scale, 0, t2x,
-        0, t2scale, t2y,
-        t2tileValue
-      )
-      if (shader2) {
-        const paint2 = new Module.PaintWrapper()
-        paint2.setShader(shader2.getPtr())
-        wasmCanvas.drawRectWithPaint(450, 50, 300, 500, paint2)
-
-        // Clean up WASM objects
-        paint2.delete()
-        shader2.delete()
-      }
-
-      updateCanvasDisplay()
-    },
-
-    mesh: () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(0.05, 0.05, 0.05, 1.0)
-
-      // Get triangle vertices from parameters
-      const v1x = getParam('mesh', 'triangle', 'v1x', 400)
-      const v1y = getParam('mesh', 'triangle', 'v1y', 100)
-      const v2x = getParam('mesh', 'triangle', 'v2x', 200)
-      const v2y = getParam('mesh', 'triangle', 'v2y', 500)
-      const v3x = getParam('mesh', 'triangle', 'v3x', 600)
-      const v3y = getParam('mesh', 'triangle', 'v3y', 500)
-
-      // Get vertex colors from parameters
-      const c1 = getColorParam('mesh', 'triangle', 'color1', '#ff0000')
-      const c2 = getColorParam('mesh', 'triangle', 'color2', '#00ff00')
-      const c3 = getColorParam('mesh', 'triangle', 'color3', '#0000ff')
-
-      // Create triangle mesh with vertex colors
-      const verts = new Module.VectorFloat()
-      const colors = new Module.VectorFloat()
-      const indices = new Module.VectorInt()
-
-      // Triangle vertices
-      ;[v1x, v1y, v2x, v2y, v3x, v3y].forEach(v => verts.push_back(v))
-
-      // Vertex colors (RGB + alpha)
-      ;[c1.r, c1.g, c1.b, 1.0,
-       c2.r, c2.g, c2.b, 1.0,
-       c3.r, c3.g, c3.b, 1.0
-      ].forEach(v => colors.push_back(v))
-
-      // Triangle indices
-      ;[0, 1, 2].forEach(v => indices.push_back(v))
-
-      const paint = new Module.PaintWrapper()
-      wasmCanvas.drawMesh(verts, colors, new Module.VectorFloat(), indices, paint)
-
-      verts.delete()
-      colors.delete()
-      indices.delete()
-
-      updateCanvasDisplay()
-    },
-
-    'poly-spiral': () => {
-      const wasmCanvas = wasmCanvasRef.current
-      const Module = moduleRef.current
-      if (!wasmCanvas || !Module) return
-
-      wasmCanvas.clear(1.0, 1.0, 1.0, 1.0)  // White background
-
-      // Fixed parameters for static demo
-      const cx = 400
-      const cy = 300
-      const startSides = 3
-      const numPolygons = 16
-      const initialRadius = 60
-      const radiusGrowth = 16
-      const rotationPerLayer = 18
-
-      // Color palette (vibrant colors matching the demo image) with semi-transparency
-      const colorPalette = [
-        { r: 0.6, g: 0.9, b: 0.7, a: 0.85 },   // Light Green/Mint (center triangle)
-        { r: 0.3, g: 0.2, b: 0.7, a: 0.85 },   // Dark Purple
-        { r: 0.5, g: 0.9, b: 0.5, a: 0.85 },   // Light Green
-        { r: 0.4, g: 0.3, b: 0.8, a: 0.85 },   // Purple
-        { r: 0.9, g: 0.3, b: 0.8, a: 0.85 },   // Magenta
-        { r: 0.9, g: 0.9, b: 0.3, a: 0.85 },   // Yellow
-        { r: 0.2, g: 0.8, b: 0.8, a: 0.85 },   // Cyan
-        { r: 1.0, g: 0.6, b: 0.7, a: 0.85 },   // Light Pink
-        { r: 0.8, g: 0.3, b: 0.4, a: 0.85 }    // Dark Pink/Rose
-      ]
-
-      // Draw from OUTSIDE to INSIDE so inner polygons appear on top
-      for (let i = numPolygons - 1; i >= 0; i--) {
-        const sides = startSides + i  // Each polygon has one more side
-        const radius = initialRadius + (i * radiusGrowth)  // Radius grows outward
-        const rotation = (rotationPerLayer * i * Math.PI) / 180  // Accumulate rotation
-
-        // Get color from palette (cycle through colors)
-        const color = colorPalette[i % colorPalette.length]
-
-        // Create polygon points
-        const points = new Module.VectorFloat()
-        for (let v = 0; v < sides; v++) {
-          const angle = (v * 2 * Math.PI) / sides + rotation
-          const x = radius * Math.cos(angle)
-          const y = radius * Math.sin(angle)
-          points.push_back(x)
-          points.push_back(y)
-        }
-
-        // Draw polygon with transformation
-        wasmCanvas.save()
-        wasmCanvas.translate(cx, cy)
-        wasmCanvas.drawConvexPolygon(points, color.r, color.g, color.b, color.a)
-        wasmCanvas.restore()
-
-        points.delete()
-      }
-
-      updateCanvasDisplay()
-    }
-  }
-
-  // Initialize event handlers
-  function initializeEventHandlers() {
-    const controlsContainer = document.getElementById('dynamicControls')
-    if (!controlsContainer) return
-
-    // Event delegation for all control inputs
-    controlsContainer.addEventListener('input', (e) => {
-      if (!e.target.dataset.param) return
-
-      const paramName = e.target.dataset.param
-      const value = e.target.value
-
-      // Update stored value (direct mutation like original - no re-render)
-      currentParams[paramName] = value
-
-      // Update display for range sliders
-      if (e.target.type === 'range') {
-        const valueDisplay = document.getElementById(`${paramName}_value`)
-        if (valueDisplay) {
-          valueDisplay.textContent = value
-        }
-      }
-
-      // Update hex display for color pickers
-      if (e.target.type === 'color') {
-        const hexDisplay = document.getElementById(`${paramName}_hex`)
-        if (hexDisplay) {
-          hexDisplay.value = value
-        }
-      }
-
-      // Trigger debounced render
-      scheduleRender()
-    })
-
-    // Change events for dropdowns (instant, no debounce)
-    controlsContainer.addEventListener('change', (e) => {
-      if (e.target.tagName === 'SELECT' && e.target.dataset.param) {
-        const paramName = e.target.dataset.param
-        currentParams[paramName] = e.target.value  // Direct mutation
-        scheduleRender()
-      }
-    })
-  }
-
-  // Load WebAssembly module
+  const { module, error: engineError, loading } = useGraphicsEngine()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const initialScene = SCENES_BY_SLUG[searchParams.get('scene')] ?? SCENES[0]
+  const [scene, setScene] = useState(initialScene)
+  const [params, setParams] = useState(() => defaultParams(initialScene))
+  const [handles, setHandles] = useState(() => defaultHandles(initialScene))
+  const [drawError, setDrawError] = useState(null)
+
+  const selectScene = useCallback((next) => {
+    setScene(next)
+    setParams(defaultParams(next))
+    setHandles(defaultHandles(next))
+    setDrawError(null)
+    setSearchParams({ scene: next.slug }, { replace: true })
+  }, [setSearchParams])
+
+  // Back/forward and shared links should move the page, not just the address bar.
   useEffect(() => {
-    let mounted = true
+    const slug = searchParams.get('scene')
+    const target = SCENES_BY_SLUG[slug]
+    if (target && target !== scene) {
+      setScene(target)
+      setParams(defaultParams(target))
+      setHandles(defaultHandles(target))
+    }
+  }, [searchParams, scene])
 
-    function initializeWasm() {
-      if (window.GraphicsEngine) {
-        window.GraphicsEngine().then((module) => {
-          if (mounted) {
-            moduleRef.current = module
-            const wasmCanvas = new module.CanvasWrapper(800, 600)
-            wasmCanvasRef.current = wasmCanvas
-
-            updateStatus('✅ Engine Ready!', 'success')
-            setControlsDisabled(false)
-            if (canvasRef.current) {
-              canvasRef.current.style.display = 'block'
-            }
-
-            // Initialize params for initial demo
-            const initialDemo = currentDemoRef.current
-            initializeParamsForDemo(initialDemo)
-
-            // Generate initial controls and run initial demo
-            setTimeout(() => {
-              const dynamicControls = document.getElementById('dynamicControls')
-              if (dynamicControls) {
-                dynamicControls.innerHTML = generateControlsForDemo(initialDemo)
-              }
-              updateDemoDescription(initialDemo)
-
-              // Initialize event handlers (only once)
-              initializeEventHandlers()
-
-              if (demos[initialDemo]) {
-                demos[initialDemo]()
-              }
-            }, 0)
-          }
-        }).catch((error) => {
-          if (mounted) {
-            updateStatus('❌ Failed to load WebAssembly module', 'error')
-            console.error('WASM load error:', error)
-          }
-        })
-      } else {
-        // GraphicsEngine not available yet, load the script
-        const script = document.createElement('script')
-        script.src = '/graphics_engine.js'
-        script.async = true
-
-        script.onload = () => {
-          if (mounted && window.GraphicsEngine) {
-            initializeWasm()
-          } else {
-            if (mounted) {
-              updateStatus('❌ GraphicsEngine not found after script load', 'error')
-            }
-          }
-        }
-
-        script.onerror = () => {
-          if (mounted) {
-            updateStatus('❌ Failed to load graphics_engine.js', 'error')
-          }
-        }
-
-        document.body.appendChild(script)
+  const setParam = useCallback((key, value) => {
+    setParams((prev) => {
+      const next = { ...prev, [key]: value }
+      // A choice can restrict a sibling's options; keep the combination legal rather
+      // than letting a demo be asked to draw something it cannot.
+      for (const p of scene.params ?? []) {
+        if (!p.optionsFor) continue
+        const allowed = p.optionsFor(next)
+        if (allowed && !allowed.includes(next[p.key])) next[p.key] = allowed[0]
       }
-    }
+      return next
+    })
+  }, [scene])
 
-    initializeWasm()
-
-    return () => {
-      mounted = false
-    }
+  const setHandle = useCallback((key, point) => {
+    setHandles((prev) => ({ ...prev, [key]: point }))
   }, [])
 
-  // Handle demo change
-  const handleDemoChange = (e) => {
-    const demo = e.target.value
-    setCurrentDemoState(demo)  // Update state for UI
-    currentDemoRef.current = demo  // Update ref for handlers
-    updateDemoDescription(demo)
-
-    // Initialize params for new demo
-    initializeParamsForDemo(demo)
-
-    // Generate new controls for selected demo
-    setTimeout(() => {
-      const dynamicControls = document.getElementById('dynamicControls')
-      if (dynamicControls) {
-        dynamicControls.innerHTML = generateControlsForDemo(demo)
-      }
-
-      // Run demo with new controls
-      if (demos[demo]) {
-        demos[demo]()
-      }
-    }, 0)
-  }
-
-  const handleClear = () => {
-    if (wasmCanvasRef.current) {
-      wasmCanvasRef.current.clear(1.0, 1.0, 1.0, 1.0)
-      updateCanvasDisplay()
+  // Keyboard: left/right move through the demos, R resets the current one.
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = e.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.metaKey || e.ctrlKey || e.altKey) return
+      const i = SCENES.indexOf(scene)
+      if (e.key === 'ArrowRight') { e.preventDefault(); selectScene(SCENES[(i + 1) % SCENES.length]) }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); selectScene(SCENES[(i - 1 + SCENES.length) % SCENES.length]) }
+      else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); selectScene(scene) }
     }
-  }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [scene, selectScene])
+
+  const failure = engineError ?? drawError
+  const interactive = !scene.static
+  const concepts = useMemo(() => scene.concepts ?? [], [scene])
 
   return (
     <DemoLayout
       wrapperClass="graphics-demo"
-      title="🎨 C++ Graphics Engine"
-      subtitle="Real-time 2D rendering powered by C++ and WebAssembly"
-      badge="Phase 4 Complete: Interactive Controls"
+      title="C++ Graphics Engine"
+      subtitle="A software rasterizer written in C++17 and compiled to WebAssembly. No GPU and no canvas drawing calls — the engine computes every pixel itself, then hands the finished buffer to the browser."
     >
+      <div className="graphics-demo-body">
+        <ScenePicker
+          scenes={SCENES}
+          current={scene}
+          onSelect={selectScene}
+          disabled={loading}
+        />
 
-        <div className="content">
-          <div className="controls">
-            <div className="info">
-              <strong>⚡ Real C++ Engine</strong><br />
-              This is not a JavaScript simulation - it's my actual C++ graphics engine compiled to WebAssembly and running in your browser at near-native speed!
-            </div>
+        {failure && (
+          <p className="graphics-error" role="alert">
+            {engineError
+              ? `The engine failed to start: ${failure.message}`
+              : `${scene.name} failed to draw: ${failure.message}`}
+          </p>
+        )}
 
-            <div className="demo-description">
-              <h3>{demoDescription.title}</h3>
-              <p>{demoDescription.description}</p>
-            </div>
+        <div className="graphics-columns">
+          <GraphicsStage
+            module={module}
+            scene={scene}
+            params={params}
+            handles={handles}
+            onHandleChange={setHandle}
+            booting={loading}
+            onError={setDrawError}
+          />
 
-            <div className="control-group">
-              <label>Demo Preset</label>
-              <select
-                id="demoPreset"
-                value={currentDemoState}
-                onChange={handleDemoChange}
-                disabled={controlsDisabled}
-              >
-                <option value="shapes">Basic Shapes</option>
-                <option value="transforms">Transformations</option>
-                <option value="gradients">Linear Gradients</option>
-                <option value="radial-gradients">Radial Gradients</option>
-                <option value="sweep-gradients">Sweep Gradients</option>
-                <option value="bitmap-shader">Bitmap Shader</option>
-                <option value="blend-modes">Blend Modes</option>
-                <option value="paths">Curved Paths</option>
-                <option value="mesh">Mesh Rendering</option>
-                <option value="poly-spiral">Polygon Spiral</option>
-              </select>
-            </div>
+          <section className="graphics-panel">
+            <h2>What this shows</h2>
+            <ul className="graphics-concepts">
+              {concepts.map((c) => <li key={c}>{c}</li>)}
+            </ul>
 
-            <div id="dynamicControls">
-              {/* Controls will be generated dynamically here */}
-            </div>
+            <a className="graphics-docs-link" href={scene.docsHref}>
+              Read how it works ›
+            </a>
 
-            <button
-              className="secondary"
-              id="clearBtn"
-              onClick={handleClear}
-              disabled={controlsDisabled}
-            >
-              Clear Canvas
-            </button>
-          </div>
+            {!interactive && (
+              <p className="graphics-fixed-note">A fixed render — nothing to adjust.</p>
+            )}
 
-          <div className="canvas-container">
-            <div id="status" className={status.type}>
-              {status.type === 'loading' && <div className="spinner"></div>}
-              {status.message}
-            </div>
-            <canvas
-              ref={canvasRef}
-              id="canvas"
-              width="800"
-              height="600"
-              style={{ display: 'none' }}
+            <SceneControls
+              scene={scene}
+              params={params}
+              onChange={setParam}
+              disabled={loading}
             />
-          </div>
-        </div>
 
+            {interactive && (
+              <div className="graphics-actions">
+                <button type="button" onClick={() => selectScene(scene)}>Reset</button>
+              </div>
+            )}
+
+            <details className="demo-details">
+              <summary>Keyboard shortcuts</summary>
+              <ul>
+                <li><kbd>←</kbd> <kbd>→</kbd> previous / next demo</li>
+                <li><kbd>R</kbd> reset the current demo</li>
+              </ul>
+            </details>
+          </section>
+        </div>
+      </div>
     </DemoLayout>
   )
 }
