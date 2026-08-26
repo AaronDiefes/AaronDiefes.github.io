@@ -66,14 +66,23 @@ Interactive visualization of a 5-stage pipelined MIPS processor with:
 - Multiple example programs (basic instructions, Fibonacci)
 - Playback controls with variable speed
 
-### Graphics Engine (Coming Soon)
+### Graphics Engine
 
-C++ 2D graphics engine compiled to WebAssembly featuring:
-- Real-time shape rendering
-- Matrix transformations
-- Porter-Duff blend modes
-- Shader system (gradients, textures)
-- Bezier curves and mesh rendering
+A software rasterizer written in C++17 and compiled to WebAssembly. No GPU and no
+canvas drawing calls: the engine computes every pixel itself, then hands the finished
+buffer to the browser.
+
+Twelve demos at `/projects/graphics-engine/demo`, one engine concept each — some fixed
+renders, some you can drive:
+- Scanline fill of convex polygons and the CTM stack, including arbitrary affines
+- Nonzero winding, and curves flattened by a curvature-adaptive rule
+- All twelve Porter-Duff blend modes
+- Five gradient shaders across three tile modes
+- Nearest and bilinear texture sampling, and shaders composed from other shaders
+- Gouraud meshes, bilinear patch subdivision, and Coons patches
+
+The C++ source lives in `graphics-engine-src/` and is built with Emscripten — see
+`CLAUDE.md` for the toolchain notes and the parity check that guards a rebuild.
 
 ## Development
 

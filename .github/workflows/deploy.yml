@@ -42,6 +42,12 @@ jobs:
       #              identity bug that let a flushed instruction reach write-back.
       #   datapath - the 59 datapath edges were validated against processor.v
       #              once; this re-checks that wiring on every push.
+      #   snippets - the demo page quotes real C++ from graphics-engine-src/; this
+      #              fails if the source moved, so the page cannot quote code the
+      #              engine no longer runs.
+      #   coverage - every function bound into the WASM module must be exercised by
+      #              a demo. The old page reached about two thirds of the engine and
+      #              nobody noticed, which is the failure this prevents.
       #
       # They run before the build so a failure is attributable and fast. If one
       # fails the deploy job never runs, and Pages keeps serving the last good
@@ -54,6 +60,12 @@ jobs:
 
       - name: Verify datapath schematic
         run: npm run verify:datapath
+
+      - name: Verify engine snippets are current
+        run: npm run verify:snippets
+
+      - name: Verify engine coverage
+        run: npm run verify:coverage
 
       - name: Build React app
         run: npm run build

@@ -79,17 +79,19 @@ This directory contains all the original vanilla JavaScript files before the Rea
 │   │   │   ├── ControlPanel.jsx        # Playback controls
 │   │   │   ├── ProgramSelector.jsx     # Program dropdown
 │   │   │   └── InstructionList.jsx     # Instruction list
-│   │   └── graphics/                   # Graphics components (TBD)
+│   │   └── graphics/                   # GraphicsStage, ScenePicker, SceneControls, SceneHandles
 │   │
 │   ├── lib/                            # Vanilla JS logic (non-React)
-│   │   └── cpu/
-│   │       ├── core/                   # CPUState, InstructionSet, SequenceGenerator
-│   │       ├── animation/              # AnimationEngine, TimingController
-│   │       └── programs/               # Program definitions
+│   │   ├── cpu/
+│   │   │   ├── core/                   # CPUState, InstructionSet, SequenceGenerator
+│   │   │   ├── animation/              # AnimationEngine, TimingController
+│   │   │   └── programs/               # Program definitions
+│   │   └── graphics/                   # engine.js, surface.js, arena.js, scenes/
+│   │       └── scenes/                 # One module per demo; framework-free on purpose
 │   │
 │   ├── hooks/                          # Custom React hooks
 │   │   ├── useAnimationEngine.js       # Wraps AnimationEngine
-│   │   └── useWasmModule.js            # Loads WASM (TBD)
+│   │   └── useGraphicsEngine.js        # Loads the WASM engine + demo textures
 │   │
 │   ├── styles/                         # CSS files
 │   │   ├── design-system.css           # Color palette, typography
@@ -97,7 +99,6 @@ This directory contains all the original vanilla JavaScript files before the Rea
 │   │   └── visualization.css           # CPU viz styles
 │   │
 │   └── assets/
-│       ├── wasm/                       # WASM files
 │       │   ├── engine.js
 │       │   └── engine.wasm
 │       └── images/                     # Test images
@@ -161,7 +162,7 @@ The site uses **React Router** for client-side routing following a consistent pr
 **Graphics Engine Project:**
 - `/projects/graphics-engine/demo` - C++ WASM graphics engine demo
 - `/projects/graphics-engine/docs` - Graphics documentation landing (React)
-- `/projects/graphics-engine/docs/*.html` - Component documentation (static HTML, will be converted to React)
+- `/projects/graphics-engine/docs/<topic>` - Six technique pages (React; the static HTML was converted long ago)
 
 ### CPU Simulator Architecture
 
@@ -327,20 +328,34 @@ The Docker setup is used for local testing and matches the production build proc
 
 ## Working with Graphics Engine
 
-**WASM files:** Located in `src/assets/wasm/`
-- `engine.js` - Emscripten-generated JS glue code
-- `engine.wasm` - Compiled C++ binary
+**WASM files served to the browser:** `public/graphics_engine.js` + `public/graphics_engine.wasm`.
+These are the only copies the site loads — the demo page fetches `/graphics_engine.js` from the site
+root. Build output goes here.
 
-**C++ source (reference):** `graphics-engine-src/`
-- Not served by the website
-- Kept for documentation and rebuilding WASM
+**C++ source:** `graphics-engine-src/` (repo root)
+- Not served by the website, but it is **not archived either** — it is the source of truth and is
+  actively built from. It was moved out of `archived/` for exactly this reason.
+- `scripts/extract-engine-snippets.mjs` reads it to generate the excerpts the demo's code panel
+  displays, so edits here can break `npm run verify:snippets`. That is deliberate: the panel claims
+  to show the code that drew the frame, and the check fails loudly if it drifts.
 
 **To rebuild WASM:**
 ```bash
+source ~/emsdk/emsdk_env.sh          # needs Python >= 3.10 on PATH
 cd graphics-engine-src
-# Use Emscripten toolchain to compile
-# Copy output to src/assets/wasm/
+make -f Makefile.wasm
+cp graphics_engine.js graphics_engine.wasm ../public/
 ```
+
+Notes on the toolchain:
+- `brew install emscripten` does **not** work on this machine — `/opt/homebrew` is owned by another
+  account, so brew cannot write. Use `~/emsdk` (which `Makefile.wasm` already assumes).
+- emsdk requires Python 3.10+; the system `python3` is 3.9. Homebrew's 3.13 is readable even though
+  brew itself cannot install, so `export PATH="/opt/homebrew/bin:$PATH"` before running emsdk.
+
+**After any rebuild, verify parity.** The version of Emscripten that produced the committed binary is
+unknown, so a rebuild can change rendering. Run the existing demo presets through both the old and new
+module and pixel-compare before adopting the new `.wasm`.
 
 ## Nginx Configuration
 
@@ -371,10 +386,7 @@ cd graphics-engine-src
 - Footer → `Footer.jsx`
 
 **Still TODO:**
-- Graphics demo pages (JS and WASM)
-- Admin page
-- Docs page
-- Update GitHub Pages deployment workflow
+- Admin page (`AdminPage.jsx` is a 12-line stub)
 
 ## Common Tasks
 

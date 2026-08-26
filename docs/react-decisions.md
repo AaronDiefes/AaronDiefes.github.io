@@ -152,10 +152,11 @@ gives me the reset semantics I'd have wanted from it.")
 
 Two real failure surfaces:
 - A failed lazy chunk (see above) — currently a blank white page.
-- `src/hooks/useWasmModule.js` loads a 132 KB binary. The hook catches its own load errors
-  into state, but `new module.CanvasWrapper(...)` in `GraphicsWasmPage` is unguarded.
-  *(Correction: `useWasmModule.js` is dead code — never imported. The live loader is inline
-  in `GraphicsWasmPage.jsx`, so the unguarded construction is on the page, not the hook.)*
+- The WASM loader. *(Resolved 2026-08-24: `useWasmModule.js` was dead code and has been
+  deleted. Loading now goes through `src/lib/graphics/engine.js`, whose `loadEngine()` is a
+  module-level memoised promise, wrapped by `src/hooks/useGraphicsEngine.js`. Both the engine
+  failure and a per-demo draw failure surface as a message on the page rather than a blank
+  canvas, and `Surface` owns the `CanvasWrapper` lifetime.)*
 
 **Outcome.** Shipped as `src/components/shared/ErrorBoundary.jsx`. Two details worth keeping:
 
@@ -263,8 +264,10 @@ Vite can split `() => import('./pages/cpu/CpuAluPage.jsx')` but **not**
 
 - `vite.config.js` sets `sourcemap: true` for production — roughly doubles the deployed
   artifact and publishes readable source.
-- `useWasmModule.js` injects a `<script>` tag and deliberately never removes it on cleanup.
-  Under `StrictMode`'s double-invoked effects that's a latent double-load. Fix the hook
-  (guard on an existing `script[src="/graphics_engine.js"]`, or hoist to a module-level
-  memoised promise) — **don't** remove StrictMode to hide it.
+- ~~`useWasmModule.js` injects a `<script>` tag and never removes it, so StrictMode's
+  double-invoked effects are a latent double-load.~~ **Fixed 2026-08-24** by the second of
+  the two suggested routes: `loadEngine()` in `src/lib/graphics/engine.js` is a module-level
+  memoised promise that also reuses an existing `script[src="/graphics_engine.js"]`. Verified:
+  two concurrent calls return the same instance and exactly one script tag reaches the
+  document. StrictMode stayed on.
 - `.github/workflows/deploy.yml` builds on Node 18, which is EOL.
