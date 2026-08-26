@@ -59,12 +59,48 @@ export default {
   params: [],
   handles: [],
   draw(module, canvas) {
-    // The pose and the styling are fixed: this demo is a finished picture, not a toy.
-    const p = { girth: 42, scaleRows: 7, scaleCols: 26, finAlpha: 38, finRays: 5,
-                palette: 'Kohaku', showBounds: 'Hide' }
-    const h = { head: { x: 96, y: 168 }, c1: { x: 236, y: 96 },
-                c2: { x: 292, y: 356 }, tail: { x: 430, y: 322 } }
     withArena(module, (g) => {
+      // Water first: concentric ripples as thin rings, each an outer subpath with a
+      // reversed inner one so the winding rule cuts it hollow.
+      canvas.clear(0.965, 0.975, 0.98, 1)
+      const ripple = (cx, cy, r, w, alpha) => {
+        const ring = g.path()
+        const pts = (radius, rev) => {
+          const a = []
+          for (let i = 0; i < 48; i++) {
+            const t = (i / 48) * Math.PI * 2
+            a.push({ x: cx + radius * Math.cos(t) * 1.35, y: cy + radius * Math.sin(t) * 0.55 })
+          }
+          if (rev) a.reverse()
+          const flat = []
+          for (const q of a) flat.push(q.x, q.y)
+          return flat
+        }
+        ring.addPolygon(g.vec(pts(r, false)))
+        ring.addPolygon(g.vec(pts(r - w, true)))
+        canvas.drawPathWithPaint(ring, g.paint({ color: [0.42, 0.62, 0.72], alpha }))
+      }
+      for (let i = 0; i < 7; i++) ripple(180, 150, 40 + i * 26, 2.2, 0.16 - i * 0.012)
+      for (let i = 0; i < 5; i++) ripple(360, 400, 34 + i * 24, 2.0, 0.13 - i * 0.012)
+
+      // Two fish, drawn small-first so the larger one overlaps it.
+      const fish = [
+        { p: { girth: 26, scaleRows: 5, scaleCols: 20, finAlpha: 34, finRays: 4,
+               palette: 'Ink', showBounds: 'Hide' },
+          h: { head: { x: 372, y: 92 }, c1: { x: 452, y: 190 },
+               c2: { x: 300, y: 208 }, tail: { x: 214, y: 286 } } },
+        { p: { girth: 44, scaleRows: 8, scaleCols: 28, finAlpha: 38, finRays: 6,
+               palette: 'Kohaku', showBounds: 'Hide' },
+          h: { head: { x: 78, y: 214 }, c1: { x: 228, y: 132 },
+               c2: { x: 300, y: 396 }, tail: { x: 452, y: 356 } } },
+      ]
+      for (const one of fish) this.drawFish(module, canvas, g, one.p, one.h)
+    })
+  },
+
+  /** One koi along a cubic spine. Split out so the scene can draw more than one. */
+  drawFish(module, canvas, g, p, h) {
+    {
       const PALETTES = {
         Kohaku: {
           body: [[1, 0.99, 0.97, 1], [0.99, 0.93, 0.88, 1]],
@@ -86,7 +122,6 @@ export default {
         }
       };
       const pal = PALETTES[p.palette];
-      canvas.clear(0.98, 0.98, 0.97, 1);
       const { head, c1, c2, tail } = h;
       const P = (u) => cubicAt(head, c1, c2, tail, u);
       const T = (u) => cubicTangent(head, c1, c2, tail, u);
@@ -306,8 +341,6 @@ export default {
         frame.addRect(l + 2, tpp + 2, r - l - 4, b - tpp - 4, module.PathDirection.CCW);
         canvas.drawPathWithPaint(frame, g.paint({ color: [0.55, 0.35, 0.2], alpha: 0.75 }));
       }
-      this._scaleCount = scaleCount;
-      this._finRayCount = finRayCount;
-    });
+    }
   },
 };

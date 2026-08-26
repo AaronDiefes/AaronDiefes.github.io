@@ -18,26 +18,35 @@ export default {
   id: 'fill',
   name: 'Convex fill',
   slug: 'fill',
-  static: true,
   concepts: ['Convex polygons filled by the scanline rasterizer, stacked through save/restore.'],
   docsHref: '/projects/graphics-engine/docs/core-rendering#edge',
   size: { w: 512, h: 512 },
-  params: [],
   handles: [],
 
-  draw(module, canvas) {
+  params: [
+    { key: 'shapes', label: 'Shapes', type: 'range', min: 1, max: 40, step: 1, def: 16 },
+    { key: 'sides', label: 'Sides of the innermost', type: 'range', min: 3, max: 12, step: 1, def: 3 },
+    { key: 'alpha', label: 'Opacity', type: 'range', min: 20, max: 100, step: 1, def: 85,
+      format: (v) => (v / 100).toFixed(2) },
+  ],
+
+  draw(module, canvas, p) {
     withArena(module, (g) => {
       canvas.clear(1, 1, 1, 1)
-      const layers = 16
+      const layers = p.shapes | 0
+      const alpha = p.alpha / 100
+      const first = p.sides | 0
       for (let i = layers - 1; i >= 0; i--) {
-        const sides = 3 + i
-        const radius = 34 + i * (200 / (layers - 1))
+        // Each ring gains a side, so the innermost is the simplest polygon the
+        // rasterizer can fill and the outermost approaches a circle.
+        const sides = first + i
+        const radius = layers === 1 ? 200 : 34 + i * (200 / (layers - 1))
         const c = PALETTE[i % PALETTE.length]
         canvas.save()
         canvas.translate(256, 256)
         canvas.rotate((18 * i * Math.PI) / 180)
         canvas.drawConvexPolygon(g.vec(polygonPoints(0, 0, radius, sides, 0)),
-          c[0], c[1], c[2], 0.85)
+          c[0], c[1], c[2], alpha)
         canvas.restore()
       }
     })

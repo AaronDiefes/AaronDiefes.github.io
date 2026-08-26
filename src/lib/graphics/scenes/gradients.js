@@ -1,4 +1,4 @@
-import { withArena } from '../arena.js'
+import { withArena, polygonPoints } from '../arena.js'
 
 /**
  * Gradient shaders. INTERACTIVE.
@@ -32,6 +32,8 @@ export default {
       def: 'Clamp',
       // Sweep wraps a full turn; it has nothing to tile.
       when: (p) => p.kind !== 'Sweep' },
+    { key: 'shape', label: 'Filled shape', type: 'choice',
+      options: ['Rectangle', 'Polygon'], def: 'Rectangle' },
     { key: 'stop', label: 'Middle stop', type: 'range', min: 2, max: 98, step: 1, def: 50,
       format: (v) => (v / 100).toFixed(2),
       // Only the two stop-position shaders read this.
@@ -51,9 +53,13 @@ export default {
         case 'Radial':
           shader = g.shader(module.createRadialGradient(cx, cy, 190, colors, tile), 'radial')
           break
-        case 'Sweep':
-          shader = g.shader(module.createAngleGradient(cx, cy, 460, cy, colors), 'sweep')
+        case 'Sweep': {
+          // The ramp has to return to its first colour or the wheel shows a hard seam
+          // where 360 degrees meets 0.
+          const wrapped = g.vec([...STOPS.flat(), ...STOPS[0]])
+          shader = g.shader(module.createAngleGradient(cx, cy, 460, cy, wrapped), 'sweep')
           break
+        }
         case 'Nonlinear':
           shader = g.shader(module.createNonlinearGradient(
             70, cy, 442, cy, colors, g.vec([0, mid, 1]), tile), 'nonlinear')
@@ -65,7 +71,13 @@ export default {
         default:
           shader = g.shader(module.createLinearGradient(70, cy, 442, cy, colors, tile), 'linear')
       }
-      canvas.drawRectWithPaint(0, 0, 512, 512, g.paint({ shader }))
+      const paint = g.paint({ shader })
+      if (p.shape === 'Polygon') {
+        // drawConvexPolygonWithPaint: a polygon filled by a shader, not a colour.
+        canvas.drawConvexPolygonWithPaint(g.vec(polygonPoints(cx, cy, 232, 7, -Math.PI / 2)), paint)
+      } else {
+        canvas.drawRectWithPaint(0, 0, 512, 512, paint)
+      }
     })
   },
 }
