@@ -2,7 +2,10 @@
 # Requires Emscripten SDK: source ~/emsdk/emsdk_env.sh
 
 # Compiler
-EMCC = emcc
+# em++, not emcc: newer Emscripten (6.x) no longer infers C++ from the source
+# extensions here, and emcc links without the C++ runtime, so every `operator new`
+# in my_canvas.cpp comes out as an undefined symbol at wasm-ld time.
+EMCC = em++
 
 # Compiler flags
 CXXFLAGS = -std=c++17 -O3 -DNDEBUG -Wno-narrowing

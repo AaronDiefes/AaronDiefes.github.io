@@ -15,14 +15,80 @@
 #include "include/GMatrix.h"
 #include "include/GShader.h"
 #include "include/GBlendMode.h"
+#include "include/GFinal.h"
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
 
 // Forward declare shader factory functions from shader_ops.h
 std::unique_ptr<GShader> GCreateRadialGradientShader(const GPoint& center, float radius, const GColor colors[], int count, GTileMode tileMode);
 std::unique_ptr<GShader> GCreateAngleGradientShader(GPoint p0, GPoint p1, const GColor colors[], int count);
+std::unique_ptr<GShader> GCreateBilerpBitmapShader(const GBitmap& bm, const GMatrix& mat, GTileMode tileMode);
+std::unique_ptr<GShader> GCreateTriColorShader(const GPoint points[], const GColor colors[], int count);
+std::unique_ptr<GShader> GCreateProxyShader(GShader* shader, GMatrix mat);
+std::unique_ptr<GShader> GCreateComposeShader(GShader* shader1, GShader* shader2);
+std::unique_ptr<GShader> GCreateNonlinearGradientShader(GPoint p0, GPoint p1, const GColor colors[], const float intervals[], int count, GTileMode tileMode);
 
 using namespace emscripten;
+
+/**
+ * Decoded-texture cache.
+ *
+ * GBitmap::readFromFile allocates the pixel buffer and, per its own header comment,
+ * "the caller must call free(bitmap->fPixels) when they are finished." The original
+ * createBitmapShaderFromFile never did, so every call leaked one fully decoded image
+ * - 552KB for the demo texture. That was survivable when a shader was built once per
+ * slider release; it is not survivable when dragging re-renders continuously, where it
+ * ran to 33MB over 60 renders.
+ *
+ * Caching by filename fixes the leak and removes a repeated PNG decode from the
+ * render path. Entries live for the lifetime of the module, which is correct: the
+ * shaders hold the pixel pointer, so the buffer has to outlive them, and there are
+ * only ever a handful of textures.
+ */
+static GBitmap* cachedBitmap(const std::string& filename) {
+    static std::map<std::string, GBitmap> cache;
+    auto it = cache.find(filename);
+    if (it != cache.end()) {
+        return &it->second;
+    }
+    GBitmap bm;
+    if (!bm.readFromFile(filename.c_str())) {
+        return nullptr;
+    }
+    auto inserted = cache.emplace(filename, bm);
+    return &inserted.first->second;
+}
+
+
+/**
+ * Shared helpers. Colours arrive from JS as a flat [r,g,b,a, r,g,b,a, ...] array and
+ * points as [x,y, x,y, ...] - the same convention the original factories used, kept
+ * so JS callers do not have to learn two marshalling styles.
+ *
+ * Matrix argument order is (a, c, e, b, d, f), matching GMatrix's own constructor and
+ * the existing createBitmapShaderFromFile - NOT row-major. Getting this wrong silently
+ * transposes every transform, so it is spelled out at each call site.
+ */
+static std::vector<GColor> toColors(const std::vector<float>& flat) {
+    size_t count = flat.size() / 4;
+    std::vector<GColor> out(count);
+    for (size_t i = 0; i < count; ++i) {
+        out[i] = GColor::RGBA(flat[i*4], flat[i*4+1], flat[i*4+2], flat[i*4+3]);
+    }
+    return out;
+}
+
+static std::vector<GPoint> toPoints(const std::vector<float>& flat) {
+    size_t count = flat.size() / 2;
+    std::vector<GPoint> out(count);
+    for (size_t i = 0; i < count; ++i) {
+        out[i] = GPoint{flat[i*2], flat[i*2+1]};
+    }
+    return out;
+}
+
 
 /**
  * PathWrapper - JavaScript-friendly wrapper for GPath
@@ -32,6 +98,19 @@ public:
     PathWrapper() {}
 
     void reset() { fPath.reset(); }
+
+    /** Matrix order is (a,c,e,b,d,f) to match GMatrix's constructor. */
+    void transform(float m0, float m1, float m2, float m3, float m4, float m5) {
+        fPath.transform(GMatrix(m0, m1, m2, m3, m4, m5));
+    }
+
+    /* Tight bounds of every segment. Returned as four floats rather than a bound
+       GRect value type, keeping the marshalling style consistent with everything
+       else here. Empty paths give a degenerate rect, not an error. */
+    float boundsLeft()   const { return fPath.bounds().left; }
+    float boundsTop()    const { return fPath.bounds().top; }
+    float boundsRight()  const { return fPath.bounds().right; }
+    float boundsBottom() const { return fPath.bounds().bottom; }
     void moveTo(float x, float y) { fPath.moveTo(x, y); }
     void lineTo(float x, float y) { fPath.lineTo(x, y); }
     void quadTo(float x1, float y1, float x2, float y2) { fPath.quadTo(x1, y1, x2, y2); }
@@ -39,12 +118,24 @@ public:
         fPath.cubicTo(x1, y1, x2, y2, x3, y3);
     }
 
-    void addRect(float x, float y, float width, float height, int direction) {
+/*
+ * Enum parameters are typed, not int.
+ *
+ * These three took `int`. embind silently coerces a JS enum object passed to an int
+ * parameter to 0, so `paint.setBlendMode(Module.BlendMode.SrcOver)` set Clear, and
+ * `path.addCircle(..., Module.PathDirection.CCW)` set CW. Every blend mode collapsed
+ * to Clear and winding direction could never be reversed - with no error anywhere.
+ *
+ * Taking the enum type makes embind marshal the JS enum object correctly. Note it does
+ * NOT make the mistake loud: passing a raw integer here now silently selects member
+ * zero instead. Pass Module.BlendMode.X / Module.PathDirection.X, never a number.
+ */
+    void addRect(float x, float y, float width, float height, GPath::Direction direction) {
         GRect rect = GRect::XYWH(x, y, width, height);
         fPath.addRect(rect, static_cast<GPath::Direction>(direction));
     }
 
-    void addCircle(float centerX, float centerY, float radius, int direction) {
+    void addCircle(float centerX, float centerY, float radius, GPath::Direction direction) {
         fPath.addCircle({centerX, centerY}, radius, static_cast<GPath::Direction>(direction));
     }
 
@@ -80,8 +171,8 @@ public:
         fPaint.setAlpha(alpha);
     }
 
-    void setBlendMode(int mode) {
-        fPaint.setBlendMode(static_cast<GBlendMode>(mode));
+    void setBlendMode(GBlendMode mode) {
+        fPaint.setBlendMode(mode);
     }
 
     void setShader(uintptr_t shaderPtr) {
@@ -148,6 +239,12 @@ public:
     }
 
     int getWidth() const { return fWidth; }
+
+    /** Arbitrary affine transform - shear and skew, which translate/scale/rotate
+     *  cannot express. Matrix order is (a,c,e,b,d,f), as GMatrix declares it. */
+    void concat(float m0, float m1, float m2, float m3, float m4, float m5) {
+        fCanvas->concat(GMatrix(m0, m1, m2, m3, m4, m5));
+    }
     int getHeight() const { return fHeight; }
 
     // Canvas state management
@@ -256,6 +353,32 @@ public:
         fCanvas->drawQuad(gverts, colorPtr, texPtr, level, paint->getPaint());
     }
 
+    /** Coons patch: four quadratic boundary curves (8 control points) with texture
+     *  coordinates at the four corners. Implemented as a MyFinal override that lowers
+     *  to drawMesh internally, so it needs a GFinal instance rather than a canvas call.
+     *
+     *  level 0 is a degenerate no-op in the implementation, so callers should pass >= 1. */
+    void drawQuadraticCoons(const std::vector<float>& pts,
+                            const std::vector<float>& texs,
+                            int level,
+                            const PaintWrapper* paint) {
+        if (pts.size() != 16) return;   // 8 control points
+        if (texs.size() != 8)  return;  // 4 corner texture coords
+
+        GPoint gpts[8];
+        for (int i = 0; i < 8; ++i) {
+            gpts[i] = GPoint{pts[i * 2], pts[i * 2 + 1]};
+        }
+        GPoint gtex[4];
+        for (int i = 0; i < 4; ++i) {
+            gtex[i] = GPoint{texs[i * 2], texs[i * 2 + 1]};
+        }
+
+        auto final = GCreateFinal();
+        if (!final) return;
+        final->drawQuadraticCoons(fCanvas.get(), gpts, gtex, level, paint->getPaint());
+    }
+
     // Legacy simple color methods (for backward compatibility)
     void drawRect(float x, float y, float width, float height,
                   float r, float g, float b, float a) {
@@ -347,16 +470,16 @@ ShaderWrapper* createBitmapShaderFromFile(const std::string& filename,
                                           float m0, float m1, float m2,
                                           float m3, float m4, float m5,
                                           int tileMode) {
-    // Load bitmap from virtual filesystem
-    GBitmap bitmap;
-    if (!bitmap.readFromFile(filename.c_str())) {
+    // Decoded once per filename - see cachedBitmap() on why this must not re-decode.
+    GBitmap* bitmap = cachedBitmap(filename);
+    if (!bitmap) {
         return nullptr;
     }
 
     // Create matrix from 6 values (affine transform)
     GMatrix matrix(m0, m1, m2, m3, m4, m5);
 
-    auto shader = GCreateBitmapShader(bitmap, matrix, static_cast<GTileMode>(tileMode));
+    auto shader = GCreateBitmapShader(*bitmap, matrix, static_cast<GTileMode>(tileMode));
     if (shader) {
         return new ShaderWrapper(std::move(shader));
     }
@@ -404,6 +527,131 @@ int testFileRead(const std::string& filename) {
 }
 
 // Emscripten bindings
+
+/* ---------------------------------------------------------------------------
+ * Newly exposed surface. Every function below was already implemented in the
+ * engine but had no embind entry, so JavaScript could not reach it.
+ * ------------------------------------------------------------------------- */
+
+/** Bilinear-filtered texture sampling - the quality tier above the nearest-neighbour
+ *  createBitmapShaderFromFile. Same arguments so the two are drop-in comparable. */
+ShaderWrapper* createBilerpBitmapShaderFromFile(const std::string& filename,
+                                                float m0, float m1, float m2,
+                                                float m3, float m4, float m5,
+                                                int tileMode) {
+    GBitmap* bitmap = cachedBitmap(filename);
+    if (!bitmap) {
+        return nullptr;
+    }
+    GMatrix matrix(m0, m1, m2, m3, m4, m5);
+    auto shader = GCreateBilerpBitmapShader(*bitmap, matrix, static_cast<GTileMode>(tileMode));
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** Barycentric interpolation across a triangle. drawMesh builds this internally;
+ *  exposing it lets a caller shade any geometry with a 3-point colour ramp. */
+ShaderWrapper* createTriColorShader(const std::vector<float>& points,
+                                    const std::vector<float>& colors) {
+    auto pts = toPoints(points);
+    auto cols = toColors(colors);
+    if (pts.size() < 3 || cols.size() < 3) return nullptr;
+    auto shader = GCreateTriColorShader(pts.data(), cols.data(), (int)pts.size());
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** Wraps an existing shader with a local matrix. The wrapped shader must outlive
+ *  the proxy - JS owns both ShaderWrappers, so keep a reference to each. */
+ShaderWrapper* createProxyShader(uintptr_t shaderPtr,
+                                 float m0, float m1, float m2,
+                                 float m3, float m4, float m5) {
+    GShader* inner = reinterpret_cast<GShader*>(shaderPtr);
+    if (!inner) return nullptr;
+    GMatrix matrix(m0, m1, m2, m3, m4, m5);
+    auto shader = GCreateProxyShader(inner, matrix);
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** Multiplies two shaders. Both inputs must outlive the composed shader. */
+ShaderWrapper* createComposeShader(uintptr_t shaderA, uintptr_t shaderB) {
+    GShader* a = reinterpret_cast<GShader*>(shaderA);
+    GShader* b = reinterpret_cast<GShader*>(shaderB);
+    if (!a || !b) return nullptr;
+    auto shader = GCreateComposeShader(a, b);
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** Gradient whose stops sit at caller-chosen intervals rather than evenly spaced.
+ *  intervals.size() is expected to match the colour count. */
+ShaderWrapper* createNonlinearGradient(float x0, float y0, float x1, float y1,
+                                       const std::vector<float>& colors,
+                                       const std::vector<float>& intervals,
+                                       int tileMode) {
+    auto cols = toColors(colors);
+    if (cols.empty() || intervals.size() < cols.size()) return nullptr;
+    auto shader = GCreateNonlinearGradientShader(GPoint{x0, y0}, GPoint{x1, y1},
+                                                 cols.data(), intervals.data(),
+                                                 (int)cols.size(),
+                                                 static_cast<GTileMode>(tileMode));
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** Position-controlled gradient: pos[i] places colour i at an explicit fraction of
+ *  the p0->p1 line. Implemented as a MyFinal override, so it goes through GCreateFinal. */
+ShaderWrapper* createLinearPosGradient(float x0, float y0, float x1, float y1,
+                                       const std::vector<float>& colors,
+                                       const std::vector<float>& pos) {
+    auto cols = toColors(colors);
+    if (cols.empty() || pos.size() < cols.size()) return nullptr;
+    auto final = GCreateFinal();
+    if (!final) return nullptr;
+    auto shader = final->createLinearPosGradient(GPoint{x0, y0}, GPoint{x1, y1},
+                                                 cols.data(), pos.data(), (int)cols.size());
+    return shader ? new ShaderWrapper(std::move(shader)) : nullptr;
+}
+
+/** de Casteljau subdivision, exposed so a caller can show where a curve splits.
+ *  Returns the flattened result: 5 points for a quad, 7 for a cubic. */
+std::vector<float> chopQuadAt(const std::vector<float>& src, float t) {
+    auto pts = toPoints(src);
+    if (pts.size() < 3) return {};
+    GPoint dst[5];
+    GPath::ChopQuadAt(pts.data(), dst, t);
+    std::vector<float> out;
+    for (int i = 0; i < 5; ++i) { out.push_back(dst[i].x); out.push_back(dst[i].y); }
+    return out;
+}
+
+std::vector<float> chopCubicAt(const std::vector<float>& src, float t) {
+    auto pts = toPoints(src);
+    if (pts.size() < 4) return {};
+    GPoint dst[7];
+    GPath::ChopCubicAt(pts.data(), dst, t);
+    std::vector<float> out;
+    for (int i = 0; i < 7; ++i) { out.push_back(dst[i].x); out.push_back(dst[i].y); }
+    return out;
+}
+
+/** Matrix inversion and point mapping. invert() returns an optional in C++; an empty
+ *  vector here means the matrix was singular, which the caller must handle. */
+std::vector<float> invertMatrix(float m0, float m1, float m2, float m3, float m4, float m5) {
+    GMatrix m(m0, m1, m2, m3, m4, m5);
+    auto inv = m.invert();
+    if (!inv) return {};
+    return { (*inv)[0], (*inv)[1], (*inv)[2], (*inv)[3], (*inv)[4], (*inv)[5] };
+}
+
+std::vector<float> mapPoints(float m0, float m1, float m2, float m3, float m4, float m5,
+                             const std::vector<float>& points) {
+    GMatrix m(m0, m1, m2, m3, m4, m5);
+    auto pts = toPoints(points);
+    if (pts.empty()) return {};
+    std::vector<GPoint> dst(pts.size());
+    m.mapPoints(dst.data(), pts.data(), (int)pts.size());
+    std::vector<float> out;
+    for (const auto& p : dst) { out.push_back(p.x); out.push_back(p.y); }
+    return out;
+}
+
 EMSCRIPTEN_BINDINGS(graphics_engine) {
     // PathWrapper
     class_<PathWrapper>("PathWrapper")
@@ -416,7 +664,12 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
         .function("addRect", &PathWrapper::addRect)
         .function("addCircle", &PathWrapper::addCircle)
         .function("addPolygon", &PathWrapper::addPolygon)
-        .function("countPoints", &PathWrapper::countPoints);
+        .function("countPoints", &PathWrapper::countPoints)
+        .function("transform", &PathWrapper::transform)
+        .function("boundsLeft", &PathWrapper::boundsLeft)
+        .function("boundsTop", &PathWrapper::boundsTop)
+        .function("boundsRight", &PathWrapper::boundsRight)
+        .function("boundsBottom", &PathWrapper::boundsBottom);
 
     // PaintWrapper
     class_<PaintWrapper>("PaintWrapper")
@@ -445,6 +698,7 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
         .function("translate", &CanvasWrapper::translate)
         .function("scale", &CanvasWrapper::scale)
         .function("rotate", &CanvasWrapper::rotate)
+        .function("concat", &CanvasWrapper::concat)
         .function("clear", &CanvasWrapper::clear)
         // Paint-based drawing
         .function("drawRectWithPaint", &CanvasWrapper::drawRectWithPaint, allow_raw_pointers())
@@ -452,6 +706,7 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
         .function("drawPathWithPaint", &CanvasWrapper::drawPathWithPaint, allow_raw_pointers())
         .function("drawMesh", &CanvasWrapper::drawMesh, allow_raw_pointers())
         .function("drawQuad", &CanvasWrapper::drawQuad, allow_raw_pointers())
+        .function("drawQuadraticCoons", &CanvasWrapper::drawQuadraticCoons, allow_raw_pointers())
         // Legacy simple color methods
         .function("drawRect", &CanvasWrapper::drawRect)
         .function("drawConvexPolygon", &CanvasWrapper::drawConvexPolygon);
@@ -463,6 +718,18 @@ EMSCRIPTEN_BINDINGS(graphics_engine) {
     function("createBitmapShaderFromFile", &createBitmapShaderFromFile, allow_raw_pointers());
     function("loadImageToVFS", &loadImageToVFS);
     function("testFileRead", &testFileRead);
+
+    // Newly exposed: implemented in the engine, previously unreachable from JS
+    function("createBilerpBitmapShaderFromFile", &createBilerpBitmapShaderFromFile, allow_raw_pointers());
+    function("createTriColorShader", &createTriColorShader, allow_raw_pointers());
+    function("createProxyShader", &createProxyShader, allow_raw_pointers());
+    function("createComposeShader", &createComposeShader, allow_raw_pointers());
+    function("createNonlinearGradient", &createNonlinearGradient, allow_raw_pointers());
+    function("createLinearPosGradient", &createLinearPosGradient, allow_raw_pointers());
+    function("chopQuadAt", &chopQuadAt);
+    function("chopCubicAt", &chopCubicAt);
+    function("invertMatrix", &invertMatrix);
+    function("mapPoints", &mapPoints);
 
     // Enums
     enum_<GBlendMode>("BlendMode")
