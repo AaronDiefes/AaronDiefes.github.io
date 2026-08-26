@@ -1038,28 +1038,23 @@ class AngleGradientShader:public GShader{
     }
 
     void shadeRow(int x, int y, int c, GPixel row[]) override {
-      float x_prime = (inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4]) * (count - 1);
-      float y_prime = (inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5]) * (count - 1);
-
-      float dx = P1.x - P0.x;
-      float dy = P1.y - P0.y;
-
-      // Calculate the angle (in radians) of the line segment
-      float line_angle = std::atan2(dy, dx);
+      // setContext built the basis from P0 and P1 and inverted it, so `inv` maps a
+      // device point into the gradient's own space: P0 becomes the origin and P1
+      // becomes (1, 0). The angle is therefore just atan2(y', x') with no further
+      // adjustment.
+      //
+      // This previously scaled by (count - 1) - copied from the linear gradient, where
+      // the mapped value indexes the colour ramp - and then subtracted P0, which is in
+      // DEVICE space, from a point already mapped into unit space. Mixing the two
+      // collapsed the whole surface into a narrow band of angles, so a sweep rendered
+      // as a nearly flat colour instead of a wheel.
+      float x_prime = inv[0] * (x + 0.5f) + inv[2] * (y + 0.5f) + inv[4];
+      float y_prime = inv[1] * (x + 0.5f) + inv[3] * (y + 0.5f) + inv[5];
 
       for (int i = 0; i < c; i++) {
-          // Calculate the angle (in radians) between the line segment and the pixel
-          float angle_to_pixel = std::atan2(y_prime - P0.y, x_prime - P0.x);
+          float angle = std::atan2(y_prime, x_prime);
 
           // Normalize the angle to [0, 2*pi]
-          if (angle_to_pixel < 0) {
-              angle_to_pixel += 2 * M_PI;
-          }
-
-          // Calculate the relative angle between the pixel and the line segment
-          float angle = angle_to_pixel - line_angle;
-
-          // Ensure the angle is in the range [0, 2*pi]
           if (angle < 0) {
               angle += 2 * M_PI;
           }
